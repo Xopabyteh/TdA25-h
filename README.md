@@ -1,9 +1,9 @@
-# Tour de App - Generic boilerplate
+# h
 
-Šablona pro vývoj aplikace pro Tour de App obsahující pouze GitHub Action s vytvořením a nahráním výstupu.
-Je potřeba přidat Dockerfile, který na základě zdrojového kódu aplikace vytvoří docker image vaší aplikace. 
-Aplikace může běžet na libovolném portu zpřístupněném pomocí příkazu `EXPOSE PORT_NUMBER` ve vaší Dockerfile.
+## Building & Running
+### Visual studio:
+Since it is a Blazor web app, with both rendering options (Server and WASM), the `h.Server` project must be launched.
 
-## Odevzdání
-
-Jak odevzdat svojí aplikaci můžete najít v našich [vzdělávacích materiálech](https://tourde.app/vzdelavaci-materialy/jak-odevzdavat)
+In vs, there are two options:
+* Either the `h.Server` and run the `https` launch profile,
+* or better select `docker-compose`.
