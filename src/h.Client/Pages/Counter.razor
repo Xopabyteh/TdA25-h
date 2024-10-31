@@ -1,0 +1,15 @@
+﻿@attribute [Route(PageRoutes.Counter)]
+@rendermode InteractiveAuto
+
+<button @onclick="HandleClick">h</button>
+
+<h3>h: @i</h3>
+
+@code {
+    private int i = 0;
+    private void HandleClick()
+    {
+        Console.WriteLine("This might appear in the server console, or in the browser console, depending on where this code is executed :wink:");
+        i++;
+    }
+}
