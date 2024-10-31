@@ -1,0 +1,6 @@
+services:
+  h.server:
+    image: ${DOCKER_REGISTRY-}hserver
+    build:
+      context: .
+      dockerfile: src/h.Server/Dockerfile
