@@ -1,6 +1,7 @@
 services:
   h.server:
-    image: ${DOCKER_REGISTRY-}hserver
+    # image: ${DOCKER_REGISTRY-}hserver
+    image: tda:latest # Tour de app image tag
     build:
       context: .
       dockerfile: src/h.Server/Dockerfile

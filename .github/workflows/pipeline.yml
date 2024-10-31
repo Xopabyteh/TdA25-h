@@ -28,6 +28,7 @@ jobs:
       - name: Build (using Docker Compose)
         run: |
           docker compose -f ./docker-compose.yml build
+          docker images  # List images to confirm "tda:latest" was created
           docker save tda:latest -o /tmp/tda.tar
 
       - name: Upload to TdA
