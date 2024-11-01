@@ -1,11 +1,9 @@
+using Carter;
+using h.Server;
 using h.Server.Components;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+builder.AddPresentation();
 
 var app = builder.Build();
 
@@ -30,5 +28,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(h.Client._Imports).Assembly);
+
+app.MapCarter();
 
 app.Run();
