@@ -1,12 +1,15 @@
 using Carter;
-using h.Server;
 using h.Server.Components;
+using h.Server.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddPresentation();
+builder
+    .AddPresentation()
+    .AddInfrastructure();
 
 var app = builder.Build();
 
+// Debugging and exception page
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -19,6 +22,10 @@ else
     app.UseHsts();
 }
 
+// Request/Start pipeline
+await app.TryMigrateDbAsync();
+
+// Endpoints and routes
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -28,6 +35,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(h.Client._Imports).Assembly);
+
 
 app.MapCarter();
 

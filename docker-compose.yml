@@ -2,6 +2,20 @@ services:
   h.server:
     # image: ${DOCKER_REGISTRY-}hserver
     image: tda:latest # Tour de app image tag
+    container_name: h.server
     build:
       context: .
       dockerfile: src/h.Server/Dockerfile
+  
+  h.database:
+    image: postgres:latest
+    container_name: h.database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hdb
+    volumes:
+      - ./.containers/h-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    
