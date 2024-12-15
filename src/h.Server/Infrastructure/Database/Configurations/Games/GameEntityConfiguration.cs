@@ -15,10 +15,10 @@ public class GameEntityConfiguration : IEntityTypeConfiguration<Game>
 
         builder.Property(x => x.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("date('now')");
+            .HasDefaultValueSql("current_timestamp");
         builder.Property(x => x.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("date('now')");
+            .HasDefaultValueSql("current_timestamp");
 
         builder.Property(x => x.Name).IsRequired();
 

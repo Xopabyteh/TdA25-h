@@ -11,7 +11,7 @@ using h.Server.Infrastructure.Database;
 namespace h.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241215164057_Initial")]
+    [Migration("20241215165204_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -29,7 +29,7 @@ namespace h.Server.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValueSql("date('now')");
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.Property<int>("Difficulty")
                         .HasColumnType("INTEGER");
@@ -44,7 +44,7 @@ namespace h.Server.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValueSql("date('now')");
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.HasKey("Id");
 

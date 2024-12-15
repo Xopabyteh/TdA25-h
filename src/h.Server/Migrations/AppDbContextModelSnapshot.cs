@@ -26,7 +26,7 @@ namespace h.Server.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValueSql("date('now')");
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.Property<int>("Difficulty")
                         .HasColumnType("INTEGER");
@@ -41,7 +41,7 @@ namespace h.Server.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValueSql("date('now')");
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.HasKey("Id");
 
