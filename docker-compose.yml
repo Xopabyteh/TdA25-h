@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: src/h.Server/Dockerfile
+    depends_on:
+      - h.database
   
   h.database:
     image: postgres:latest
