@@ -1,6 +1,7 @@
 using Carter;
 using h.Server.Components;
 using h.Server.Infrastructure;
+using h.Server.Infrastructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -35,6 +36,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(h.Client._Imports).Assembly);
+
+app.UseMiddleware<BadRequestResponseMiddleware>();
 
 app.MapCarter();
 

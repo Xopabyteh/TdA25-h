@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OneOf;
+using System;
 
 namespace h.Server.Entities.Games;
 
@@ -32,27 +33,27 @@ public class GameBoard
     }
 
     // Todo: consider changing to Span2D<>
-    public static GameBoard Parse(string[][] boardMatrix)
+    public static OneOf<GameBoard, IncorrectBoardSizeError, IncorrectCellFormatError> Parse(string[][] boardMatrix)
     {
         var gameBoard = CreateNew();
 
         // Todo: ensure board matrix size is validated elsewhere
         if (boardMatrix.Length != PREDEFINED_BOARD_SIDE_SIZE)
-            throw new IncorrectBoardSizeException();
+            return new IncorrectBoardSizeError();
 
         for (int y = 0; y < boardMatrix.Length; y++)
         {
             var row = boardMatrix[y];
             if (row.Length != PREDEFINED_BOARD_SIDE_SIZE)
-                throw new IncorrectBoardSizeException();
+                return new IncorrectBoardSizeError();
 
             for (int x = 0; x < row.Length; x++)
             {
                 var cell = row[x];
                 if (cell.Length > 1)
-                    throw new IncorrectCellSizeException();
+                    return new IncorrectCellFormatError(x, y);
 
-                if(cell.Length == 0)
+                if (cell.Length == 0)
                 {
                     // -> No symbol
                     gameBoard.BoardMatrix[y][x] = GameSymbol.None;
@@ -60,7 +61,12 @@ public class GameBoard
                 }
 
                 // -> Some symbol
-                gameBoard.BoardMatrix[y][x] = GameSymbolParser.Parse(cell[0]);
+                var symbol = GameSymbolParser.Parse(cell[0]);
+                if(symbol == GameSymbol.None)
+                    // We were supposed to have a symbol here, but parsing failed
+                    return new IncorrectCellFormatError(x, y); 
+
+                gameBoard.BoardMatrix[y][x] = symbol;
             }
         }
 
@@ -90,17 +96,6 @@ public class GameBoard
         return result;
     }
 
-    public class IncorrectBoardSizeException : Exception
-    {
-        public IncorrectBoardSizeException() : base("Board matrix must be 15x15")
-        {
-        }
-    }
-
-    public class IncorrectCellSizeException : Exception
-    {
-        public IncorrectCellSizeException() : base("Cell must be empty or a single character")
-        {
-        }
-    }
+    public readonly struct IncorrectBoardSizeError;
+    public readonly record struct IncorrectCellFormatError(int CellY, int CellX);
 }

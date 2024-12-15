@@ -1,6 +1,9 @@
 ﻿using Carter;
+using FluentValidation;
 using h.Contracts.Games;
+using h.Primitives.Games;
 using h.Server.Entities.Games;
+using h.Server.Infrastructure;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +17,29 @@ public static class CreateNewGame
         {
             app.MapPost("/api/games", async (
                 [FromBody] CreateNewGameRequest request,
-                [FromServices] AppDbContext db) =>
+                [FromServices] AppDbContext db,
+                [FromServices] IValidator<CreateNewGameRequest> validator) =>
             {
+                // Validate
+                var validationResult = validator.Validate(request);
+                if(!validationResult.IsValid)
+                {
+                    return ErrorResults.ValidationError(validationResult);
+                }
+
                 // Map to entity
-                var board = GameBoard.Parse(request.Board);
+                var boardResult = GameBoard.Parse(request.Board);
+                if (!boardResult.IsT0)
+                {
+                    // -> Error parsing
+                    return boardResult.Match(
+                        null, // Never result (T0)
+                        boardSizeError => ErrorResults.ValidationError("Board size does not match specification"),
+                        cellSizeError => ErrorResults.ValidationError($"The cell {cellSizeError} does not match the specification")
+                    );
+                }
+
+                var board = boardResult.AsT0;
                 var game = new Game(request.Name, request.Difficulty, board);
 
                 // Persist
@@ -36,6 +58,16 @@ public static class CreateNewGame
                 
                 return Results.Created($"/api/games/{game.Id}", response);
             });
+        }
+    }
+
+    public class Validator : AbstractValidator<CreateNewGameRequest>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Difficulty).IsInSmartEnum(GameDifficulty.List);
+            RuleFor(x => x.Board).NotEmpty();
         }
     }
 }

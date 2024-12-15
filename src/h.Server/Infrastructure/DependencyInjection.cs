@@ -1,6 +1,9 @@
 ﻿using Carter;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
+using h.Server.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +18,9 @@ public static class DependencyInjection
             .AddInteractiveWebAssemblyComponents();
 
         builder.Services.AddCarter();
+        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+        builder.Services.AddScoped<BadRequestResponseMiddleware>();
 
         // Add custom json converters
         // Mainly for custom model bindings
