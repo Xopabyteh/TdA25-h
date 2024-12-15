@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Ardalis.SmartEnum" Version="8.2.0" />
+		<PackageReference Include="Ardalis.SmartEnum" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\h.Primitives\h.Primitives.csproj" />
