@@ -1,6 +1,7 @@
 ﻿using Carter;
 using h.Contracts.Games;
 using h.Server.Entities.Games;
+using h.Server.Infrastructure;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ public static class GetGameById
 
                 if (game is null)
                 {
-                    return Results.NotFound();
+                    return ErrorResults.NotFound();
                 }
 
                 return Results.Ok(new GameResponse(

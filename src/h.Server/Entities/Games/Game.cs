@@ -8,9 +8,9 @@ public class Game
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; set; }
     public string Name { get; set; }
-    public GameDifficulty Difficulty { get; init; }
+    public GameDifficulty Difficulty { get; set; }
     public GameState GameState { get; set; } // Todo: use
-    public GameBoard Board { get; init; }
+    public GameBoard Board { get; set; }
 
     /// <summary>
     /// Creates a new game

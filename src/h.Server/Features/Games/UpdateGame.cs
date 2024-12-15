@@ -9,35 +9,39 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace h.Server.Features.Games;
 
-public static class CreateNewGame
+public static class UpdateGame
 {
     public class Endpoint : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/games", async (
-                [FromBody] CreateNewGameRequest request,
+            app.MapPut("/api/games/{id}", async (
+                [FromRoute] Guid id,
+                [FromBody] UpdateGameRequest request,
                 [FromServices] AppDbContext db,
-                [FromServices] IValidator<CreateNewGameRequest> validator) =>
+                [FromServices] IValidator<UpdateGameRequest> validator) =>
             {
                 // Validate
                 var validationResult = validator.Validate(request);
-                if(!validationResult.IsValid)
+                if (!validationResult.IsValid)
                     return ErrorResults.ValidationError(validationResult);
 
-                // Map to entity
-                var boardResult = GameBoard.Parse(request.Board);
-                if (boardResult.IsError)
-                {
-                    // -> Error while parsing
-                    return ErrorResults.ValidationError(boardResult.Errors);
-                }
+                var game = await db.GamesDbSet.FindAsync(id);
 
-                var board = boardResult.Value;
-                var game = new Game(request.Name, request.Difficulty, board);
+                if (game is null)
+                    return ErrorResults.NotFound();
+
+                var newBoardResult = GameBoard.Parse(request.Board);
+                if (newBoardResult.IsError)
+                    return ErrorResults.ValidationError(newBoardResult.Errors);
+
+                // Update properties
+                game.Name = request.Name;
+                game.Difficulty = request.Difficulty;
+                game.Board = newBoardResult.Value;
 
                 // Persist
-                await db.GamesDbSet.AddAsync(game);
+                db.GamesDbSet.Update(game);
                 await db.SaveChangesAsync();
 
                 // Map to response
@@ -50,13 +54,13 @@ public static class CreateNewGame
                     game.GameState,
                     GameBoard.BoardMatrixToString(game.Board.BoardMatrix)
                 );
-                
-                return Results.Created($"/api/games/{game.Id}", response);
+
+                return Results.Ok(response);
             });
         }
     }
 
-    public class Validator : AbstractValidator<CreateNewGameRequest>
+    public class Validator : AbstractValidator<UpdateGameRequest>
     {
         public Validator()
         {

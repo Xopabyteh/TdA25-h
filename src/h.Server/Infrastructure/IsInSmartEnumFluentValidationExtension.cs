@@ -22,6 +22,12 @@ public static class IsInSmartEnumFluentValidationExtension
         {
             return avaliableEnumValues.Contains(value);
         }
+
+        protected override string GetDefaultMessageTemplate(string errorCode)
+        {
+            // The value {PropertyValue} is not a valid {PropertyName}.
+            return "The value {PropertyValue} is not a valid {PropertyName}.";
+        }
     }
 
     public static IRuleBuilderOptions<T, TProperty> IsInSmartEnum<T, TProperty>(

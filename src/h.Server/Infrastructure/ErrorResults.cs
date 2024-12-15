@@ -1,4 +1,5 @@
 ﻿using Carter.ModelBinding;
+using ErrorOr;
 using FluentValidation.Results;
 using h.Contracts;
 
@@ -32,6 +33,16 @@ public static class ErrorResults
     /// </summary>
     public static IResult ValidationError(string reason, Dictionary<string, string[]>? Errors = null)
         => Results.UnprocessableEntity(new ErrorResponse(422, $"Semantic error: {reason}", Errors));
+
+    public static IResult ValidationError(IReadOnlyCollection<Error> errors)
+        => Results.UnprocessableEntity(new ErrorResponse(
+            422,
+            "Semantic error: The content contains semantic errors.",
+            errors.ToDictionary(
+                keySelector: k => k.Code,
+                elementSelector: v => new[] { v.Description }
+            )   
+        ));
 
     public static IResult ValidationError(ValidationResult validationResult)
     {

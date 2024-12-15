@@ -17,6 +17,7 @@
     <PackageReference Include="Ardalis.SmartEnum" />
     <PackageReference Include="Ardalis.SmartEnum.EFCore" />
     <PackageReference Include="Carter" />
+    <PackageReference Include="ErrorOr" />
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -25,6 +26,5 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="OneOf" />
   </ItemGroup>
 </Project>

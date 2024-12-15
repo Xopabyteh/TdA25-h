@@ -1,4 +1,4 @@
-﻿using OneOf;
+﻿using ErrorOr;
 using System;
 
 namespace h.Server.Entities.Games;
@@ -33,25 +33,25 @@ public class GameBoard
     }
 
     // Todo: consider changing to Span2D<>
-    public static OneOf<GameBoard, IncorrectBoardSizeError, IncorrectCellFormatError> Parse(string[][] boardMatrix)
+    public static ErrorOr<GameBoard> Parse(string[][] boardMatrix)
     {
         var gameBoard = CreateNew();
 
         // Todo: ensure board matrix size is validated elsewhere
         if (boardMatrix.Length != PREDEFINED_BOARD_SIDE_SIZE)
-            return new IncorrectBoardSizeError();
+            return IncorrectBoardSizeError();
 
         for (int y = 0; y < boardMatrix.Length; y++)
         {
             var row = boardMatrix[y];
             if (row.Length != PREDEFINED_BOARD_SIDE_SIZE)
-                return new IncorrectBoardSizeError();
+                return IncorrectBoardSizeError();
 
             for (int x = 0; x < row.Length; x++)
             {
                 var cell = row[x];
                 if (cell.Length > 1)
-                    return new IncorrectCellFormatError(x, y);
+                    return IncorrectCellFormatError(x, y);
 
                 if (cell.Length == 0)
                 {
@@ -64,7 +64,7 @@ public class GameBoard
                 var symbol = GameSymbolParser.Parse(cell[0]);
                 if(symbol == GameSymbol.None)
                     // We were supposed to have a symbol here, but parsing failed
-                    return new IncorrectCellFormatError(x, y); 
+                    return IncorrectCellFormatError(x, y); 
 
                 gameBoard.BoardMatrix[y][x] = symbol;
             }
@@ -96,6 +96,9 @@ public class GameBoard
         return result;
     }
 
-    public readonly struct IncorrectBoardSizeError;
-    public readonly record struct IncorrectCellFormatError(int CellY, int CellX);
+    public static Error IncorrectBoardSizeError()
+        => Error.Validation(nameof(IncorrectBoardSizeError) ,"Board size does not match specification");
+
+    public static Error IncorrectCellFormatError(int x, int y)
+        => Error.Validation(nameof(IncorrectCellFormatError), $"The cell {x},{y} does not match the specification");
 }
