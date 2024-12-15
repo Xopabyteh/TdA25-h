@@ -29,6 +29,8 @@ jobs:
         run: |
           docker compose -f ./docker-compose.yml build
           docker images  # List images to confirm "tda:latest" was created
+          docker compose -f ./docker-compose.yml up -d
+          docker ps  # List running containers to confirm services are up
           docker save tda:latest -o /tmp/tda.tar
 
       - name: Upload to TdA
