@@ -12,7 +12,7 @@ using h.Server.Infrastructure.Database;
 namespace h.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241213191744_Initial")]
+    [Migration("20241215091708_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -32,7 +32,9 @@ namespace h.Server.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Difficulty")
                         .HasColumnType("integer");
@@ -45,7 +47,9 @@ namespace h.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
 

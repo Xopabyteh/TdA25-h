@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\h.Contracts\h.Contracts.csproj" />
     <ProjectReference Include="..\h.Client\h.Client.csproj" />
+    <ProjectReference Include="..\h.Contracts\h.Contracts.csproj" />
     <PackageReference Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageReference Include="Ardalis.SmartEnum.EFCore" Version="8.1.0" />
     <PackageReference Include="Carter" Version="8.2.1" />
@@ -24,5 +24,4 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
   </ItemGroup>
-
 </Project>

@@ -13,8 +13,13 @@ public class GameEntityConfiguration : IEntityTypeConfiguration<Game>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x => x.CreatedAt).IsRequired();
-        builder.Property(x => x.UpdatedAt).IsRequired();
+        builder.Property(x => x.CreatedAt)
+            .IsRequired()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+        builder.Property(x => x.UpdatedAt)
+            .IsRequired()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         builder.Property(x => x.Name).IsRequired();
 
         builder.Property(x => x.Difficulty).IsRequired();

@@ -11,7 +11,7 @@ public class Game
     public GameBoard Board { get; init; }
 
     /// <summary>
-    /// 
+    /// Creates a new game
     /// </summary>
     /// <param name="name"></param>
     /// <param name="difficulty"></param>
@@ -23,6 +23,8 @@ public class Game
         Name = name;
         Difficulty = difficulty;
         Board = board;
+
+        GameState = GameState.Unknown;
         
         // Todo:
         //DETAIL: Failing row contains (0193c1ca-20a0-7977-a104-68fe8f343a7c, -infinity, -infinity, Moje první hra, 3, null, [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]...).
