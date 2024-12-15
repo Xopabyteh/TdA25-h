@@ -401,3 +401,6 @@ FodyWeavers.xsd
 
 # Docker volume
 .containers/*
+
+# SQlite db
+hdb.db*

@@ -15,13 +15,13 @@ namespace h.Server.Migrations
                 name: "GamesDbSet",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Difficulty = table.Column<int>(type: "integer", nullable: false),
-                    GameState = table.Column<int>(type: "integer", nullable: false),
-                    Board_BoardMatrix = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "date('now')"),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "date('now')"),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Difficulty = table.Column<int>(type: "INTEGER", nullable: false),
+                    GameState = table.Column<int>(type: "INTEGER", nullable: false),
+                    Board_BoardMatrix = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
