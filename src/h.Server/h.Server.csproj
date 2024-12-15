@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\h.Client\h.Client.csproj" />
     <ProjectReference Include="..\h.Contracts\h.Contracts.csproj" />
+    <ProjectReference Include="..\h.Primitives\h.Primitives.csproj" />
     <PackageReference Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageReference Include="Ardalis.SmartEnum.EFCore" Version="8.1.0" />
     <PackageReference Include="Carter" Version="8.2.1" />

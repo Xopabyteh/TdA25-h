@@ -1,4 +1,6 @@
-﻿namespace h.Server.Entities.Games;
+﻿using h.Primitives.Games;
+
+namespace h.Server.Entities.Games;
 
 public class Game
 {
@@ -13,8 +15,6 @@ public class Game
     /// <summary>
     /// Creates a new game
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="difficulty"></param>
     /// <param name="boardMatrix">
     /// [height][width], value is either '', 'X' or 'O'
     /// </param>

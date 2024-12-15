@@ -36,7 +36,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(h.Client._Imports).Assembly);
 
-
 app.MapCarter();
 
 app.Run();

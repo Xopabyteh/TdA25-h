@@ -1,4 +1,5 @@
 ﻿using Carter;
+using h.Contracts.Games;
 using h.Server.Entities.Games;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,10 @@ public static class CreateNewGame
 {
     public class Endpoint : ICarterModule
     {
-        public readonly record struct Request(string Name, GameDifficulty Difficulty, string[][] Board);
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost("/api/games", async (
-                [FromBody] Request request,
+                [FromBody] CreateNewGameRequest request,
                 [FromServices] AppDbContext db) =>
             {
                 var board = GameBoard.Parse(request.Board);

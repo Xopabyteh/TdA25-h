@@ -1,5 +1,5 @@
 ﻿using Carter;
-using h.Server.Entities.Games;
+using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,9 @@ public static class DependencyInjection
         // Mainly for custom model bindings
         builder.Services.Configure<JsonOptions>(o =>
         {
+            // Primitives parsers
             o.SerializerOptions.Converters.Add(new GameDifficultyJsonConverter());
+            o.SerializerOptions.Converters.Add(new GameStateJsonConverter());
         });
         
         return builder;
@@ -28,10 +30,18 @@ public static class DependencyInjection
 
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
-        // Add efcore with sqlite database
+        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+
+        // Add EF Core
+        builder.Services.AddScoped<AutoSetUpdatedAtDbSaveInterceptor>();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+            
+            // Add interceptors
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            var autoSetUpdatedAtInterceptor = serviceProvider.GetRequiredService<AutoSetUpdatedAtDbSaveInterceptor>();
+            options.AddInterceptors(autoSetUpdatedAtInterceptor);
         });
 
         return builder;
