@@ -1,6 +1,5 @@
 ﻿using Carter;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Middleware;
@@ -47,6 +46,7 @@ public static class DependencyInjection
                 npgsqlOptions =>
                 {
                     npgsqlOptions.EnableRetryOnFailure(4, TimeSpan.FromSeconds(10), null);
+                    
                 }
             );
             // Add interceptors

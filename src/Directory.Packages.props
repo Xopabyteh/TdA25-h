@@ -15,5 +15,6 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
     <PackageVersion Include="OneOf" Version="3.0.271" />
     <PackageVersion Include="Polly" Version="8.5.0" />
+    <PackageVersion Include="Polly.Extensions.Http" Version="3.0.0" />
   </ItemGroup>
 </Project>

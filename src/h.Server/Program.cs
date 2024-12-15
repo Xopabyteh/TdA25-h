@@ -24,6 +24,7 @@ else
 }
 
 // Request/Start pipeline
+await app.WaitUntilDbReadyAsync();
 await app.TryMigrateDbAsync();
 
 // Endpoints and routes
