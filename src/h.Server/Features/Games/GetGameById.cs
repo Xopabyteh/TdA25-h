@@ -13,7 +13,7 @@ public static class GetGameById
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/games/{id}", async (
+            app.MapGet("/api/v1/games/{id}", async (
                 [FromRoute] Guid id,
                 [FromServices] AppDbContext db) =>
             {

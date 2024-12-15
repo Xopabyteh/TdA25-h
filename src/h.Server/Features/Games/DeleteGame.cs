@@ -11,7 +11,7 @@ public static class DeleteGame
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapDelete("/api/games/{id}", async (
+            app.MapDelete("/api/v1/games/{id}", async (
                 [FromRoute] Guid id,
                 [FromServices] AppDbContext db) =>
             {

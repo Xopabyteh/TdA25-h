@@ -15,7 +15,7 @@ public static class CreateNewGame
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/games", async (
+            app.MapPost("/api/v1/games", async (
                 [FromBody] CreateNewGameRequest request,
                 [FromServices] AppDbContext db,
                 [FromServices] IValidator<CreateNewGameRequest> validator) =>

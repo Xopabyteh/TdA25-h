@@ -13,7 +13,7 @@ public static class GetAllGames
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/games", async ([FromServices] AppDbContext db) =>
+            app.MapGet("/api/v1/games", async ([FromServices] AppDbContext db) =>
             {
                 // Get from db
                 var games = await db.GamesDbSet.Select(g => new {

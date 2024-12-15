@@ -15,7 +15,7 @@ public static class UpdateGame
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/api/games/{id}", async (
+            app.MapPut("/api/v1/games/{id}", async (
                 [FromRoute] Guid id,
                 [FromBody] UpdateGameRequest request,
                 [FromServices] AppDbContext db,

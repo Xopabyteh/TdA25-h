@@ -1,6 +1,5 @@
 ﻿using h.Server.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 
 namespace h.Server.Infrastructure;
 
