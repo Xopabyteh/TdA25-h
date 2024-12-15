@@ -42,8 +42,13 @@ public static class DependencyInjection
         builder.Services.AddScoped<AutoSetUpdatedAtDbSaveInterceptor>();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
-            
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("Database"),
+                npgsqlOptions =>
+                {
+                    npgsqlOptions.EnableRetryOnFailure(4, TimeSpan.FromSeconds(10), null);
+                }
+            );
             // Add interceptors
             var serviceProvider = builder.Services.BuildServiceProvider();
             var autoSetUpdatedAtInterceptor = serviceProvider.GetRequiredService<AutoSetUpdatedAtDbSaveInterceptor>();

@@ -26,7 +26,8 @@ RUN dotnet publish "./h.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "h.Server.dll"]
 ## Wait for database, then run h.Server
-COPY wait-for-it.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/wait-for-it.sh
-ENTRYPOINT ["wait-for-it.sh", "h.database:5432", "--", "dotnet", "h.Server.dll"]
+#COPY wait-for-it.sh /usr/local/bin/
+#RUN chmod +x /usr/local/bin/wait-for-it.sh
+#ENTRYPOINT ["wait-for-it.sh", "h.database:5432", "--", "dotnet", "h.Server.dll"]

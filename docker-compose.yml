@@ -8,9 +8,6 @@ services:
       dockerfile: src/h.Server/Dockerfile
     depends_on:
       - h.database
-    environment:
-      - WAIT_HOSTS=h.database:5432
-    command: ["wait-for-it.sh", "h.database:5432", "--", "dotnet", "h.Server.dll"]
 
   h.database:
     image: postgres:latest
