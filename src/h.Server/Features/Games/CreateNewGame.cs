@@ -16,11 +16,25 @@ public static class CreateNewGame
                 [FromBody] CreateNewGameRequest request,
                 [FromServices] AppDbContext db) =>
             {
+                // Map to entity
                 var board = GameBoard.Parse(request.Board);
                 var game = new Game(request.Name, request.Difficulty, board);
 
+                // Persist
                 await db.GamesDbSet.AddAsync(game);
                 await db.SaveChangesAsync();
+
+                // Map to response
+                var response = new GameResponse(
+                    game.Id,
+                    game.CreatedAt,
+                    game.UpdatedAt,
+                    game.Name,
+                    game.Difficulty,
+                    game.GameState,
+                    GameBoard.BoardMatrixToString(game.Board.BoardMatrix));
+                
+                return Results.Created($"/api/games/{game.Id}", response);
             });
         }
     }

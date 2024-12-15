@@ -66,6 +66,29 @@ public class GameBoard
 
         return gameBoard;
     }
+    
+    public static string[][] BoardMatrixToString(GameSymbol[][] boardMatrix)
+    {
+        var result = new string[PREDEFINED_BOARD_SIDE_SIZE][];
+        for (int y = 0; y < boardMatrix.Length; y++)
+        {
+            var row = boardMatrix[y];
+            result[y] = new string[PREDEFINED_BOARD_SIDE_SIZE];
+            for (int x = 0; x < row.Length; x++)
+            {
+                var cell = row[x];
+                result[y][x] = cell switch
+                {
+                    GameSymbol.None => "",
+                    GameSymbol.X => "X",
+                    GameSymbol.O => "O",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+        }
+
+        return result;
+    }
 
     public class IncorrectBoardSizeException : Exception
     {
