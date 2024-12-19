@@ -96,6 +96,24 @@ public class GameBoard
         return result;
     }
 
+    /// <returns>How many xs and os are on the board. Complexity: O(w*h)</returns>
+    public (int XsCount, int OsCount) GetSymbolCounts()
+    {
+        var xoCount = BoardMatrix
+            .SelectMany(rows => rows)
+            .Aggregate(
+                (XsCount: 0, OsCount: 0),
+                (accumulate, symbol) =>
+                    symbol switch
+                    {
+                        GameSymbol.X => (accumulate.XsCount + 1, accumulate.OsCount),
+                        GameSymbol.O => (accumulate.XsCount, accumulate.OsCount + 1),
+                        _ => accumulate
+                });
+
+        return xoCount;
+    }
+
     public static Error IncorrectBoardSizeError()
         => Error.Validation(nameof(IncorrectBoardSizeError) ,"Board size does not match specification");
 

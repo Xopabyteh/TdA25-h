@@ -34,8 +34,13 @@ public static class CreateNewGame
                 }
 
                 var board = boardResult.Value;
-                var game = new Game(request.Name, request.Difficulty, board);
-
+                var gameResult = Game.CreateNewGame(request.Name, request.Difficulty, board);
+                
+                if(gameResult.IsError)
+                    return ErrorResults.ValidationError(gameResult.Errors);
+                
+                var game = gameResult.Value;
+                
                 // Persist
                 await db.GamesDbSet.AddAsync(game);
                 await db.SaveChangesAsync();
