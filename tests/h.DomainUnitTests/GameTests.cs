@@ -1,5 +1,6 @@
 ﻿using h.Primitives.Games;
 using h.Server.Entities.Games;
+using h.Server.Infrastructure;
 
 namespace h.DomainUnitTests;
 public class GameTests
@@ -9,10 +10,10 @@ public class GameTests
     {
         // Arrange
         var board = GameBoard.CreateNew();
-        board.BoardMatrix[0][0] = GameSymbol.O;
-        board.BoardMatrix[1][0] = GameSymbol.O;
-        board.BoardMatrix[2][0] = GameSymbol.X;
-        board.BoardMatrix[3][0] = GameSymbol.X;
+        board.SetSymbolAt(new Int2(0, 0), GameSymbol.O);
+        board.SetSymbolAt(new Int2(0, 1), GameSymbol.O);
+        board.SetSymbolAt(new Int2(0, 2), GameSymbol.X);
+        board.SetSymbolAt(new Int2(0, 3), GameSymbol.X);
 
         // Act
         var game = Game.CreateNewGame("name", GameDifficulty.Easy, board);
@@ -26,9 +27,9 @@ public class GameTests
     {
         // Arrange
         var board = GameBoard.CreateNew();
-        board.BoardMatrix[0][0] = GameSymbol.O;
-        board.BoardMatrix[1][0] = GameSymbol.O;
-        board.BoardMatrix[2][0] = GameSymbol.X;
+        board.SetSymbolAt(new Int2(0, 0), GameSymbol.O);
+        board.SetSymbolAt(new Int2(0, 1), GameSymbol.O);
+        board.SetSymbolAt(new Int2(0, 2), GameSymbol.X);
 
         // Act
         var game = Game.CreateNewGame("name", GameDifficulty.Easy, board);
@@ -43,8 +44,8 @@ public class GameTests
     {
         // Arrange
         var board = GameBoard.CreateNew();
-        board.BoardMatrix[0][0] = GameSymbol.X;
-        board.BoardMatrix[1][0] = GameSymbol.X;
+        board.SetSymbolAt(new Int2(0, 0), GameSymbol.X);
+        board.SetSymbolAt(new Int2(0, 1), GameSymbol.X);
 
         // Act
         var game = Game.CreateNewGame("name", GameDifficulty.Easy, board);
@@ -58,8 +59,8 @@ public class GameTests
     {
         // Arrange
         var board = GameBoard.CreateNew();
-        board.BoardMatrix[0][0] = GameSymbol.O;
-        board.BoardMatrix[1][0] = GameSymbol.O;
+        board.SetSymbolAt(new Int2(0, 0), GameSymbol.O);
+        board.SetSymbolAt(new Int2(0, 1), GameSymbol.O);
 
         // Act
         var game = Game.CreateNewGame("name", GameDifficulty.Easy, board);
@@ -67,4 +68,73 @@ public class GameTests
         // Assert
         Assert.True(game.IsError);
     }
+
+    [Fact]
+    public void CreateNewGame_GameState_EndGame_ForX_ClassifiedCorrectly()
+    {
+        // Arrange
+        var board = GameBoard.Parse(BoardXWinNextTurn);
+
+        // Act
+        var game = Game.CreateNewGame("name", GameDifficulty.Easy, board.Value);
+
+        // Assert
+        Assert.False(board.IsError);
+        Assert.False(game.IsError);
+
+        Assert.Equal(GameState.Endgame, game.Value.GameState);
+    }
+
+    [Fact]
+    public void CreateNewGame_GameState_EndGame_ForO_ClassifiedCorrectly()
+    {
+        // Arrange
+        var board = GameBoard.Parse(BoardOWinNextTurn);
+
+        // Act
+        var game = Game.CreateNewGame("name", GameDifficulty.Easy, board.Value);
+
+        // Assert
+        Assert.False(board.IsError);
+        Assert.False(game.IsError);
+
+        Assert.Equal(GameState.Endgame, game.Value.GameState);
+    }
+
+
+    private static readonly string[][] BoardXWinNextTurn = [
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "O", "O", "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "X", "O", "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "X", "O", "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "X", "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "X",  "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""],
+                ["",  "",  "",  "",  "",  "",  "",  "",  "",   "",  "",  "",  "",  "",  ""]
+            ];
+
+    private static readonly string[][] BoardOWinNextTurn = [
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "O", "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "O", "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "X", "O", "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "X", "O", "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "X", "X", "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "X", "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""],
+            ["",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  "",  ""]
+        ];
 }

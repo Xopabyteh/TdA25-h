@@ -1,5 +1,5 @@
 ﻿using ErrorOr;
-using System;
+using h.Server.Infrastructure;
 
 namespace h.Server.Entities.Games;
 
@@ -7,7 +7,9 @@ public class GameBoard
 {
     public const int PREDEFINED_BOARD_SIDE_SIZE = 15;
     /// <summary>
-    /// [height][width]
+    /// Rather than accessing this directly, use <see cref="GetSymbolAt(Int2)"/> and <see cref="SetSymbolAt(Int2, GameSymbol)"/>.
+    /// This is public mainly due to EF Core.
+    /// Array structure is [height][width].
     /// </summary>
     public GameSymbol[][] BoardMatrix { get; init; }
 
@@ -73,12 +75,12 @@ public class GameBoard
         return gameBoard;
     }
     
-    public static string[][] BoardMatrixToString(GameSymbol[][] boardMatrix)
+    public string[][] BoardMatrixToString()
     {
         var result = new string[PREDEFINED_BOARD_SIDE_SIZE][];
-        for (int y = 0; y < boardMatrix.Length; y++)
+        for (int y = 0; y < BoardMatrix.Length; y++)
         {
-            var row = boardMatrix[y];
+            var row = BoardMatrix[y];
             result[y] = new string[PREDEFINED_BOARD_SIDE_SIZE];
             for (int x = 0; x < row.Length; x++)
             {
@@ -96,6 +98,18 @@ public class GameBoard
         return result;
     }
 
+    /// <summary>
+    /// Assuming the position is within bounds
+    /// </summary>
+    public GameSymbol GetSymbolAt(Int2 position)
+        => BoardMatrix[position.Y][position.X];
+
+    public void SetSymbolAt(Int2 position, GameSymbol symbol)
+        => BoardMatrix[position.Y][position.X] = symbol;
+
+    /// <summary>
+    /// Count how many Xs and Os are on the board.
+    /// </summary>
     /// <returns>How many xs and os are on the board. Complexity: O(w*h)</returns>
     public (int XsCount, int OsCount) GetSymbolCounts()
     {
@@ -112,6 +126,38 @@ public class GameBoard
                 });
 
         return xoCount;
+    }
+
+    /// <summary>
+    /// Finds the length of the row of the same symbols in the given direction.
+    /// If no symbol is present at startpos, returns 0.
+    /// </summary>
+    /// <param name="fromPos">Symbol position from where to search</param>
+    /// <param name="inDirection">Direction of search, if |xy| must be <= 1</param>
+    public int GetSymbolsInRowInDirection(Int2 fromPos, Int2 inDirection)
+    {
+        // Validate direction
+        if(inDirection.X is > 1 or < -1 || inDirection.Y is > 1 or < -1)
+            throw new ArgumentOutOfRangeException(nameof(inDirection), "Direction must be within -1, 0, 1");
+
+        var symbol = BoardMatrix[fromPos.Y][fromPos.X];
+        if (symbol == GameSymbol.None)
+            return 0;
+
+        var count = 1;
+        var nextPos = fromPos + inDirection;
+        while (
+            // Inside walls
+            nextPos.X >= 0 && nextPos.X < PREDEFINED_BOARD_SIDE_SIZE &&
+            nextPos.Y >= 0 && nextPos.Y < PREDEFINED_BOARD_SIDE_SIZE &&
+            // Same symbol
+            GetSymbolAt(nextPos) == symbol)
+        {
+            count++;
+            nextPos += inDirection;
+        }
+
+        return count;
     }
 
     public static Error IncorrectBoardSizeError()

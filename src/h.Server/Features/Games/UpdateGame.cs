@@ -15,49 +15,53 @@ public static class UpdateGame
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/api/v1/games/{id}", async (
+            app.MapPut("/api/v1/games/{id}", Handle);
+        }
+    }
+
+    public static async Task<IResult> Handle(
                 [FromRoute] Guid id,
                 [FromBody] UpdateGameRequest request,
                 [FromServices] AppDbContext db,
-                [FromServices] IValidator<UpdateGameRequest> validator) =>
-            {
-                // Validate
-                var validationResult = validator.Validate(request);
-                if (!validationResult.IsValid)
-                    return ErrorResults.ValidationError(validationResult);
+                [FromServices] IValidator<UpdateGameRequest> validator)
+    {
+        // Validate
+        var validationResult = validator.Validate(request);
+        if (!validationResult.IsValid)
+            return ErrorResults.ValidationError(validationResult);
 
-                var game = await db.GamesDbSet.FindAsync(id);
+        var game = await db.GamesDbSet.FindAsync(id);
 
-                if (game is null)
-                    return ErrorResults.NotFound();
+        if (game is null)
+            return ErrorResults.NotFound();
 
-                var newBoardResult = GameBoard.Parse(request.Board);
-                if (newBoardResult.IsError)
-                    return ErrorResults.ValidationError(newBoardResult.Errors);
+        var newBoardResult = GameBoard.Parse(request.Board);
+        if (newBoardResult.IsError)
+            return ErrorResults.ValidationError(newBoardResult.Errors);
 
-                // Update properties
-                game.Name = request.Name;
-                game.Difficulty = request.Difficulty;
-                game.Board = newBoardResult.Value;
+        // Update properties
+        game.Update(
+            request.Name,
+            request.Difficulty,
+            newBoardResult.Value
+        );
 
-                // Persist
-                db.GamesDbSet.Update(game);
-                await db.SaveChangesAsync();
+        // Persist
+        db.GamesDbSet.Update(game);
+        await db.SaveChangesAsync();
 
-                // Map to response
-                var response = new GameResponse(
-                    game.Id,
-                    game.CreatedAt,
-                    game.UpdatedAt,
-                    game.Name,
-                    game.Difficulty,
-                    game.GameState,
-                    GameBoard.BoardMatrixToString(game.Board.BoardMatrix)
-                );
+        // Map to response
+        var response = new GameResponse(
+            game.Id,
+            game.CreatedAt,
+            game.UpdatedAt,
+            game.Name,
+            game.Difficulty,
+            game.GameState,
+            game.Board.BoardMatrixToString()
+        );
 
-                return Results.Ok(response);
-            });
-        }
+        return Results.Ok(response);
     }
 
     public class Validator : AbstractValidator<UpdateGameRequest>
