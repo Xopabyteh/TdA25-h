@@ -107,11 +107,12 @@ public class Game
         var symbolCounts = Board.GetSymbolCounts();
 
         // Get am of rounds (both players played)
-        // X -> 0
+        // X -> 1
         // XO -> 1
-        // XOX -> 1
+        // XOX -> 2
         // XOXO -> 2
-        var amOfRounds = (symbolCounts.XsCount + symbolCounts.OsCount) / 2;
+        // XOXOX -> 3
+        var amOfRounds = (symbolCounts.XsCount + symbolCounts.OsCount) / 2 + 1; // +1 because we start at round 1
 
         // Remember, cross always starts
         var symbolInPlay = symbolCounts.XsCount > symbolCounts.OsCount
