@@ -1,13 +1,54 @@
 ﻿@attribute [Route(PageRoutes.HomeIndex)]
+@inherits LayoutComponentBase;
+
 
 <PageTitle>Výběr úloh</PageTitle>
 
-<h2>Výběr úloh</h2>
+<div class="vyber">
+    <h2>Výběr úloh</h2>
 
-<div class="game-cards">
-    <div class="card">
-        <h3>Armagedon</h3>
-        <img src="" alt="diff">
-        <div class="game-img"></div>
+    <div class="game-cards">
+        <div class="card">
+            <h3>Armagedon</h3>
+            <img src="" alt="diff">
+            <div class="game-img"></div>
+        </div>
     </div>
+</div>
+
+<div class="filters">
+    <h2 style=" color: #D5D5D5; ">Filtry</h2>
+
+    <form action="" class="filter-bar">
+        <div class="category">
+            <h3 class="category-txt">Obtížnost</h3>
+
+            <div class="option">
+                <input type="checkbox" value="1" name="1">
+                <span>Začátečník</span>
+            </div>
+            <div class="option">
+                <input type="checkbox" value="1" name="2">
+                <span>Jednoduchá</span>
+            </div>
+            <div class="option">
+                <input type="checkbox" value="1" name="3">
+                <span>Střední</span>
+            </div>
+            <div class="option">
+                <input type="checkbox" value="1" name="4">
+                <span>Těžká</span>
+            </div>
+            <div class="option">
+                <input type="checkbox" value="1" name="5">
+                <span>Extrémní</span>
+            </div>
+        </div>
+        <br>
+        <div class="buttons">
+            <button class="filtrovat">Filtrovat</button>
+            <button class="zrusit">Zrušít filtry</button>
+        </div>
+        
+    </form>
 </div>

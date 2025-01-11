@@ -47,3 +47,51 @@ body {
 #TdA-logo {
     height: 100px;
 }
+
+.filters {
+    width: 20%;
+}
+
+.category-txt {
+    color: #0070BB;
+}
+
+.filter-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.option {
+    color: #D5D5D5;
+}
+
+.option input[type="checkbox"]:checked + span {
+    color: #0070BB;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.filtrovat {
+    background: #0070BB;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    align-content: center;
+    padding: 10px 5px;
+    margin: 2px 0;
+}
+
+.zrusit {
+    background: white;
+    border: 1px #0070BB solid;
+    color: #0070BB;
+    border-radius: 8px;
+    align-content: center;
+    padding: 10px 5px;
+    margin: 2px 0;
+}
