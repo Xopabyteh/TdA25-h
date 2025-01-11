@@ -1,6 +1,6 @@
 ﻿@using h.Contracts.Games
-@attribute [Route(PageRoutes.HomeIndex)]
-
+@attribute [Route(PageRoutes.HomeIndex)]    
+@rendermode InteractiveWebAssembly
 
 <PageTitle>Výběr úloh</PageTitle>
 
@@ -61,6 +61,7 @@
     private List<GameResponse> games;
     protected override void OnInitialized()
     {
+        Console.WriteLine("Ahoj");
         games = new()
         {
             new(Guid.NewGuid(),
