@@ -21,10 +21,6 @@ public partial class HomeIndex
             return;
 
         games = await _HttpClient.Http!.GetFromJsonAsync<List<GameResponse>>("api/v1/games", AppJsonOptions.WithConverters);
-        foreach (var game in games)
-        {
-            Console.WriteLine(game);
-        }
         gamesLoading = false;
     }
 }
