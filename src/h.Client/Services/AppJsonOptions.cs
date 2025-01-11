@@ -13,7 +13,7 @@ public static class AppJsonOptions
 
     static AppJsonOptions()
     {
-        var options = new JsonSerializerOptions(JsonSerializerOptions.Default);
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         options.Converters.Add(new GameDifficultyJsonConverter());
         options.Converters.Add(new GameStateJsonConverter());
 

@@ -7,102 +7,107 @@
     <h2>Výběr úloh</h2>
 
     <div class="game-cards">
-        @foreach (var game in games)
+        @if(gamesLoading)
         {
-            string imgSrc = "";
-            string alt = "";
-
-            @switch (game.Difficulty)
+            
+        } else {
+            @foreach (var game in games!)
             {
-                case 0:
-                    imgSrc = "/IMG/Difficulties/Zacatecnik/zarivka_beginner_modre.svg";
-                    alt = "zacatecnik";
-                    break;
-                case 1:
-                    imgSrc = "/IMG/Difficulties/Jednoducha/zarivka_easy_modre.svg";
-                    alt = "jednoducha";
-                    break;
-                case 2:
-                    imgSrc = "IMG/Difficulties/Stredni/zarivka_medium_modre.svg";
-                    alt = "stredni";
-                    break;
-                case 3:
-                    imgSrc = "IMG/Difficulties/Tezka/zarivka_hard_modra.svg";
-                    alt = "tezka";
-                    break;
-                case 4:
-                    imgSrc = "IMG/Difficulties/Extremni/zarivka_extreme_modre.svg";
-                    alt = "extremni";
-                    break;
+                string imgSrc = "";
+                string alt = "";
+
+                @switch (game.Difficulty)
+                {
+                    case 0:
+                        imgSrc = "/IMG/Difficulties/Zacatecnik/zarivka_beginner_modre.svg";
+                        alt = "zacatecnik";
+                        break;
+                    case 1:
+                        imgSrc = "/IMG/Difficulties/Jednoducha/zarivka_easy_modre.svg";
+                        alt = "jednoducha";
+                        break;
+                    case 2:
+                        imgSrc = "IMG/Difficulties/Stredni/zarivka_medium_modre.svg";
+                        alt = "stredni";
+                        break;
+                    case 3:
+                        imgSrc = "IMG/Difficulties/Tezka/zarivka_hard_modra.svg";
+                        alt = "tezka";
+                        break;
+                    case 4:
+                        imgSrc = "IMG/Difficulties/Extremni/zarivka_extreme_modre.svg";
+                        alt = "extremni";
+                        break;
+                }
+                <div class="card">
+                    <div class="name-diff">
+                        <h3>@game.Name</h3>
+                        <img src=@imgSrc alt=@alt class="diff">
+                    </div>
+
+                    <div class="game-img">
+                        @for (int i = 0; i < game.Board.Length; i++)
+                        {
+                            string elem = "";
+                            string imgClass = "";
+                            <div class="row">
+                                @for (int j = 0; j < game.Board[i].Length; j++)
+                                {
+                                    @switch (game.Board[i][j])
+                                    {
+                                        case "X":
+                                            elem = "/IMG/X/X_cervene.svg";
+                                            imgClass = "small-x";
+                                            alt = "X";
+                                            break;
+                                        case "O":
+                                            elem = "/IMG/O/O_modre.svg";
+                                            imgClass = "small-o";
+                                            alt = "O";
+                                            break;
+                                        case "":
+                                            elem = "";
+                                            imgClass = "";
+                                            alt = "";
+                                            break;
+                                    }
+                                    @if (i % 2 == 0)
+                                    {
+                                        @if (j % 2 == 0)
+                                        {
+                                            <div class="col-dark">
+                                                <img src="@elem" alt="@alt" class="@imgClass">
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-light">
+                                                <img src="@elem" alt="@alt" class="@imgClass">
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (j % 2 == 0)
+                                        {
+                                            <div class="col-light">
+                                                <img src="@elem" alt="@alt" class="@imgClass">
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-dark">
+                                                <img src="@elem" alt="@alt" class="@imgClass">
+                                            </div>
+                                        }
+                                    }
+
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
             }
-            <div class="card">
-                <div class="name-diff">
-                    <h3>@game.Name</h3>
-                    <img src=@imgSrc alt=@alt class="diff">
-                </div>
-                
-                <div class="game-img">
-                    @for (int i = 0; i < game.Board.Length; i++)
-                    {
-                        string elem = "";
-                        string imgClass = "";
-                        <div class="row">
-                            @for (int j = 0; j < game.Board[i].Length; j++)
-                            {
-                                @switch (game.Board[i][j])
-                                {
-                                    case "X":
-                                        elem = "/IMG/X/X_cervene.svg";
-                                        imgClass = "small-x";
-                                        alt = "X";
-                                        break;
-                                    case "O":
-                                        elem = "/IMG/O/O_modre.svg";
-                                        imgClass = "small-o";
-                                        alt = "O";
-                                        break;
-                                    case "":
-                                        elem = "";
-                                        imgClass = "";
-                                        alt = "";
-                                        break;
-                                }
-                                @if (i % 2 == 0)
-                                {
-                                    @if (j % 2 == 0)
-                                    {
-                                        <div class="col-dark">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-light">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    @if (j % 2 == 0)
-                                    {
-                                        <div class="col-light">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-dark">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                }
-                                
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
         }
     </div>
 </div>
