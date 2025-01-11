@@ -54,6 +54,32 @@ input[type="text"] {
 }
 
 /*Vyber hry*/
+.game-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    gap: 15px;
+}
+
+.card {
+    background: white;
+    border: none;
+    border-radius: 10px;
+    filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
+    padding: 5px 15px;
+}
+
+.name-diff {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    align-items: center;
+}
+
+.diff {
+    height: 20px;
+}
+
 .filters {
     width: 20%;
 }
