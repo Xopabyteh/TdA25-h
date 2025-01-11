@@ -1,5 +1,5 @@
 ﻿@attribute [Route(PageRoutes.HomeIndex)]
-
+@rendermode InteractiveWebAssembly
 
 <PageTitle>Výběr úloh</PageTitle>
 
@@ -42,7 +42,65 @@
                 </div>
                 
                 <div class="game-img">
-
+                    @for (int i = 0; i < game.Board.Length; i++)
+                    {
+                        string elem = "";
+                        string imgClass = "";
+                        <div class="row">
+                            @for (int j = 0; j < game.Board[i].Length; j++)
+                            {
+                                @switch (game.Board[i][j])
+                                {
+                                    case "X":
+                                        elem = "/IMG/X/X_cervene.svg";
+                                        imgClass = "small-x";
+                                        alt = "X";
+                                        break;
+                                    case "O":
+                                        elem = "/IMG/O/O_modre.svg";
+                                        imgClass = "small-o";
+                                        alt = "O";
+                                        break;
+                                    case "":
+                                        elem = "";
+                                        imgClass = "";
+                                        alt = "";
+                                        break;
+                                }
+                                @if (i % 2 == 0)
+                                {
+                                    @if (j % 2 == 0)
+                                    {
+                                        <div class="col-dark">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-light">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    @if (j % 2 == 0)
+                                    {
+                                        <div class="col-light">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-dark">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
+                                    }
+                                }
+                                
+                            }
+                        </div>
+                    }
                 </div>
             </div>
         }
