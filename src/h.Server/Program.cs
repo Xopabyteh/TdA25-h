@@ -1,4 +1,5 @@
 using Carter;
+using h.Contracts;
 using h.Server.Components;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Middleware;
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .AddPresentation()
     .AddInfrastructure();
+
+builder.Services.AddShared();
+
 
 var app = builder.Build();
 

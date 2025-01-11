@@ -28,7 +28,7 @@ public static class DependencyInjection
             o.SerializerOptions.Converters.Add(new GameDifficultyJsonConverter());
             o.SerializerOptions.Converters.Add(new GameStateJsonConverter());
         });
-        
+
         return builder;
     }
 
