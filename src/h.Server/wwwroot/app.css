@@ -1,9 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
 :root {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Dosis', cursive, sans-serif;
+}
+
+a {
+    text-decoration: none;
 }
 
 h1:focus {
     outline: none;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -30,4 +41,9 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+
+#TdA-logo {
+    height: 100px;
 }

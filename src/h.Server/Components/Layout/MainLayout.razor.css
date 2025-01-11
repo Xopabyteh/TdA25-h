@@ -1,3 +1,51 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+}
+
+.display {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #F9F9F9;
+}
+
+.navbar {
+    background: white;
+    filter: drop-shadow(1px 1px 6px rgba(0, 0, 0, 0.1));
+    padding: 10px;
+    margin: 15px;
+    border-radius: 10px;
+    min-width: 185px;
+}
+
+.search-bar {
+    justify-content: flex-end;
+    display: flex;
+    padding: 10px;
+    border-radius: 0;
+    border: 1px solid #d7d7d7;
+}
+
+.header, article {
+    padding-left: 2rem !important;
+    padding-right: 1.5rem !important;
+}
+
+.content {
+    width: 70%;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -16,3 +64,4 @@
         right: 0.75rem;
         top: 0.5rem;
     }
+    

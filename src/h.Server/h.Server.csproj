@@ -29,4 +29,9 @@
     <PackageReference Include="Polly" />
     <PackageReference Include="Polly.Extensions.Http" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\IMG\Think-different-Academy_LOGO.png" />
+    <None Include="wwwroot\IMG\Think-different-Academy_LOGO_oficialni_1 1.svg" />
+  </ItemGroup>
 </Project>
