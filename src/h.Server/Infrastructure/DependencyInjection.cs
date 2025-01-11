@@ -1,6 +1,8 @@
 ﻿using Carter;
 using FluentValidation;
+using h.Contracts.Components.Services;
 using h.Primitives.Games;
+using h.Server.Components.Services;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Http.Json;
@@ -11,10 +13,7 @@ public static class DependencyInjection
 {
     public static WebApplicationBuilder AddPresentation(this WebApplicationBuilder builder)
     {
-        // Add services to the container.
-        builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents()
-            .AddInteractiveWebAssemblyComponents();
+        builder.AddBlazorComponents();
 
         builder.Services.AddCarter();
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -30,6 +29,18 @@ public static class DependencyInjection
             o.SerializerOptions.Converters.Add(new GameStateJsonConverter());
         });
         
+        return builder;
+    }
+
+    private static WebApplicationBuilder AddBlazorComponents(this WebApplicationBuilder builder)
+    {
+        // Add services to the container.
+        builder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents()
+            .AddInteractiveWebAssemblyComponents();
+
+        builder.Services.AddScoped<IWasmOnlyHttpClient, WasmOnlyHttpClient>();
+    
         return builder;
     }
 
