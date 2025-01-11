@@ -66,13 +66,13 @@ input[type="text"] {
     border: none;
     border-radius: 10px;
     filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
-    padding: 5px 15px;
+    padding: 0 15px 15px;
 }
 
 .name-diff {
     display: flex;
     flex-direction: row;
-    gap: 40px;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -80,8 +80,47 @@ input[type="text"] {
     height: 20px;
 }
 
+.game-img {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    height: 20px;
+}
+
+.col-dark {
+    background: #F9F9F9;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-light {
+    background: none;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.small-x {
+    height: 15px;
+    width: 15px;
+}
+
+.small-o {
+    height: 15px;
+    width: 15px;
+}
+
+/*filters*/
 .filters {
     width: 20%;
+    justify-content: flex-end;
 }
 
 .category-txt {
