@@ -11,7 +11,6 @@ public partial class GameEditor : IAsyncDisposable
 {
     [Parameter] public Guid? GameId { get; set; }
 
-
     [Inject] protected IJSRuntime _js { get; set; } = null!;
     private IJSObjectReference? jsModule;
     private CancellationTokenSource disposeCts = new();
@@ -68,6 +67,12 @@ public partial class GameEditor : IAsyncDisposable
 
     public async Task HandleSaveGame()
     {
+        if(jsModule is null)
+            return;
+
+        var board = await jsModule.InvokeAsync<string[][]>("getGameField", disposeCts.Token);
+    
+    
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

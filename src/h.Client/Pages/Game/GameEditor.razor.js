@@ -203,3 +203,7 @@ const appendCurrentStateToEditHistory = () => {
     editHistory.push(gameFieldDeepCopy);
     historyI = editHistory.length - 1;
 }
+
+export const getGameField = () => {
+    return gameField;
+}
