@@ -15,5 +15,6 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="src\h.Client\Pages\Game\GameEditor1.razor.cs" />
   </ItemGroup>
 </Project>

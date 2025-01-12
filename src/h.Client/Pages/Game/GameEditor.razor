@@ -1,7 +1,5 @@
 @attribute [Route(PageRoutes.Game.GameEditor)]
-
 @rendermode InteractiveWebAssembly
-
 
 <PageTitle>Vytvořit novou úlohu</PageTitle>
 
@@ -14,34 +12,41 @@
             <button class="save-btn"><img src="/IMG/icons/save.svg" alt="save"></button>
         </div>
         <div class="pick">
-            <button class="cross-btn" @onclick="Cross"></button>
-            <button class="circle-btn" @onclick="Circle"></button>
+            <button class="cross-btn" @onclick="HandleSelectX"></button>
+            <button class="circle-btn" @onclick="HandleSelectO"></button>
+            <button class="eraser" @onclick="HandleSelectEraser"><img src="/IMG/icons/bin.svg" alt="eraser"></button>
             <div class="line"></div>
-            <button class="bin" @onclick="Bin"><img src="/IMG/icons/bin.svg" alt="bin"></button>
+            <button class="bin" @onclick="HandleClearCanvas"><img src="/IMG/icons/bin.svg" alt="bin"></button>
         </div>
         <div class="back-forth">
-            <button class="back-btn"><img src="/IMG/icons/back.svg" alt="back"></button>
-            <button class="forth-btn"><img src="/IMG/icons/forth.svg" alt="forth"></button>
+            <button class="back-btn" @onclick="HandleHistoryBack"><img src="/IMG/icons/back.svg" alt="back"></button>
+            <button class="forth-btn" @onclick="HandleHistoryForth"><img src="/IMG/icons/forth.svg" alt="forth"></button>
         </div>
         <div class="diff">
             
         </div>
     </div>
     
-    <div class="game-field">
-        @for (int i = 0; i < 15; i++)
+    <div class="game-field" @ref="gameFieldRef">
+        @for (int y = 0; y < 15; y++)
         {
-            <div class="creator-row">
-                @for (int j = 0; j < 15; j++)
+            <div class="editor-row">
+                @for (int x = 0; x < 15; x++)
                 {
-                    int id = i * 15 + j;
-                    string background = (id % 2 == 0) ? "#f9f9f9" : "white";
+                    int id1D = y * 15 + x;
+                    var xCopy = x;
+                    var yCopy = y;
+
+                    string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
                     
-                    <button id="@id"
+                    <div class="cell"
                             style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
-                            @onclick="() => PlaceElement(GetButtonID(id))">
-                        <img src="@elemImg" style="width: 30px; height: 30px"/>
-                    </button>
+                            data-x="@xCopy"
+                            data-y="@yCopy">
+                            
+                            @* Symbols added via js *@
+                            @* <img src="" /> *@
+                    </div>
                 }
             </div>
             
@@ -49,6 +54,8 @@
     </div>
 </div>
 
+
+@* 
 @code
 {
     string elemImg = "";
@@ -60,7 +67,7 @@
     string X = "/IMG/X/X_cervene.svg";
 
     /*string[,] Game = new string[15, 15];
-
+     * 
     protected override void OnInitialized()
     {
         for (int i = 0; i < 15; i++)
@@ -135,4 +142,4 @@
     }
 
 
-}
+} *@
