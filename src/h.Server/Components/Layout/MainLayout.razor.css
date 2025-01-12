@@ -6,11 +6,9 @@
 }
 
 .display {
-    display: grid;
-    grid-template-columns: 300px auto;
+    display: flex;
     padding: 15px;
     height: 100%;
-    gap: 40px;
 }
 
 .header {
@@ -27,7 +25,9 @@
     padding: 10px;
     margin: 15px;
     border-radius: 10px;
-    min-width: 185px;
+    min-width: 200px;
+    padding-top: 0;
+    padding-left: 20px;
 }
 
 .search-bar {
@@ -35,7 +35,7 @@
     display: flex;
     padding: 10px;
     border-radius: 0;
-    width: 20vh;
+    width: 500px;
 }
 
 .header {
@@ -44,11 +44,10 @@
 }
 
 .content {
-    width: 70%;
+    width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    gap: 40px;
+    justify-content: left;
 }
 
 #blazor-error-ui {

@@ -54,11 +54,33 @@ input[type="text"] {
 }
 
 /*Vyber hry*/
+.game-list-h2 {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+#new-game {
+    background: #0070BB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    align-content: center;
+    padding: 10px 60px;
+    margin: 2px 0;
+    cursor: pointer;
+}
+
+.vyber {
+    width: calc(100% - 220px);
+}
+
 .game-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
+    display: flex;
     gap: 15px;
+    overflow-y: scroll;
+    height: 70vh;
+    flex-wrap: wrap;
 }
 
 .card {
@@ -67,6 +89,13 @@ input[type="text"] {
     border-radius: 10px;
     filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
     padding: 0 15px 15px;
+    align-self: flex-start;
+}
+
+.card button:hover {
+    transition: transform .2s ease;
+    cursor: pointer;
+    transform: scale(1.1);
 }
 
 .name-diff {
@@ -83,17 +112,46 @@ input[type="text"] {
 .game-img {
     display: flex;
     flex-direction: column;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+#play, #edit, #delete {
+    height: 30px;
+    width: 30px;
+    background: none;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#play {
+    background: #0070BB;
+    border-radius: 4px;
+}
+
+.action-row {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 5px;
+}
+
+.secondary-row {
+    display: flex;
+    justify-content: right;
 }
 
 .row {
     display: flex;
     flex-direction: row;
-    height: 20px;
+    height: 15px;
 }
 
 .col-dark {
     background: #F9F9F9;
-    width: 20px;
+    width: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,44 +159,93 @@ input[type="text"] {
 
 .col-light {
     background: none;
-    width: 20px;
+    width: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .small-x {
-    height: 15px;
-    width: 15px;
+    height: 10px;
+    width: 10px;
 }
 
 .small-o {
-    height: 15px;
-    width: 15px;
+    height: 10px;
+    width: 10px;
 }
 
 /*filters*/
+.selected span {
+    background: #0070BB;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
 .filters {
-    min-width: 150px;
-    width: 20%;
-    justify-content: flex-end;
+    width: 200px;
+    position: absolute;
+    right: 25px;
 }
 
 .category-txt {
     color: #0070BB;
 }
 
-.filter-bar {
+.filter-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
+.filter-wrapper #diff, .filter-wrapper #name, .filter-wrapper #date {
+    border-top: solid 2px #D5D5D5;
+    padding: 10px;
+}
+
+.filter-wrapper div:first-child {
+    border: solid 0 white;
+}
+
+.filter-btn {
+    color: #D5D5D5;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+#diff-unwrapped, #name-unwrapped, #date-unwrapped {
+    display: none;
+}
+
+#name-unwrapped input {
+    justify-content: flex-end;
+    display: flex;
+    padding: 10px;
+    border-radius: 0;
+    margin-top: 20px;
+    width: 150px;
+}
+
+#diff span, #date span, #name span{
+    display: inline-block;
+}
+
 .option {
     color: #D5D5D5;
+    border: none !important;
 }
 
 .option input[type="checkbox"]:checked + span {
+    color: #0070BB;
+}
+
+.option input[type="radio"]:checked + span {
     color: #0070BB;
 }
 
@@ -152,20 +259,22 @@ input[type="text"] {
     background: #0070BB;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     align-content: center;
     padding: 10px 5px;
     margin: 2px 0;
+    cursor: pointer;
 }
 
 .zrusit {
     background: white;
     border: 1px #0070BB solid;
     color: #0070BB;
-    border-radius: 8px;
+    border-radius: 4px;
     align-content: center;
     padding: 10px 5px;
     margin: 2px 0;
+    cursor: pointer;
 }
 
 /*Vytvorit hru*/

@@ -4,8 +4,11 @@
 <PageTitle>Výběr úloh</PageTitle>
 
 <div class="vyber">
-    <h2>Výběr úloh</h2>
-
+    <h2 class="game-list-h2">
+        <span>Výběr úloh</span>
+        <button id="new-game">Hrát hru</button>
+    </h2>
+    
     <div class="game-cards">
         @if (gamesLoading)
         {
@@ -41,6 +44,7 @@
                         alt = "extremni";
                         break;
                 }
+
                 <div class="card">
                     <div class="name-diff">
                         <h3>@game.Name</h3>
@@ -73,6 +77,7 @@
                                             alt = "";
                                             break;
                                     }
+
                                     @if (i % 2 == 0)
                                     {
                                         @if (j % 2 == 0)
@@ -108,6 +113,13 @@
                             </div>
                         }
                     </div>
+                    <div class="action-row">
+                        <button id="play"><img src="/IMG/icons/play.svg" alt="play"></button>
+                        <div class="secondary-row">
+                            <button id="edit"><img src="/IMG/icons/edit.svg" alt="edit"></button>
+                            <button id="delete"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
+                        </div>
+                    </div>
                 </div>
             }
         }
@@ -116,37 +128,125 @@
 
 <div class="filters">
     <h2 style=" color: #D5D5D5; ">Filtry</h2>
-
-    <form action="" class="filter-bar">
-        <div class="category">
-            <h3 class="category-txt">Obtížnost</h3>
-
-            <div class="option">
-                <input type="checkbox" value="1" name="1">
-                <span>Začátečník</span>
-            </div>
-            <div class="option">
-                <input type="checkbox" value="1" name="2">
-                <span>Jednoduchá</span>
-            </div>
-            <div class="option">
-                <input type="checkbox" value="1" name="3">
-                <span>Střední</span>
-            </div>
-            <div class="option">
-                <input type="checkbox" value="1" name="4">
-                <span>Těžká</span>
-            </div>
-            <div class="option">
-                <input type="checkbox" value="1" name="5">
-                <span>Extrémní</span>
+    
+    <div class="selected">
+        <span>Extremni</span>
+        <span>POslednich 30 dnu</span>
+        <span>"Armagedon"</span>
+    </div>
+    
+    <div class="filter-wrapper">
+        <div id="diff">
+            <button class="filter-btn" onclick="toggleFilter(0)"><span>❯</span> Obtížnost</button>
+            
+            <div id="diff-unwrapped">
+                <div class="option">
+                    <input type="checkbox" value="1" name="1">
+                    <span>Začátečník</span>
+                </div>
+                <div class="option">
+                    <input type="checkbox" value="1" name="2">
+                    <span>Jednoduchá</span>
+                </div>
+                <div class="option">
+                    <input type="checkbox" value="1" name="3">
+                    <span>Střední</span>
+                </div>
+                <div class="option">
+                    <input type="checkbox" value="1" name="4">
+                    <span>Těžká</span>
+                </div>
+                <div class="option">
+                    <input type="checkbox" value="1" name="5">
+                    <span>Extrémní</span>
+                </div>
             </div>
         </div>
-        <br>
+        <div id="date">
+            <button class="filter-btn" onclick="toggleFilter(1)"><span>❯</span> Datum úpravy</button>
+            
+            <div id="date-unwrapped">
+                <div class="option">
+                    <input type="radio" value="1" name="date">
+                    <span>1 den</span>
+                </div>
+                <div class="option">
+                    <input type="radio" value="7" name="date">
+                    <span>1 týden</span>
+                </div>
+                <div class="option">
+                    <input type="radio" value="14" name="date">
+                    <span>2 týdny</span>
+                </div>
+                <div class="option">
+                    <input type="radio" value="30" name="date">
+                    <span>1 měsíc</span>
+                </div>
+                <div class="option">
+                    <input type="radio" value="90" name="date">
+                    <span>3 měsíce</span>
+                </div>
+            </div>
+        </div>
+        <div id="name">
+            <button class="filter-btn" onclick="toggleFilter(2)"><span>❯</span> Název úlohy</button>
+            
+            <div id="name-unwrapped">
+                <input type="text" name="name" placeholder="Zadejte název úlohy">
+            </div>
+        </div>
+
         <div class="buttons">
             <button class="filtrovat">Filtrovat</button>
             <button class="zrusit">Zrušít filtry</button>
         </div>
-
-    </form>
+    </div>
 </div>
+
+<script>
+    var diffCont = document.getElementById("diff-unwrapped");
+    var nameCont = document.getElementById("name-unwrapped");
+    var dateCont = document.getElementById("date-unwrapped");
+    
+    function toggleFilter(filter) {
+        switch (filter) {
+            case 0:
+                if (diffCont.style.display === "none") {
+                    diffCont.style.display = "block";
+                    document.querySelector("#diff .filter-btn").style.color = "#0070BB";
+                    document.querySelector("#diff .filter-btn span").style.transform = "rotate(90deg)";
+                }
+                else {
+                    diffCont.style.display = "none";
+                    document.querySelector("#diff .filter-btn").style.color = "#D5D5D5";
+                    document.querySelector("#diff .filter-btn span").style.transform = "rotate(0deg)";
+                }
+                break;
+            case 1:
+                if (dateCont.style.display === "none") {
+                    dateCont.style.display = "block";
+                    document.querySelector("#date .filter-btn").style.color = "#0070BB";
+                    document.querySelector("#date .filter-btn span").style.transform = "rotate(90deg)";
+                }
+                else {
+                    dateCont.style.display = "none";
+                    document.querySelector("#date .filter-btn").style.color = "#D5D5D5";
+                    document.querySelector("#date .filter-btn span").style.transform = "rotate(0deg)";
+                }
+                break;
+            case 2:
+                if (nameCont.style.display === "none") {
+                    nameCont.style.display = "block";
+                    document.querySelector("#name .filter-btn").style.color = "#0070BB";
+                    document.querySelector("#name .filter-btn span").style.transform = "rotate(90deg)";
+                }
+                else {
+                    nameCont.style.display = "none";
+                    document.querySelector("#name .filter-btn").style.color = "#D5D5D5";
+                    document.querySelector("#name .filter-btn span").style.transform = "rotate(0deg)";
+                }
+                break;
+        }
+    }
+
+</script>
