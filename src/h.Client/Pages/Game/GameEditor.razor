@@ -6,26 +6,28 @@
 <div class="vytvorit">
     <h2>Vytvořit novou úlohu</h2>
     
-    <div class="panel">
-        <div class="jmeno">
-            <input type="text" placeholder="Jméno úlohy">
-            <button class="save-btn" @onclick="HandleSaveGame"><img src="/IMG/icons/save.svg" alt="save"></button>
+    <EditForm class="panel">
+        <div class="jmeno sheet">
+            <InputText placeholder="Jméno úlohy"/>
+            <button class="save-btn" @onclick="HandleSaveGame" type="submit">
+                <img src="/IMG/icons/save.svg" alt="save">
+            </button>
         </div>
-        <div class="pick">
+        <div class="pick sheet">
             <button class="cross-btn" @onclick="HandleSelectX"></button>
             <button class="circle-btn" @onclick="HandleSelectO"></button>
             <button class="eraser" @onclick="HandleSelectEraser"><img src="/IMG/icons/bin.svg" alt="eraser"></button>
             <div class="line"></div>
             <button class="bin" @onclick="HandleClearCanvas"><img src="/IMG/icons/bin.svg" alt="bin"></button>
         </div>
-        <div class="back-forth">
+        <div class="back-forth sheet">
             <button class="back-btn" @onclick="HandleHistoryBack"><img src="/IMG/icons/back.svg" alt="back"></button>
             <button class="forth-btn" @onclick="HandleHistoryForth"><img src="/IMG/icons/forth.svg" alt="forth"></button>
         </div>
-        <div class="diff">
-            
+        <div class="difficulty-selector sheet">
+            <input type="range" 
         </div>
-    </div>
+    </EditForm>
     
     <div class="game-field" @ref="gameFieldRef">
         @for (int y = 0; y < 15; y++)

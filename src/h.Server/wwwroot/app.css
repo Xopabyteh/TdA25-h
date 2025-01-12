@@ -180,11 +180,6 @@ input[type="text"] {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: white;
-    border: none;
-    border-radius: 8px;
-    filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
-    padding: 7px;
     gap: 10px;
 }
 
@@ -265,6 +260,8 @@ input[type="text"] {
     border: none;
     padding: 5px;
 }
+
+.
 
 /*Creat game grid*/
 .game-field{
