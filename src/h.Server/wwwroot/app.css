@@ -119,6 +119,7 @@ input[type="text"] {
 
 /*filters*/
 .filters {
+    min-width: 150px;
     width: 20%;
     justify-content: flex-end;
 }
@@ -171,7 +172,6 @@ input[type="text"] {
 .panel {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     gap: 7px;
 }
 
@@ -265,3 +265,84 @@ input[type="text"] {
     border: none;
     padding: 5px;
 }
+
+/*Creat game grid*/
+.game-field{
+    display: flex;
+    flex-direction: column;
+}
+
+.creator-row {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+}
+
+.col-btn-dark {
+    width: 50px;
+    background: #F9F9F9;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-btn-light {
+    width: 50px;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.creator-X {
+    width: 45px;
+    height: 45px;
+}
+
+.creator-O {
+    width: 45px;
+    height: 45px;
+}
+
+/*
+
+!* Grid container *!
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 30px); !* 10 columns of 30px each *!
+    grid-template-rows: repeat(10, 30px);    !* 10 rows of 30px each *!
+    gap: 2px;  !* Space between grid cells *!
+    margin-top: 20px;
+}
+
+!* Row for each set of cells *!
+.row {
+    display: flex;
+}
+
+!* Each cell in the grid *!
+.cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+!* Color palette container *!
+.palette {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+!* Color buttons in the palette *!
+.color-button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    margin: 5px;
+    cursor: pointer;
+}
+*/

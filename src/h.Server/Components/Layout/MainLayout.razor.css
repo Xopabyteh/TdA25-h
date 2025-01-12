@@ -6,8 +6,8 @@
 }
 
 .display {
-    display: flex;
-    /*justify-content: space-between;*/
+    display: grid;
+    grid-template-columns: 300px auto;
     padding: 15px;
     height: 100%;
     gap: 40px;

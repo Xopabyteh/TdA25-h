@@ -1,5 +1,8 @@
 @page "/vytvorit-hru"
 
+@rendermode InteractiveWebAssembly
+
+
 <PageTitle>Vytvořit novou úlohu</PageTitle>
 
 <div class="vytvorit">
@@ -11,10 +14,10 @@
             <button class="save-btn"><img src="/IMG/icons/save.svg" alt="save"></button>
         </div>
         <div class="pick">
-            <button class="cross-btn"></button>
-            <button class="circle-btn"></button>
+            <button class="cross-btn" @onclick="Cross"></button>
+            <button class="circle-btn" @onclick="Circle"></button>
             <div class="line"></div>
-            <button class="bin"><img src="/IMG/icons/bin.svg" alt="bin"></button>
+            <button class="bin" @onclick="Bin"><img src="/IMG/icons/bin.svg" alt="bin"></button>
         </div>
         <div class="back-forth">
             <button class="back-btn"><img src="/IMG/icons/back.svg" alt="back"></button>
@@ -24,4 +27,112 @@
             
         </div>
     </div>
+    
+    <div class="game-field">
+        @for (int i = 0; i < 15; i++)
+        {
+            <div class="creator-row">
+                @for (int j = 0; j < 15; j++)
+                {
+                    int id = i * 15 + j;
+                    string background = (id % 2 == 0) ? "#f9f9f9" : "white";
+                    
+                    <button id="@id"
+                            style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
+                            @onclick="() => PlaceElement(GetButtonID(id))">
+                        <img src="@elemImg" style="width: 30px; height: 30px"/>
+                    </button>
+                }
+            </div>
+            
+        }
+    </div>
 </div>
+
+@code
+{
+    string elemImg = "";
+    string elem = "";
+    string alt = "";
+    string imgClass = "";
+
+    string O = "/IMG/O/O_modre.svg";
+    string X = "/IMG/X/X_cervene.svg";
+
+    /*string[,] Game = new string[15, 15];
+
+    protected override void OnInitialized()
+    {
+        for (int i = 0; i < 15; i++)
+        {
+            for (int j = 0; j < 15; j++)
+            {
+                Game[i, j] = "";
+            }
+        }
+    }*/
+
+    int ButtonID;
+    private int GetButtonID(int id)
+    {
+        return id;
+    }
+    
+    private void Circle()
+    {
+        elem = "O";
+        Console.WriteLine("O");
+    }
+
+    private void Cross()
+    {
+        elem = "X";
+        Console.WriteLine("X");
+    }
+
+    private void Bin()
+    {
+        elem = "";
+        Console.WriteLine("H");
+    }
+    
+
+    private void PlaceElement(int id)
+    {
+        int x = IdToCoordinates(id).x;
+        int y = IdToCoordinates(id).y;
+        //Game[x, y] = elem;
+        Console.WriteLine(id + ": " + x + " " + y);
+        
+        elemImg = GetElementImg(elem);
+        
+        StateHasChanged();
+    }
+
+    private string GetElementImg(string state)
+    {
+        return state switch
+        {
+            "O" => "/IMG/O/O_modre.svg",
+            "X" => "/IMG/X/X_cervene.svg",
+            _ => ""
+        };
+    }
+    
+    private (int x, int y) IdToCoordinates(int id)
+    {
+        // Ensure the ID is within the valid range
+        if (id < 0 || id > 224)
+        {
+            throw new ArgumentOutOfRangeException(nameof(id), "ID must be in the range 0 to 224.");
+        }
+
+        // Calculate coordinates
+        int x = id % 15; // Column index
+        int y = id / 15; // Row index
+
+        return (x, y);
+    }
+
+
+}
