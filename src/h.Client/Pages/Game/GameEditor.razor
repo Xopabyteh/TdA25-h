@@ -6,9 +6,9 @@
 <div class="vytvorit">
     <h2>Vytvořit novou úlohu</h2>
     
-    <EditForm class="panel">
+    <EditForm class="panel" FormName="SaveForm" Model="RequestModel">
         <div class="jmeno sheet">
-            <InputText placeholder="Jméno úlohy"/>
+            <input placeholder="Jméno úlohy"/>
             <button class="save-btn" @onclick="HandleSaveGame" type="submit">
                 <img src="/IMG/icons/save.svg" alt="save">
             </button>
@@ -25,14 +25,13 @@
             <button class="forth-btn" @onclick="HandleHistoryForth"><img src="/IMG/icons/forth.svg" alt="forth"></button>
         </div>
         <div class="difficulty-selector sheet">
-            <input type="range" 
         </div>
     </EditForm>
     
     <div class="game-field" @ref="gameFieldRef">
         @for (int y = 0; y < 15; y++)
         {
-            <div class="editor-row">
+            <div class="game-field-row">
                 @for (int x = 0; x < 15; x++)
                 {
                     int id1D = y * 15 + x;

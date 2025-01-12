@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using h.Contracts.Games;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Runtime.InteropServices;
 
@@ -15,7 +16,12 @@ public partial class GameEditor : IAsyncDisposable
     private IJSObjectReference? jsModule;
     private CancellationTokenSource disposeCts = new();
 
-    private ElementReference gameFieldRef; 
+    private ElementReference gameFieldRef;
+
+    /// <summary>
+    /// Gets mapped to <see cref="UpdateGameRequest"/> if used for editing.
+    /// </summary>
+    public CreateNewGameRequest RequestModel { get; set; }
 
     public async Task HandleSelectX()
     {

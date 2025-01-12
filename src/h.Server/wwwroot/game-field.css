@@ -1,0 +1,38 @@
+﻿/*
+    Common board display - 
+    panel with cells, each cell has symbol.
+*/
+
+.game-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-field-row {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+}
+
+.col-btn-dark {
+    width: 50px;
+    background: #F9F9F9;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-btn-light {
+    width: 50px;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-field .cell > img {
+    width: 30px;
+    height: 30px;
+}
