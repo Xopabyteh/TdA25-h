@@ -5,12 +5,27 @@ namespace h.Server.Components.Services;
 
 public class WasmGameService : IWasmGameService
 {
-    public Task DeleteGameAsync(Guid gameId)
+    Task<GameResponse?> IWasmGameService.CreateGameAsync(CreateNewGameRequest request)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<GameResponse>> LoadAllGamesAsync()
+    Task IWasmGameService.DeleteGameAsync(Guid gameId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<List<GameResponse>> IWasmGameService.LoadAllGamesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<GameResponse?> IWasmGameService.LoadGameAsync(Guid gameId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<GameResponse?> IWasmGameService.UpdateGameAsync(UpdateGameRequest request)
     {
         throw new NotImplementedException();
     }

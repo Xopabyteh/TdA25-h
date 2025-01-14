@@ -7,27 +7,43 @@ const PENCIL_O = 'O';
 const PENCIL_ERASER = '';
 
 let selectedPencil = null;
-const gameField = []; // [y][x], y - row, x - column
+let gameField = []; // [y][x], y - row, x - column
 let gameFieldElementRef;
 
-const editHistory = [];
+let editHistory = [];
 let historyI = 0;
+
+// Needed, because js variables persists after leaving page
+const reset = () => {
+    gameField = [];
+    gameFieldElementRef = null;
+    editHistory = [];
+    historyI = 0;
+    selectedPencil = null;
+}
 
 export const initializeEditor = (
     _gameFieldElementRef = new Element(),
     fieldWidth = 15,
-    fieldHeight = 15
+    fieldHeight = 15,
+    loadedField = null // Optional, used when editing existing game
 ) => {
+    reset();
+
     gameFieldElementRef = _gameFieldElementRef;
 
     // Prepare field
     for (let y = 0; y < fieldHeight; y++) {
         gameField.push([]);
         for (let x = 0; x < fieldWidth; x++) {
-            gameField[y].push('');
+            gameField[y].push(PENCIL_ERASER);
         }
     }
 
+    if (loadedField != null) {
+        loadField(loadedField);
+    }
+    
     appendCurrentStateToEditHistory();
 
     // Add onclick event to each cell
