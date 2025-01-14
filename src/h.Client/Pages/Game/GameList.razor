@@ -5,13 +5,12 @@
 
 <PageTitle>Výběr úloh</PageTitle>
 
-<div class="vyber">
+<div class="cards-pane">
     <h2 class="game-list-h2">
         <span>Výběr úloh</span>
         <a href="/game" style="text-decoration: none"><button id="new-game">Hrát hru</button></a>
     </h2>
     
-
     <div class="game-cards">
         <Virtualize
             TItem="GameResponse"
@@ -118,10 +117,10 @@
                         }
                     </div>
                     <div class="action-row">
-                        <button id="play"><img src="/IMG/icons/play.svg" alt="play"></button>
+                        <button class="play"><img src="/IMG/icons/play.svg" alt="play"></button>
                         <div class="secondary-row">
-                            <button id="edit"><img src="/IMG/icons/edit.svg" alt="edit"></button>
-                            <button id="delete"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
+                            <button class="edit"><img src="/IMG/icons/edit.svg" alt="edit"></button>
+                            <button class="delete"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
                         </div>
                     </div>
                 </div>
@@ -213,59 +212,11 @@
             </InputRadioGroup>
         </Dropdown>
         <Dropdown Title="Název úlohy">
-            <InputText @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
+            <InputText class="name-filter" @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
         </Dropdown>
-        <div class="buttons">
-            <button class="filtrovat" @onclick="HandleFilterClick">Filtrovat</button>
-            <button class="zrusit" @onclick="HandleFilterReset">Zrušít filtry</button>
+        <div class="filter-buttons">
+            <button class="btn-filter" @onclick="HandleFilterClick">Filtrovat</button>
+            <button class="btn-cancel-filters" @onclick="HandleFilterReset">Zrušít filtry</button>
         </div>
     </div>
 </div>
-@* 
-<script>
-    var diffCont = document.getElementById("diff-unwrapped");
-    var nameCont = document.getElementById("name-unwrapped");
-    var dateCont = document.getElementById("date-unwrapped");
-    
-    function toggleFilter(filter) {
-        switch (filter) {
-            case 0:
-                if (diffCont.style.display === "none") {
-                    diffCont.style.display = "block";
-                    document.querySelector("#diff .filter-btn").style.color = "#0070BB";
-                    document.querySelector("#diff .filter-btn span").style.transform = "rotate(90deg)";
-                }
-                else {
-                    diffCont.style.display = "none";
-                    document.querySelector("#diff .filter-btn").style.color = "#D5D5D5";
-                    document.querySelector("#diff .filter-btn span").style.transform = "rotate(0deg)";
-                }
-                break;
-            case 1:
-                if (dateCont.style.display === "none") {
-                    dateCont.style.display = "block";
-                    document.querySelector("#date .filter-btn").style.color = "#0070BB";
-                    document.querySelector("#date .filter-btn span").style.transform = "rotate(90deg)";
-                }
-                else {
-                    dateCont.style.display = "none";
-                    document.querySelector("#date .filter-btn").style.color = "#D5D5D5";
-                    document.querySelector("#date .filter-btn span").style.transform = "rotate(0deg)";
-                }
-                break;
-            case 2:
-                if (nameCont.style.display === "none") {
-                    nameCont.style.display = "block";
-                    document.querySelector("#name .filter-btn").style.color = "#0070BB";
-                    document.querySelector("#name .filter-btn span").style.transform = "rotate(90deg)";
-                }
-                else {
-                    nameCont.style.display = "none";
-                    document.querySelector("#name .filter-btn").style.color = "#D5D5D5";
-                    document.querySelector("#name .filter-btn span").style.transform = "rotate(0deg)";
-                }
-                break;
-        }
-    }
-
-</script> *@
