@@ -73,6 +73,7 @@
     filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
     padding: 5px 50px 15px;
     justify-content: center;
+    margin-bottom: 20px;
 }
 
 .info {
@@ -80,4 +81,17 @@
     flex-direction: column;
     justify-content: center;
     text-align: center;
+}
+
+.to-games {
+    background: white;
+    border: 1px #0070BB solid;
+    color: #0070BB;
+    border-radius: 4px;
+    align-content: center;
+    padding: 10px 5px;
+    margin: 2px 0;
+    cursor: pointer;
+    min-width: 227px;
+    justify-items: center;
 }
