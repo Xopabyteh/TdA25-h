@@ -1,3 +1,5 @@
+@using h.Contracts.Games
+@using h.Primitives.Games
 @attribute [Route(PageRoutes.Game.GameList)]
 @rendermode InteractiveWebAssembly
 
@@ -9,17 +11,19 @@
         <a href="/game" style="text-decoration: none"><button id="new-game">Hrát hru</button></a>
     </h2>
     
-    <div class="game-cards">
-        @if (gamesLoading)
-        {
 
-        }
-        else
-        {
-            @foreach (var game in games!)
-            {
-                string imgSrc = "";
-                string alt = "";
+    <div class="game-cards">
+        <Virtualize
+            TItem="GameResponse"
+            ItemsProvider="GetRows"
+            Context="game"
+            ItemSize="25"
+            @ref="virtualizeRef">
+            <ItemContent>
+                @{
+                    string imgSrc = "";
+                    string alt = "";
+                }
 
                 @switch (game.Difficulty)
                 {
@@ -121,8 +125,8 @@
                         </div>
                     </div>
                 </div>
-            }
-        }
+            </ItemContent>
+        </Virtualize>
     </div>
 </div>
 
@@ -130,79 +134,94 @@
     <h2 style=" color: #D5D5D5; ">Filtry</h2>
     
     <div class="selected">
-        <span>Extremni</span>
-        <span>POslednich 30 dnu</span>
-        <span>"Armagedon"</span>
+        @if(!string.IsNullOrEmpty(appliedFilter.GameName))
+        {
+            <span>@($"\"{appliedFilter.GameName}\"")</span>
+        }
+
+        @if(appliedFilter.IsBeginner)
+        {
+            <span>Začátečník</span>
+        }
+        @if(appliedFilter.IsEasy)
+        {
+            <span>Jednoduchá</span>
+        }
+        @if(appliedFilter.IsMedium)
+        {
+            <span>Střední</span>
+        }
+        @if(appliedFilter.IsHard)
+        {
+            <span>Těžká</span>
+        }
+        @if(appliedFilter.IsExtreme)
+        {
+            <span>Extrémní</span>
+        }
+
+        @if(appliedFilter.UpdatedWithin is not null)
+        {
+            <span>@($"{appliedFilter.UpdatedWithin.Value.Days} {(appliedFilter.UpdatedWithin.Value.Days == 1 ? "den" : "dní")}")</span>
+        }
     </div>
-    
     <div class="filter-wrapper">
-        <div id="diff">
-            <button class="filter-btn" onclick="toggleFilter(0)"><span>❯</span> Obtížnost</button>
-            
-            <div id="diff-unwrapped">
-                <div class="option">
-                    <input type="checkbox" value="1" name="1">
-                    <span>Začátečník</span>
-                </div>
-                <div class="option">
-                    <input type="checkbox" value="1" name="2">
-                    <span>Jednoduchá</span>
-                </div>
-                <div class="option">
-                    <input type="checkbox" value="1" name="3">
-                    <span>Střední</span>
-                </div>
-                <div class="option">
-                    <input type="checkbox" value="1" name="4">
-                    <span>Těžká</span>
-                </div>
-                <div class="option">
-                    <input type="checkbox" value="1" name="5">
-                    <span>Extrémní</span>
-                </div>
+        <Dropdown Title="Obtížnost">
+            <div class="option">
+                <InputCheckbox @bind-Value="filter.IsBeginner" />
+                <span>Začátečník</span>
             </div>
-        </div>
-        <div id="date">
-            <button class="filter-btn" onclick="toggleFilter(1)"><span>❯</span> Datum úpravy</button>
-            
-            <div id="date-unwrapped">
+            <div class="option">
+                <InputCheckbox @bind-Value="filter.IsEasy" />
+                <span>Jednoduchá</span>
+            </div>
+            <div class="option">
+                <InputCheckbox @bind-Value="filter.IsMedium" />
+                <span>Střední</span>
+            </div>
+            <div class="option">
+                <InputCheckbox @bind-Value="filter.IsHard" />
+                <span>Těžká</span>
+            </div>
+            <div class="option">
+                <InputCheckbox @bind-Value="filter.IsExtreme" />
+                <span>Extrémní</span>
+            </div>
+        </Dropdown>
+        <Dropdown Title="Datum úpravy">
+            <InputRadioGroup @bind-Value="filter.UpdatedWithin">
                 <div class="option">
-                    <input type="radio" value="1" name="date">
+                    <InputRadio Value="TimeSpan.FromDays(1)" />
                     <span>1 den</span>
                 </div>
                 <div class="option">
-                    <input type="radio" value="7" name="date">
+                    <InputRadio Value="TimeSpan.FromDays(7)" />
                     <span>1 týden</span>
                 </div>
                 <div class="option">
-                    <input type="radio" value="14" name="date">
+                    <InputRadio Value="TimeSpan.FromDays(14)" />
                     <span>2 týdny</span>
                 </div>
                 <div class="option">
-                    <input type="radio" value="30" name="date">
+                    <InputRadio Value="TimeSpan.FromDays(30)" />
                     <span>1 měsíc</span>
                 </div>
                 <div class="option">
-                    <input type="radio" value="90" name="date">
+                    <InputRadio Value="TimeSpan.FromDays(90)" />
                     <span>3 měsíce</span>
                 </div>
-            </div>
-        </div>
-        <div id="name">
-            <button class="filter-btn" onclick="toggleFilter(2)"><span>❯</span> Název úlohy</button>
-            
-            <div id="name-unwrapped">
-                <input type="text" name="name" placeholder="Zadejte název úlohy">
-            </div>
-        </div>
-
+            </InputRadioGroup>
+        </Dropdown>
+        <Dropdown Title="Název úlohy">
+            <InputText @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
+        </Dropdown>
         <div class="buttons">
-            <button class="filtrovat">Filtrovat</button>
-            <button class="zrusit">Zrušít filtry</button>
+            <button class="filtrovat" @onclick="HandleFilterClick">Filtrovat</button>
+            <button class="zrusit" @onclick="HandleFilterReset">Zrušít filtry</button>
         </div>
     </div>
 </div>
-
+@* 
 <script>
     var diffCont = document.getElementById("diff-unwrapped");
     var nameCont = document.getElementById("name-unwrapped");
@@ -249,4 +268,4 @@
         }
     }
 
-</script>
+</script> *@

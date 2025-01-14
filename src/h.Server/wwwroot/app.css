@@ -211,18 +211,7 @@ input[type="text"] {
     border: solid 0 white;
 }
 
-.filter-btn {
-    color: #D5D5D5;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-#diff-unwrapped, #name-unwrapped, #date-unwrapped {
-    display: none;
-}
-
+/*todo: redo*/
 #name-unwrapped input {
     justify-content: flex-end;
     display: flex;
@@ -232,13 +221,9 @@ input[type="text"] {
     width: 150px;
 }
 
-#diff span, #date span, #name span{
-    display: inline-block;
-}
-
 .option {
     color: #D5D5D5;
-    border: none !important;
+    border: none;
 }
 
 .option input[type="checkbox"]:checked + span {

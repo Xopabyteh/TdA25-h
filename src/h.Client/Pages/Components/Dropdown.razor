@@ -1,0 +1,12 @@
+﻿<div class="dropdown" data-open="@Open">
+    <button class="toggle-btn" @onclick="() => Open = !Open"><span>❯</span> @Title</button>
+
+    <div class="child-view">
+        @ChildContent
+    </div>
+</div>
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    private bool Open { get; set; }
+}

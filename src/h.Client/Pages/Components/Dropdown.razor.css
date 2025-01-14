@@ -1,0 +1,28 @@
+﻿
+.dropdown .toggle-btn {
+    color: #D5D5D5;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.dropdown .toggle-btn span {
+    display: inline-block;
+}
+
+.dropdown .child-view {
+    display: none;
+}
+
+    .dropdown[data-open] .child-view {
+        display: block;
+    }
+
+    .dropdown[data-open] .toggle-btn {
+        color: #0070BB;
+    }
+
+    .dropdown[data-open] .toggle-btn span {
+        transform: rotate(90deg);
+    }
