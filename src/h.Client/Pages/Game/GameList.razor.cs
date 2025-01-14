@@ -1,5 +1,5 @@
 ﻿using h.Client.Services;
-using h.Contracts.Components.Services;
+using h.Client.Services.Game;
 using h.Contracts.Games;
 using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
@@ -13,24 +13,20 @@ namespace h.Client.Pages.Game;
 
 public partial class GameList
 {
-    [Inject] protected IWasmOnlyHttpClient _HttpClient { get; set; } = null!;
+    [Inject] protected IWasmHttpClient _HttpClient { get; set; } = null!;
+    [Inject] protected IWasmGameService _GameService { get; set; } = null!;
 
     private List<GameResponse>? games;
     private FilterModel filter = new(); // Filters to be used
     private FilterModel appliedFilter = new(); // Copied from filters when applied
     private Virtualize<GameResponse> virtualizeRef;
 
-    protected override async Task OnInitializedAsync()
+    private async Task HandleGameDeleteClick(GameResponse game)
     {
-        // If prerendering, do not fetch data
-        if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
-            return;
-
-    }
-
-    private Task<List<GameResponse>> LoadAllGames()
-    {
-        return _HttpClient.Http!.GetFromJsonAsync<List<GameResponse>>("api/v1/games", AppJsonOptions.WithConverters)!;
+        await _GameService.DeleteGameAsync(game.Uuid);
+        
+        games = await _GameService.LoadAllGamesAsync();
+        await virtualizeRef.RefreshDataAsync();
     }
 
     private async ValueTask<ItemsProviderResult<GameResponse>> GetRows(ItemsProviderRequest request)
@@ -40,7 +36,7 @@ public partial class GameList
 
         if (games is null)
         {
-            games = await LoadAllGames();
+            games = await _GameService.LoadAllGamesAsync();
         }
 
         var filteredGames = appliedFilter.ApplyTo(games).ToArray();

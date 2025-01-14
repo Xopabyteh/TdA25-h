@@ -1,19 +1,15 @@
-﻿::deep .name-filter {
-    justify-content: flex-end;
-    display: flex;
-    padding: 10px;
-    border-radius: 0;
-    margin-top: 20px;
-    width: 150px;
-}
-
-.game-cards {
+﻿.game-cards {
     display: flex;
     gap: 15px;
     overflow-y: scroll;
     height: 70vh;
     flex-wrap: wrap;
 }
+
+    ::deep .game-cards > div:first-child {
+        /*first child is Virtualize spacer, so remove first gap.*/
+        margin-right: -15px;
+    }
 
 .game-list-h2 {
     display: flex;
@@ -88,6 +84,15 @@
 }
 
 /*filters*/
+::deep .name-filter {
+    justify-content: flex-end;
+    display: flex;
+    padding: 10px;
+    border-radius: 0;
+    margin-top: 20px;
+    width: 150px;
+}
+
 .selected span {
     background: #0070BB;
     color: white;
