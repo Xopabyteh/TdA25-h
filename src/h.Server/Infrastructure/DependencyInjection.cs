@@ -1,5 +1,7 @@
 ﻿using Carter;
 using FluentValidation;
+using h.Client.Services;
+using h.Client.Services.Game;
 using h.Contracts.Components.Services;
 using h.Primitives.Games;
 using h.Server.Components.Services;
@@ -7,6 +9,7 @@ using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -39,8 +42,10 @@ public static class DependencyInjection
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        builder.Services.AddScoped<IWasmOnlyHttpClient, WasmOnlyHttpClient>();
-    
+        // Add dummy implementations for server-side services (used when prerendering)
+        builder.Services.AddScoped<IWasmHttpClient, Server.Components.Services.WasmHttpClient>();
+        builder.Services.AddSingleton<IWasmGameService, Server.Components.Services.WasmGameService>();
+
         return builder;
     }
 

@@ -1,10 +1,12 @@
-﻿namespace h.Contracts.Components.Services;
+﻿using h.Contracts.Components.Services;
+
+namespace h.Client.Services;
 
 /// <summary>
 /// Server implementation throws exception, 
 /// meanwhile the WASM implementation returns the HttpClient.
 /// </summary>
-public interface IWasmOnlyHttpClient
+public interface IWasmHttpClient : IWasmOnly
 {
     public HttpClient Http { get; }
 
