@@ -119,14 +119,14 @@
     justify-content: space-between;
 }
 
-    .filter-wrapper #diff, .filter-wrapper #name, .filter-wrapper #date {
+    ::deep .filter-wrapper .dropdown {
         border-top: solid 2px #D5D5D5;
         padding: 10px;
     }
 
-    .filter-wrapper div:first-child {
-        border: solid 0 white;
-    }
+        ::deep .filter-wrapper .dropdown:first-child {
+            border: solid 0 white;
+        }
 
 .option {
     color: #D5D5D5;
