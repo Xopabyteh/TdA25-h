@@ -83,7 +83,7 @@ input[type="text"] {
     flex-wrap: wrap;
 }
 
-.card {
+.game-card {
     background: white;
     border: none;
     border-radius: 10px;
@@ -92,7 +92,7 @@ input[type="text"] {
     align-self: flex-start;
 }
 
-.card button:hover {
+.game-card button:hover {
     transition: transform .2s ease;
     cursor: pointer;
     transform: scale(1.1);
