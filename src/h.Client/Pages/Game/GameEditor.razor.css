@@ -64,3 +64,27 @@
     .difficulty-selector .slider {
         grid-area: slider;
     }
+
+.pick {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+    .panel button {
+        border: none;
+        padding: 10px;
+        background: none;
+        border-radius: 8px;
+        aspect-ratio: 1/1;
+    }
+
+    .panel button:hover {
+        background: #f5f5f5;
+    }
+
+    .pick button.active {
+        background: #f5f5f5;
+    }
+

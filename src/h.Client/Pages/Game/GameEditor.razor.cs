@@ -47,13 +47,11 @@ public partial class GameEditor : IAsyncDisposable
         ActiveButtonId = buttonId;
     }
 
-    // Get style dynamically
-    private string GetButtonStyle(int buttonId)
-    {
-        return ActiveButtonId == buttonId
-            ? "background-color: #D5D5D5;"
-            : "background-color: none;";
-    }
+    /// <summary>
+    /// Sets active class for the button
+    /// </summary>
+    private string GetBtnActiveClass(int buttonId)
+        => ActiveButtonId == buttonId ? "active" : string.Empty;
 
     protected override async Task OnInitializedAsync()
     {       

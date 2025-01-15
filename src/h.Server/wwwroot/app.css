@@ -123,38 +123,6 @@ input[type="text"] {
     padding: 7px 120px 7px 5px;
 }
 
-.cross-btn {
-    background-image: url("/IMG/X/X_cervene.svg");
-    background-repeat: no-repeat;
-    background-color: transparent;
-    background-size: contain;
-}
-
-.circle-btn {
-    background-image: url("/IMG/O/O_modre.svg");
-    background-repeat: no-repeat;
-    background-color: transparent;
-    background-size: contain;
-}
-
-.pick button {
-    border: none;
-    padding: 10px;
-}
-
-.pick {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    border: none;
-    border-radius: 8px;
-    filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
-    padding: 7px;
-    gap: 10px;
-}
-
 .line {
     width: 2px;
     background: #f5f5f5;
