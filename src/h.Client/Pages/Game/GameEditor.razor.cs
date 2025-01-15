@@ -114,6 +114,8 @@ public partial class GameEditor : IAsyncDisposable
 
         await jsModule.InvokeVoidAsync("selectXPencil", disposeCts.Token);
         imgSrc = "url('/IMG/X/X_cervene.svg')";
+    
+        SetActiveButton(1);
     }
 
     public async Task HandleSelectO()
@@ -123,6 +125,8 @@ public partial class GameEditor : IAsyncDisposable
 
         await jsModule.InvokeVoidAsync("selectOPencil", disposeCts.Token);
         imgSrc = "url('/IMG/O/O_modre.svg')";
+    
+        SetActiveButton(2);
     }
 
     public async Task HandleSelectEraser()
@@ -132,6 +136,8 @@ public partial class GameEditor : IAsyncDisposable
 
         await jsModule.InvokeVoidAsync("selectEraser", disposeCts.Token);
         imgSrc = "none";
+    
+        SetActiveButton(3);
     }
 
     public async Task HandleClearCanvas()

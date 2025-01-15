@@ -40,6 +40,8 @@
 }
 
 .game-field .cell {
+    position: relative;
+
     border: none;
     display: flex;
     align-items: center;
@@ -52,16 +54,24 @@
     }
 
         .game-field .cell.empty {
-            background-size: 75% 75%;
-            background-repeat: no-repeat;
-            background-position: center;
             cursor: pointer;
         }
 
-            .game-field[data-symbol-on-turn="x"] .cell.empty:hover {
+        .game-field .cell.empty::after {
+            content: "";
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            /*background-size: 75% 75%;*/
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.5;
+        }
+
+            .game-field[data-cell-hover-symbol="x"] .cell.empty:hover::after {
                 background-image: url("/IMG/X/X_cervene.svg");
             }
 
-            .game-field[data-symbol-on-turn="o"] .cell.empty:hover {
+            .game-field[data-cell-hover-symbol="o"] .cell.empty:hover::after {
                 background-image: url("/IMG/O/O_modre.svg");
             }
