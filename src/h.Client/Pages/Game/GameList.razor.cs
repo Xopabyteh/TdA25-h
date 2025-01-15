@@ -17,10 +17,18 @@ public partial class GameList
     [Inject] protected IWasmGameService _GameService { get; set; } = null!;
 
     private List<GameResponse>? games;
+    private GameResponse[] filteredGames = Array.Empty<GameResponse>();
     private FilterModel filter = new(); // Filters to be used
     private FilterModel appliedFilter = new(); // Copied from filters when applied
-    private Virtualize<GameResponse> virtualizeRef;
+    //private Virtualize<GameResponse> virtualizeRef;
 
+    protected override Task OnInitializedAsync()
+    {
+        if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+            return Task.CompletedTask; // Prerendering should not load game
+
+        return LoadFillteredGamesAsync();
+    }
     //protected override void OnInitialized()
     //{
     //    games = new()
@@ -56,38 +64,54 @@ public partial class GameList
         await _GameService.DeleteGameAsync(game.Uuid);
         
         games = await _GameService.LoadAllGamesAsync();
-        await virtualizeRef.RefreshDataAsync();
+        await LoadFillteredGamesAsync();
+        //await virtualizeRef.RefreshDataAsync();
     }
 
-    private async ValueTask<ItemsProviderResult<GameResponse>> GetRows(ItemsProviderRequest request)
+    //private async ValueTask<ItemsProviderResult<GameResponse>> GetRows(ItemsProviderRequest request)
+    //{
+    //    if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+    //        return new ItemsProviderResult<GameResponse>(Array.Empty<GameResponse>(), 0); // Prerendering
+
+    //    if (games is null)
+    //    {
+    //        games = await _GameService.LoadAllGamesAsync();
+    //    }
+
+    //    var filteredGames = appliedFilter.ApplyTo(games).ToArray();
+
+    //    return new ItemsProviderResult<GameResponse>(
+    //        filteredGames.Skip(request.StartIndex).Take(request.Count),
+    //        filteredGames.Length
+    //    );
+    //}
+        
+    private async Task LoadFillteredGamesAsync()
     {
         if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
-            return new ItemsProviderResult<GameResponse>(Array.Empty<GameResponse>(), 0); // Prerendering
+            return;
 
         if (games is null)
         {
             games = await _GameService.LoadAllGamesAsync();
         }
 
-        var filteredGames = appliedFilter.ApplyTo(games).ToArray();
-
-        return new ItemsProviderResult<GameResponse>(
-            filteredGames.Skip(request.StartIndex).Take(request.Count),
-            filteredGames.Length
-        );
+        filteredGames = appliedFilter.ApplyTo(games).ToArray();
     }
 
     private async Task HandleFilterClick()
     {
         appliedFilter = filter with {};
-        await virtualizeRef.RefreshDataAsync();
+        await LoadFillteredGamesAsync();
+        //await virtualizeRef.RefreshDataAsync();
     }
 
     private async Task HandleFilterReset()
     {
         filter = new();
         appliedFilter = new();
-        await virtualizeRef.RefreshDataAsync();
+        await LoadFillteredGamesAsync();
+        //await virtualizeRef.RefreshDataAsync();
     }
 
     public record FilterModel

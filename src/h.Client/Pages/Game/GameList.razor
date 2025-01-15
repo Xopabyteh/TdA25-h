@@ -12,120 +12,112 @@
     </h2>
     
     <div class="game-cards">
-        <Virtualize
-            TItem="GameResponse"
-            ItemsProvider="GetRows"
-            Context="game"
-            ItemSize="25"
-            @ref="virtualizeRef">
-            <ItemContent>
-                @{
-                    string imgSrc = "";
-                    string alt = "";
-                }
+        @foreach(var game in filteredGames)
+        {
+            string imgSrc = "";
+            string alt = "";
 
-                @switch (game.Difficulty)
-                {
-                    case 0:
-                        imgSrc = "/IMG/Difficulties/Zacatecnik/zarivka_beginner_modre.svg";
-                        alt = "zacatecnik";
-                        break;
-                    case 1:
-                        imgSrc = "/IMG/Difficulties/Jednoducha/zarivka_easy_modre.svg";
-                        alt = "jednoducha";
-                        break;
-                    case 2:
-                        imgSrc = "IMG/Difficulties/Stredni/zarivka_medium_modre.svg";
-                        alt = "stredni";
-                        break;
-                    case 3:
-                        imgSrc = "IMG/Difficulties/Tezka/zarivka_hard_modra.svg";
-                        alt = "tezka";
-                        break;
-                    case 4:
-                        imgSrc = "IMG/Difficulties/Extremni/zarivka_extreme_modre.svg";
-                        alt = "extremni";
-                        break;
-                }
+            @switch (game.Difficulty)
+            {
+                case 0:
+                    imgSrc = "/IMG/Difficulties/Zacatecnik/zarivka_beginner_modre.svg";
+                    alt = "zacatecnik";
+                    break;
+                case 1:
+                    imgSrc = "/IMG/Difficulties/Jednoducha/zarivka_easy_modre.svg";
+                    alt = "jednoducha";
+                    break;
+                case 2:
+                    imgSrc = "IMG/Difficulties/Stredni/zarivka_medium_modre.svg";
+                    alt = "stredni";
+                    break;
+                case 3:
+                    imgSrc = "IMG/Difficulties/Tezka/zarivka_hard_modra.svg";
+                    alt = "tezka";
+                    break;
+                case 4:
+                    imgSrc = "IMG/Difficulties/Extremni/zarivka_extreme_modre.svg";
+                    alt = "extremni";
+                    break;
+            }
 
-                <div class="game-card">
-                    <div class="name-diff">
-                        <h3>@game.Name</h3>
-                        <img src=@imgSrc alt=@alt class="diff">
-                    </div>
+            <div class="game-card">
+                <div class="name-diff">
+                    <h3>@game.Name</h3>
+                    <img src=@imgSrc alt=@alt class="diff">
+                </div>
 
-                    <div class="game-img">
-                        @for (int i = 0; i < game.Board.Length; i++)
-                        {
-                            string elem = "";
-                            string imgClass = "";
-                            <div class="row">
-                                @for (int j = 0; j < game.Board[i].Length; j++)
+                <div class="game-img">
+                    @for (int i = 0; i < game.Board.Length; i++)
+                    {
+                        string elem = "";
+                        string imgClass = "";
+                        <div class="row">
+                            @for (int j = 0; j < game.Board[i].Length; j++)
+                            {
+                                @switch (game.Board[i][j])
                                 {
-                                    @switch (game.Board[i][j])
-                                    {
-                                        case "X":
-                                            elem = "/IMG/X/X_cervene.svg";
-                                            imgClass = "small-x";
-                                            alt = "X";
-                                            break;
-                                        case "O":
-                                            elem = "/IMG/O/O_modre.svg";
-                                            imgClass = "small-o";
-                                            alt = "O";
-                                            break;
-                                        case "":
-                                            elem = "";
-                                            imgClass = "";
-                                            alt = "";
-                                            break;
-                                    }
+                                    case "X":
+                                        elem = "/IMG/X/X_cervene.svg";
+                                        imgClass = "small-x";
+                                        alt = "X";
+                                        break;
+                                    case "O":
+                                        elem = "/IMG/O/O_modre.svg";
+                                        imgClass = "small-o";
+                                        alt = "O";
+                                        break;
+                                    case "":
+                                        elem = "";
+                                        imgClass = "";
+                                        alt = "";
+                                        break;
+                                }
 
-                                    @if (i % 2 == 0)
+                                @if (i % 2 == 0)
+                                {
+                                    @if (j % 2 == 0)
                                     {
-                                        @if (j % 2 == 0)
-                                        {
-                                            <div class="col-dark">
-                                                <img src="@elem" alt="@alt" class="@imgClass">
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="col-light">
-                                                <img src="@elem" alt="@alt" class="@imgClass">
-                                            </div>
-                                        }
+                                        <div class="col-dark">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
                                     }
                                     else
                                     {
-                                        @if (j % 2 == 0)
-                                        {
-                                            <div class="col-light">
-                                                <img src="@elem" alt="@alt" class="@imgClass">
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="col-dark">
-                                                <img src="@elem" alt="@alt" class="@imgClass">
-                                            </div>
-                                        }
+                                        <div class="col-light">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
                                     }
-
                                 }
-                            </div>
-                        }
-                    </div>
-                    <div class="action-row">
-                        <a class="play" href="@(PageRoutes.Game.GameIndexWithParam(game.Uuid))"><img src="/IMG/icons/play.svg" alt="play"></a>
-                        <div class="secondary-row">
-                            <a class="edit" href="@(PageRoutes.Game.GameEditorWithParam(game.Uuid))"><img src="/IMG/icons/edit.svg" alt="edit"></a>
-                            <button class="delete" @onclick="() => HandleGameDeleteClick(game)"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
+                                else
+                                {
+                                    @if (j % 2 == 0)
+                                    {
+                                        <div class="col-light">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-dark">
+                                            <img src="@elem" alt="@alt" class="@imgClass">
+                                        </div>
+                                    }
+                                }
+
+                            }
                         </div>
+                    }
+                </div>
+                <div class="action-row">
+                    <a class="play" href="@(PageRoutes.Game.GameIndexWithParam(game.Uuid))"><img src="/IMG/icons/play.svg" alt="play"></a>
+                    <div class="secondary-row">
+                        <a class="edit" href="@(PageRoutes.Game.GameEditorWithParam(game.Uuid))"><img src="/IMG/icons/edit.svg" alt="edit"></a>
+                        <button class="delete" @onclick="() => HandleGameDeleteClick(game)"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
                     </div>
                 </div>
-            </ItemContent>
-        </Virtualize>
+            </div>   
+        }
     </div>
 </div>
 

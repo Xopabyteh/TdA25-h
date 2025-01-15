@@ -6,10 +6,10 @@
     flex-wrap: wrap;
 }
 
-    ::deep .game-cards > div:first-child {
+    /*::deep .game-cards > div:first-child {*/
         /*first child is Virtualize spacer, so remove first gap.*/
-        margin-right: -15px;
-    }
+        /*margin-right: -15px;
+    }*/
 
 .game-list-h2 {
     display: flex;
