@@ -6,7 +6,8 @@
     padding: 7px;
 }
 
-.center-content {
+.place-center {
     display: flex;
     place-content: center;
+    align-items: center;
 }

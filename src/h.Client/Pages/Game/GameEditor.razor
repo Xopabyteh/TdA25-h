@@ -3,8 +3,9 @@
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Vytvořit novou úlohu</PageTitle>
-
 <div class="vytvorit">
+    <Loader />
+
     @if(loadedGame is not null) {
         <h2>Upravit úlohu</h2>
     } else
@@ -24,7 +25,7 @@
             <button type="button" class="circle-btn @(GetBtnActiveClass(2))" @onclick="HandleSelectO"><img src="/IMG/O/O_modre.svg" alt="O"></button>
             <button type="button" class="eraser @(GetBtnActiveClass(3))" @onclick="HandleSelectEraser"><img src="/IMG/icons/rubber.svg" alt="eraser"></button>
             <div class="line"></div>
-            <button type="button" class="bin center-content" @onclick="HandleClearCanvas"><img src="/IMG/icons/bin.svg" alt="bin"></button>
+            <button type="button" class="bin place-center" @onclick="HandleClearCanvas"><img src="/IMG/icons/bin.svg" alt="bin"></button>
         </div>
         <div class="back-forth sheet">
             <button type="button" class="back-btn" @onclick="HandleHistoryBack"><img src="/IMG/icons/back.svg" alt="back"></button>
