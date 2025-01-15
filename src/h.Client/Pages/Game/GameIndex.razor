@@ -6,6 +6,12 @@
 <div class="card">
     <div class="primary-column">
         <div class="info-row">
+            <a href="/game/list">
+                <button class="to-games">
+                    <img src="/IMG/icons/end-game-arrow.svg" alt="back" style="height: 15px">
+                    <h3>Ukončit hru</h3>
+                </button>
+            </a>
             <div class="game-name">
                 <h2>Placeholder</h2>
             </div>
@@ -22,9 +28,6 @@
                 }
                 <img src=@imgSrc alt=@imgAlt>
             </div>
-            <div class="round">
-                <h3>10. kolo</h3>
-            </div>
         </div>
         <div class="game-field">
             @for (int y = 0; y < 15; y++)
@@ -39,9 +42,17 @@
                         string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
 
                         <div class="cell"
-                             style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
+                             style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center;"
                              data-x="@xCopy"
                              data-y="@yCopy">
+                            <style>
+                                .cell:hover {
+                                    background-image: url(@imgSrc);
+                                    background-size: 75% 75%;
+                                    background-repeat: no-repeat;
+                                    background-position: center;
+                                }
+                            </style>
 
                             @* Symbols added via js *@
                             @* <img src="" /> *@
@@ -52,7 +63,10 @@
         </div>
     </div>
     <div class="secondary-column">
-        <div class="addit-info">
+        <div class="round">
+            <h3>10. kolo</h3>
+        </div>
+        <div class="addit-info" style="display: @(IsVisible ? "flex" : "none")">
             <div class="info">
                 <h3 style="color: #0070BB">Obtížnost</h3>
                 <span>Placeholder</span>
@@ -66,11 +80,11 @@
                 <span>yyyy-mm-dd hh:mm</span>
             </div>
         </div>
-        <a href="/game/list" style="text-decoration: none">
-            <button class="to-games">
-                <img src="/IMG/icons/back-arrow.svg" alt="back">
-                Úlohy
+        <div class="save-game">
+            <button class="save-game-btn">
+                
             </button>
-        </a>
+        </div>
     </div>
 </div>
+

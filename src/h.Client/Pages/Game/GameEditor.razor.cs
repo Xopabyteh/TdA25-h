@@ -34,6 +34,8 @@ public partial class GameEditor : IAsyncDisposable
     /// </summary>
     private EditorModel RequestModel { get; set; } = new();
 
+    private string imgSrc = "";
+
     protected override async Task OnInitializedAsync()
     {       
         if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
@@ -95,6 +97,7 @@ public partial class GameEditor : IAsyncDisposable
             return;
 
         await jsModule.InvokeVoidAsync("selectXPencil", disposeCts.Token);
+        imgSrc = "url('/IMG/X/X_cervene.svg')";
     }
 
     public async Task HandleSelectO()
@@ -103,6 +106,7 @@ public partial class GameEditor : IAsyncDisposable
             return;
 
         await jsModule.InvokeVoidAsync("selectOPencil", disposeCts.Token);
+        imgSrc = "url('/IMG/O/O_modre.svg')";
     }
 
     public async Task HandleSelectEraser()
@@ -111,6 +115,7 @@ public partial class GameEditor : IAsyncDisposable
             return;
 
         await jsModule.InvokeVoidAsync("selectEraser", disposeCts.Token);
+        imgSrc = "none";
     }
 
     public async Task HandleClearCanvas()

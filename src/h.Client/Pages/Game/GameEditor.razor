@@ -54,7 +54,14 @@
                             style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
                             data-x="@xCopy"
                             data-y="@yCopy">
-                            
+                        <style>
+                            .cell:hover {
+                                background-image: @imgSrc;
+                                background-size: 75% 75%;
+                                background-repeat: no-repeat;
+                                background-position: center;
+                            }
+                        </style>
                             @* Symbols added via js *@
                             @* <img src="" /> *@
                     </div>
