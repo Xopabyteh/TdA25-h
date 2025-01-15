@@ -1,6 +1,7 @@
 @using System.Diagnostics
 @using System.Runtime.CompilerServices
 @attribute [Route(PageRoutes.Game.GameIndex)]
+@rendermode InteractiveWebAssembly
 @layout NoNavLayout
 
 <div class="card">
@@ -16,20 +17,20 @@
                 <h2>Placeholder</h2>
             </div>
             <div class="turn">
-                @if (xTurn)
+                @if (xOnTurn)
                 {
-                    imgSrc = "/IMG/X/X_cervene.svg";
-                    imgAlt = "X";
+                    turnDisplaySrc = "/IMG/X/X_cervene.svg";
+                    turnDisplayAlt = "X";
                 }
                 else
                 {
-                    imgSrc = "/IMG/O/O_modre.svg";
-                    imgAlt = "O";
+                    turnDisplaySrc = "/IMG/O/O_modre.svg";
+                    turnDisplayAlt = "O";
                 }
-                <img src=@imgSrc alt=@imgAlt>
+                <img src=@turnDisplaySrc alt=@turnDisplayAlt>
             </div>
         </div>
-        <div class="game-field">
+        <div class="game-field" @ref="gameFieldRef" data-cell-hover-symbol="@(xOnTurn ? "x" : "o")">
             @for (int y = 0; y < 15; y++)
             {
                 <div class="game-field-row">
@@ -41,20 +42,13 @@
 
                         string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
 
-                        <div class="cell"
-                             style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center;"
+                        <div class="cell empty"
+                             style="width: 50px; background-color: @background;"
                              data-x="@xCopy"
                              data-y="@yCopy">
-                            <style>
-                                .cell:hover {
-                                    background-image: url(@imgSrc);
-                                    background-size: 75% 75%;
-                                    background-repeat: no-repeat;
-                                    background-position: center;
-                                }
-                            </style>
 
                             @* Symbols added via js *@
+                            @* Any inner content is removed when cell is placed !!! *@
                             @* <img src="" /> *@
                         </div>
                     }

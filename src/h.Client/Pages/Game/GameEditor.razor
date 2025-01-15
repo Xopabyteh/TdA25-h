@@ -20,9 +20,9 @@
             </button>
         </div>
         <div class="pick sheet">
-            <button class="cross-btn" @onclick="(() => { SetActiveButton(1); HandleSelectX(); })" style="@GetButtonStyle(1)"></button>
-            <button class="circle-btn" @onclick="(() => { SetActiveButton(2); HandleSelectO(); })" style="@GetButtonStyle(2)"></button>
-            <button class="eraser" @onclick="(() => { SetActiveButton(3); HandleSelectEraser(); })" style="@GetButtonStyle(3)"><img src="/IMG/icons/rubber.svg" alt="eraser"></button>
+            <button class="cross-btn" @onclick="HandleSelectX" style="@GetButtonStyle(1)"></button>
+            <button class="circle-btn" @onclick="HandleSelectO" style="@GetButtonStyle(2)"></button>
+            <button class="eraser" @onclick="HandleSelectEraser" style="@GetButtonStyle(3)"><img src="/IMG/icons/rubber.svg" alt="eraser"></button>
             <div class="line"></div>
             <button class="bin" @onclick="HandleClearCanvas"><img src="/IMG/icons/bin.svg" alt="bin"></button>
         </div>
@@ -41,6 +41,7 @@
     <div class="game-field" @ref="gameFieldRef">
         @for (int y = 0; y < 15; y++)
         {
+            @* "data-cell-hover-symbol" set via js *@
             <div class="game-field-row">
                 @for (int x = 0; x < 15; x++)
                 {
@@ -50,18 +51,10 @@
 
                     string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
                     
-                    <div class="cell"
+                    <div class="cell empty"
                             style="width: 50px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
                             data-x="@xCopy"
                             data-y="@yCopy">
-                        <style>
-                            .cell:hover {
-                                background-image: @imgSrc;
-                                background-size: 75% 75%;
-                                background-repeat: no-repeat;
-                                background-position: center;
-                            }
-                        </style>
                             @* Symbols added via js *@
                             @* <img src="" /> *@
                     </div>

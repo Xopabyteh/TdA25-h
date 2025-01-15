@@ -2,8 +2,8 @@
 const O_IMG_PATH = '/img/O/O_modre.svg';
 
 // 'X' or 'O' or '' for eraser
-const PENCIL_X = 'X';
-const PENCIL_O = 'O';
+const PENCIL_X = 'x';
+const PENCIL_O = 'o';
 const PENCIL_ERASER = '';
 
 let selectedPencil = null;
@@ -76,8 +76,9 @@ const handleCellClick = (
             if (shouldAppendToHistory) {
                 appendCurrentStateToEditHistory();
             }
-            return;
         }
+
+        return;
     }
 
     // -> Draw
@@ -103,15 +104,30 @@ const handleCellClick = (
 }
 
 export const selectXPencil = () => {
+    if (gameFieldElementRef == null)
+        return;
+
     selectedPencil = PENCIL_X;
+
+    gameFieldElementRef.setAttribute('data-cell-hover-symbol', PENCIL_X);
 }
  
 export const selectOPencil = () => {
+    if (gameFieldElementRef == null)
+        return;
+
     selectedPencil = PENCIL_O;
+
+    gameFieldElementRef.setAttribute('data-cell-hover-symbol', PENCIL_O);
 }
 
 export const selectEraser = () => {
+    if (gameFieldElementRef == null)
+        return;
+
     selectedPencil = PENCIL_ERASER;
+
+    gameFieldElementRef.setAttribute('data-cell-hover-symbol', PENCIL_ERASER);
 }
 
 export const clearCanvas = () => {
