@@ -21,6 +21,36 @@ public partial class GameList
     private FilterModel appliedFilter = new(); // Copied from filters when applied
     private Virtualize<GameResponse> virtualizeRef;
 
+    protected override void OnInitialized()
+    {
+        games = new()
+        {
+            new(Guid.NewGuid(),
+                DateTime.Now,
+                DateTime.Now,
+                "Armagedon",
+                Primitives.Games.GameDifficulty.Easy,
+                Primitives.Games.GameState.Opening,
+                [
+                    ["O", "X", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["O", "X", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "X", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "O", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "X", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "X", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "O", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                ]),
+        };
+    }
+
     private async Task HandleGameDeleteClick(GameResponse game)
     {
         await _GameService.DeleteGameAsync(game.Uuid);

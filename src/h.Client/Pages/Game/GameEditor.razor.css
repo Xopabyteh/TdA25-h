@@ -2,6 +2,11 @@
     background: none;
 }
 
+.eraser {
+    background: none;
+    padding: 0;
+}
+
 .back-forth {
     display: flex;
     flex-direction: row;

@@ -35,6 +35,22 @@ public partial class GameEditor : IAsyncDisposable
     private EditorModel RequestModel { get; set; } = new();
 
     private string imgSrc = "";
+    
+    private int ActiveButtonId { get; set; } = 0;
+
+    // Set active button state
+    private void SetActiveButton(int buttonId)
+    {
+        ActiveButtonId = buttonId;
+    }
+
+    // Get style dynamically
+    private string GetButtonStyle(int buttonId)
+    {
+        return ActiveButtonId == buttonId
+            ? "background-color: #D5D5D5;"
+            : "background-color: none;";
+    }
 
     protected override async Task OnInitializedAsync()
     {       
