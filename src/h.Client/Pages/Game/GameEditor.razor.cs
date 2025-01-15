@@ -171,8 +171,6 @@ public partial class GameEditor : IAsyncDisposable
     {
         if(jsModule is null)
             return;
-
-        // Todo: validate inputs
         
         var board = await jsModule.InvokeAsync<string[][]>("getGameField", disposeCts.Token);
 
@@ -227,6 +225,7 @@ public partial class GameEditor : IAsyncDisposable
             );
         }
     }
+
 
     public async ValueTask DisposeAsync()
     {

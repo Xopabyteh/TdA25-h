@@ -12,10 +12,10 @@
         <h2>Vytvořit novou úlohu</h2>
     }
 
-    <EditForm class="panel" FormName="SaveForm" Model="RequestModel">
+    <EditForm class="panel" FormName="SaveForm" Model="RequestModel" OnValidSubmit="HandleSaveGame">
         <div class="jmeno sheet">
-            <input @bind="RequestModel.Name" placeholder="Jméno úlohy"/>
-            <button class="save-btn" @onclick="HandleSaveGame" type="submit">
+            <input @bind="RequestModel.Name" placeholder="Jméno úlohy" required/>
+            <button class="save-btn" type="submit">
                 <img src="/IMG/icons/save.svg" alt="save">
             </button>
         </div>
