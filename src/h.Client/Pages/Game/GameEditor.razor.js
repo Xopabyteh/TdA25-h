@@ -2,8 +2,8 @@
 const O_IMG_PATH = '/img/O/O_modre.svg';
 
 // 'X' or 'O' or '' for eraser
-const PENCIL_X = 'x';
-const PENCIL_O = 'o';
+const PENCIL_X = 'X';
+const PENCIL_O = 'O';
 const PENCIL_ERASER = '';
 
 let selectedPencil = null;

@@ -1,5 +1,7 @@
-﻿using h.Contracts.Components.Services;
+﻿using h.Contracts;
+using h.Contracts.Components.Services;
 using h.Contracts.Games;
+using OneOf;
 using System.Net.Http.Json;
 
 namespace h.Client.Services.Game;
@@ -13,12 +15,12 @@ public class WasmGameService : IWasmGameService
         _httpClient = httpClient;
     }
 
-    public async Task<GameResponse?> CreateGameAsync(CreateNewGameRequest request)
+    public async Task<OneOf<GameResponse, ErrorResponse>> CreateGameAsync(CreateNewGameRequest request)
     {
         var result = await _httpClient.Http!.PostAsJsonAsync("api/v1/games", request, AppJsonOptions.WithConverters);
         
         if(result.StatusCode != System.Net.HttpStatusCode.Created)
-            return null;
+            return await result.Content.ReadFromJsonAsync<ErrorResponse>(AppJsonOptions.WithConverters);
 
         return await result.Content.ReadFromJsonAsync<GameResponse>(AppJsonOptions.WithConverters);
     }
@@ -51,12 +53,12 @@ public class WasmGameService : IWasmGameService
         }
     }
 
-    public async Task<GameResponse?> UpdateGameAsync(UpdateGameRequest request)
+    public async Task<OneOf<GameResponse, ErrorResponse>> UpdateGameAsync(UpdateGameRequest request)
     {
         var result = await _httpClient.Http!.PutAsJsonAsync($"api/v1/games/{request.GameId}", request, AppJsonOptions.WithConverters)!;
         if(result.StatusCode != System.Net.HttpStatusCode.OK)
-            return null;
+            return await result.Content.ReadFromJsonAsync<ErrorResponse>(AppJsonOptions.WithConverters);
 
-        return await result.Content.ReadFromJsonAsync<GameResponse?>(AppJsonOptions.WithConverters);
+        return await result.Content.ReadFromJsonAsync<GameResponse>(AppJsonOptions.WithConverters);
     }
 }

@@ -1,4 +1,5 @@
-﻿using h.Client.Services.Game;
+﻿using h.Client.Services;
+using h.Client.Services.Game;
 using h.Contracts.Games;
 using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
@@ -15,8 +16,10 @@ public partial class GameEditor : IAsyncDisposable
     [Parameter] public Guid? GameId { get; set; }
 
     [Inject] protected IJSRuntime _js { get; set; } = null!;
-    [Inject] protected IWasmGameService _GameService { get; set; } = null!;
-    [Inject] protected NavigationManager _NavigationManager { get; set; } = null!;
+    [Inject] protected IWasmGameService _gameService { get; set; } = null!;
+    [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
+    [Inject] protected ToastService _toastService { get; set; } = null!;
+
 
     private IJSObjectReference? jsModule;
     private CancellationTokenSource disposeCts = new();
@@ -62,12 +65,12 @@ public partial class GameEditor : IAsyncDisposable
             // Try load game if we have a GameId
             if(GameId is not null)
             {
-                loadedGame = await _GameService.LoadGameAsync(GameId.Value);
+                loadedGame = await _gameService.LoadGameAsync(GameId.Value);
 
                 // If null, we have an invalid GameId
                 if (loadedGame is null)
                 {
-                    _NavigationManager.NavigateTo(PageRoutes.Game.GameEditorWithParam(gameId: null));
+                    _navigationManager.NavigateTo(PageRoutes.Game.GameEditorWithParam(gameId: null));
                     return;
                 }
 
@@ -184,8 +187,18 @@ public partial class GameEditor : IAsyncDisposable
                 board,
                 GameId!.Value);
 
-            var updateResult = await _GameService.UpdateGameAsync(request);
-            // Todo: handle error
+            var updateResult = await _gameService.UpdateGameAsync(request);
+            updateResult.Switch(
+                async game =>
+                {
+                    await _toastService.SuccessAsync("Uloženo");
+                    return;
+                },
+                async error =>
+                {
+                    await _toastService.ErrorAsync(error.Message);
+                }
+            );
         } else
         {
             // Make new game
@@ -194,11 +207,24 @@ public partial class GameEditor : IAsyncDisposable
                 GameDifficulty.FromValue(RequestModel.Difficulty),
                 board);
 
-            // Todo: handle error
-            var result = await _GameService.CreateGameAsync(request);
-            Console.WriteLine(result);
-            GameId = result.Value.Uuid;
-            loadedGame = result;
+            var result = await _gameService.CreateGameAsync(request);
+            result.Switch(
+                async game =>
+                {
+                    GameId = game.Uuid;
+                    loadedGame = game;
+                    _navigationManager.NavigateTo(
+                        PageRoutes.Game.GameEditorWithParam(GameId),
+                        forceLoad: false,
+                        replace: false);
+                    await _toastService.SuccessAsync("Uloženo");
+                    return;
+                },
+                async error =>
+                {
+                    await _toastService.ErrorAsync(error.Message);
+                }
+            );
         }
     }
 

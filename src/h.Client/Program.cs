@@ -12,6 +12,8 @@ builder.Services.AddSingleton(new HttpClient()
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress),
 });
 
+builder.Services.AddTransient<ToastService>();
+
 builder.Services.AddSingleton<IWasmHttpClient, WasmHttpClient>();
 builder.Services.AddSingleton<IWasmGameService, WasmGameService>();
 

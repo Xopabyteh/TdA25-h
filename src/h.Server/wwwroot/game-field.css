@@ -68,10 +68,10 @@
             opacity: 0.5;
         }
 
-            .game-field[data-cell-hover-symbol="x"] .cell.empty:hover::after {
+            .game-field[data-cell-hover-symbol="X"] .cell.empty:hover::after {
                 background-image: url("/IMG/X/X_cervene.svg");
             }
 
-            .game-field[data-cell-hover-symbol="o"] .cell.empty:hover::after {
+            .game-field[data-cell-hover-symbol="O"] .cell.empty:hover::after {
                 background-image: url("/IMG/O/O_modre.svg");
             }

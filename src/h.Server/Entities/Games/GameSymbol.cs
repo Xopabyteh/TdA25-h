@@ -18,7 +18,7 @@ public static class GameSymbolParser
 {
     public static GameSymbol Parse(char symbol)
     {
-        return symbol switch
+        return char.ToUpperInvariant(symbol) switch
         {
             'X' => GameSymbol.X,
             'O' => GameSymbol.O,

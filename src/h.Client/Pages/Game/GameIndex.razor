@@ -30,7 +30,7 @@
                 <img src=@turnDisplaySrc alt=@turnDisplayAlt>
             </div>
         </div>
-        <div class="game-field" @ref="gameFieldRef" data-cell-hover-symbol="@(xOnTurn ? "x" : "o")">
+        <div class="game-field" @ref="gameFieldRef" data-cell-hover-symbol="@(xOnTurn ? "X" : "O")">
             @for (int y = 0; y < 15; y++)
             {
                 <div class="game-field-row">

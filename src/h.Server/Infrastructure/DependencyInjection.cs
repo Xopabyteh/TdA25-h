@@ -42,6 +42,8 @@ public static class DependencyInjection
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        builder.Services.AddTransient<ToastService>();
+
         // Add dummy implementations for server-side services (used when prerendering)
         builder.Services.AddScoped<IWasmHttpClient, Server.Components.Services.WasmHttpClient>();
         builder.Services.AddSingleton<IWasmGameService, Server.Components.Services.WasmGameService>();
