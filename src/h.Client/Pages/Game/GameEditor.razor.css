@@ -76,6 +76,7 @@
         background: none;
         border-radius: 8px;
         aspect-ratio: 1/1;
+        transition: background-color .1s;
     }
 
     .panel button:hover {
@@ -110,4 +111,8 @@
     .jmeno input {
         min-height: 100%;
         min-width: 50%;
+    }
+
+    .pick button img {
+        width: 20px;
     }
