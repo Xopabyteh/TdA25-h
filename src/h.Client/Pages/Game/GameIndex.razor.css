@@ -193,4 +193,37 @@
 /*save popup*/
 .save-popup {
     display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 69;
+}
+
+.save-card {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    gap: 20px;
+}
+.save-info{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.mini-row {
+    height: 25px;
+}
+
+.save-game-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

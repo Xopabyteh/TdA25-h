@@ -1,5 +1,6 @@
 @using System.Diagnostics
 @using System.Runtime.CompilerServices
+@using h.Primitives.Games
 @attribute [Route(PageRoutes.Game.GameIndex)]
 @rendermode InteractiveWebAssembly
 @layout NoNavLayout
@@ -18,6 +19,49 @@
         <div class="win-r3">
             <button class="new-game">Nová hra</button>
             <a href="/game/list"><button class="back-to-list">Zpět na výběr</button></a>
+        </div>
+    </div>
+</div>
+<div class="save-popup">
+    <div class="save-card">
+        <div class="game-field mini" @ref="gameFieldRef">
+            @for (int y = 0; y < 15; y++)
+            {
+                @* "data-cell-hover-symbol" set via js *@
+                <div class="game-field-row mini-row">
+                    @for (int x = 0; x < 15; x++)
+                    {
+                        int id1D = y * 15 + x;
+                        var xCopy = x;
+                        var yCopy = y;
+
+                        string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
+
+                        <div class="cell empty"
+                             style="width: 25px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
+                             data-x="@xCopy"
+                             data-y="@yCopy">
+                            @* Symbols added via js *@
+                            @* <img src="" /> *@
+                        </div>
+                    }
+                </div>
+
+            }
+        </div>
+        <div class="save-info">
+            <h2>Uložit úlohu</h2>
+            <form action="" class="save-game-form">
+                <input type="text" class="text-input" placeholder="Jméno úlohy">
+                <div class="difficulty-selector sheet">
+                    <div class="left">Nejjednodušší</div>
+                    <div class="right">Nejobtížnější</div>
+                    <input class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)"/>
+                    @* <img class="bulb"/> *@
+                </div>
+                <button class="save-game primary-button">Uložit hru</button>
+                <button class="exit-save-menu secondary-button">Zrušit</button>
+            </form>
         </div>
     </div>
 </div>
@@ -93,9 +137,7 @@
             </div>
         </div>
         <div class="save-game">
-            <button class="save-game-btn">
-
-            </button>
+            <button class="save-game-btn primary-button">Uložit hru</button>
         </div>
     </div>
 </div>
