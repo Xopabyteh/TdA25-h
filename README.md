@@ -1,4 +1,15 @@
-# h
+# Tour de App tým h
+
+## Členové týmu h
+
+| **Člen týmu**  | **Pozice**        |
+|----------------|-------------------|
+| Martin Fiala   | Fullstack         |
+| Klára Futejová | Frontend          |
+| Jonáš Holub    | Design a frontend |
+
+## Využité technologie
+- Blazor
 
 ## Building & Running
 ### Visual studio:
