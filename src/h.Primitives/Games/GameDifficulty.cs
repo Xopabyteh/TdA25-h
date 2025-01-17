@@ -6,14 +6,17 @@ namespace h.Primitives.Games;
 
 public sealed class GameDifficulty : SmartEnum<GameDifficulty>
 {
-    public static readonly GameDifficulty Beginner = new GameDifficulty("beginner", (int)Enum.Beginner);
-    public static readonly GameDifficulty Easy = new GameDifficulty("easy", (int)Enum.Easy);
-    public static readonly GameDifficulty Medium = new GameDifficulty("medium", (int)Enum.Medium);
-    public static readonly GameDifficulty Hard = new GameDifficulty("hard", (int)Enum.Hard);
-    public static readonly GameDifficulty Extreme = new GameDifficulty("extreme", (int)Enum.Extreme);
+    public static readonly GameDifficulty Beginner = new GameDifficulty("beginner", Enum.Beginner);
+    public static readonly GameDifficulty Easy = new GameDifficulty("easy", Enum.Easy);
+    public static readonly GameDifficulty Medium = new GameDifficulty("medium", Enum.Medium);
+    public static readonly GameDifficulty Hard = new GameDifficulty("hard", Enum.Hard);
+    public static readonly GameDifficulty Extreme = new GameDifficulty("extreme", Enum.Extreme);
+    
+    private GameDifficulty(string name, Enum value)
+        : base(name, (int)value) { }
 
-    // Todo: refactor to use enum
-    private GameDifficulty(string name, int value) : base(name, value) { }
+    public Enum EnumValue
+        => (Enum)Value;
 
     public enum Enum
     {

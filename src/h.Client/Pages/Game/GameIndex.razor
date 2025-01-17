@@ -1,5 +1,6 @@
 @using System.Diagnostics
 @using System.Runtime.CompilerServices
+@using h.Client.Services
 @using h.Primitives.Games
 @attribute [Route(PageRoutes.Game.GameIndex)]
 @rendermode InteractiveWebAssembly
@@ -62,8 +63,8 @@
                 <div class="difficulty-selector sheet">
                     <div class="left">Nejjednodušší</div>
                     <div class="right">Nejobtížnější</div>
-                    <input @bind="saveGameModel.Difficulty" class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)"/>
-                    @* <img class="bulb"/> *@
+                    <input @bind="saveGameModel.Difficulty" @bind:event="oninput" class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)"/>
+                    <img class="bulb" src="@(ResourceHelper.GetDifficultyBulbImgSrc(GameDifficulty.FromValue(saveGameModel.Difficulty)))" />
                 </div>
                 <button type="submit" class="save-game primary-button">Uložit hru</button>
                 <button type="button" @onclick="() => showSaveGameDialog = false" class="exit-save-menu secondary-button">Zrušit</button>
@@ -131,7 +132,8 @@
             <div class="addit-info">
                 <div class="info">
                     <h3 style="color: #0070BB">Obtížnost</h3>
-                    <span>@loadedGame.Value.Difficulty.Name</span>
+                    <img style="width: 2rem" src="@(ResourceHelper.GetDifficultyBulbImgSrc(loadedGame.Value.Difficulty))"/>
+                    @* <span>@loadedGame.Value.Difficulty.Name</span> *@
                 </div>
                 <div class="info">
                     <h3 style="color: #0070BB">Vytvoření hry</h3>

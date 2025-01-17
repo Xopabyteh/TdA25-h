@@ -1,3 +1,4 @@
+@using h.Client.Services
 @using h.Primitives.Games
 @attribute [Route(PageRoutes.Game.GameEditor)]
 @rendermode InteractiveWebAssembly
@@ -33,8 +34,8 @@
         <div class="difficulty-selector sheet">
             <div class="left">Nejjednodušší</div>
             <div class="right">Nejobtížnější</div>
-            <input class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)" @bind="RequestModel.Difficulty"/>
-            @* <img class="bulb"/> *@
+            <input class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)" @bind="RequestModel.Difficulty" @bind:event="oninput"/>
+            <img class="bulb" src="@(ResourceHelper.GetDifficultyBulbImgSrc(GameDifficulty.FromValue(RequestModel.Difficulty)))"/>
         </div>
     </EditForm>
     

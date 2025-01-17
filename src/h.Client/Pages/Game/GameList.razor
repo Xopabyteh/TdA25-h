@@ -1,3 +1,4 @@
+@using h.Client.Services
 @using h.Contracts.Games
 @using h.Primitives.Games
 @attribute [Route(PageRoutes.Game.GameList)]
@@ -14,47 +15,22 @@
     <div class="game-cards">
         @foreach(var game in filteredGames)
         {
-            string imgSrc = "";
-            string alt = "";
-
-            @switch (game.Difficulty)
-            {
-                case 0:
-                    imgSrc = "/IMG/Difficulties/Zacatecnik/zarivka_beginner_modre.svg";
-                    alt = "zacatecnik";
-                    break;
-                case 1:
-                    imgSrc = "/IMG/Difficulties/Jednoducha/zarivka_easy_modre.svg";
-                    alt = "jednoducha";
-                    break;
-                case 2:
-                    imgSrc = "IMG/Difficulties/Stredni/zarivka_medium_modre.svg";
-                    alt = "stredni";
-                    break;
-                case 3:
-                    imgSrc = "IMG/Difficulties/Tezka/zarivka_hard_modra.svg";
-                    alt = "tezka";
-                    break;
-                case 4:
-                    imgSrc = "IMG/Difficulties/Extremni/zarivka_extreme_modre.svg";
-                    alt = "extremni";
-                    break;
-            }
-
             <div class="game-card">
                 <div class="name-diff">
                     <h3>@game.Name</h3>
-                    <img src=@imgSrc alt=@alt class="diff">
+                    <img src="@(ResourceHelper.GetDifficultyBulbImgSrc(game.Difficulty))" alt="@game.Difficulty.Name" class="diff">
                 </div>
 
                 <div class="game-img">
                     @for (int i = 0; i < game.Board.Length; i++)
                     {
-                        string elem = "";
-                        string imgClass = "";
                         <div class="row">
                             @for (int j = 0; j < game.Board[i].Length; j++)
                             {
+                                string elem;
+                                string imgClass;
+                                string alt;
+
                                 @switch (game.Board[i][j])
                                 {
                                     case "X":
@@ -67,7 +43,7 @@
                                         imgClass = "small-o";
                                         alt = "O";
                                         break;
-                                    case "":
+                                    default:
                                         elem = "";
                                         imgClass = "";
                                         alt = "";
