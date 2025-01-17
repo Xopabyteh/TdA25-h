@@ -1,22 +1,11 @@
-.navbar-toggler {
-    appearance: none;
-    cursor: pointer;
-    width: 3.5rem;
-    height: 2.5rem;
-    color: #0070BB;
-    position: absolute;
-    top: 0.5rem;
-    right: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
-}
+.nav {
+    display: flex;
 
-.navbar-toggler:checked {
-    background-color: rgba(255, 255, 255, 0.5);
-}
+    flex-direction: column;
+    align-items: center;
 
-.navbar-brand {
-    font-size: 1.1rem;
+    min-height: 100%;
+    padding: 1rem;
 }
 
 .bi {
@@ -30,6 +19,7 @@
     padding: 10px;
 }
 
+
 .nav-item {
     font-size: 1rem;
     padding-bottom: 0.5rem;
@@ -38,11 +28,11 @@
 }
 
 .nav-item:first-of-type {
-    padding-top: 1rem;
+    margin-block-start: 1rem;
 }
 
 .nav-item:last-of-type {
-    padding-bottom: 1rem;
+    margin-block-end: 1rem;
 }
 
 .nav-item ::deep .nav-link {
@@ -72,37 +62,14 @@
     background-image: url("/IMG/O/O_bile.svg");
 }
 
-.nav-item ::deep .nav-link:hover {
+.nav-item ::deep .nav-link:not(.active):hover {
     background-color: #a2daff;
     color: #000;
     font-weight: normal;
 }
- 
-.nav-scrollable {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
 
 .navbar-toggler:checked ~ .nav-scrollable {
     display: block;
-}
-
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
-
-    .nav-scrollable {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
-
-        /* Allow sidebar to scroll for tall menus */
-        height: 100%;
-        overflow-y: hidden;
-        overflow-x: hidden;
-    }
 }
 
 .cross {
@@ -111,11 +78,4 @@
 
 .circle {
     background-image: url("/IMG/O/O_modre.svg");
-}
-
-.nav {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }

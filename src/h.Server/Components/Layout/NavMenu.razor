@@ -1,39 +1,17 @@
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    @*<a href="/game" style="text-decoration: none; position: absolute; right: 15vw;"></a>
-    *@
-    <nav class="nav">
-        <NavLink href="/game" class="nav-link">
-            <button class="primary-button">Hrát hru</button>
+<nav class="nav sheet">
+    <NavLink href="/game" class="nav-link">
+        <button class="primary-button">Hrát hru</button>
+    </NavLink>
+    <hr>
+    <div class="nav-item">
+        <NavLink class="nav-link" href="game/list" Match="NavLinkMatch.All">
+            <span class="bi cross" aria-hidden="true"></span> Výběr úloh
         </NavLink>
-        <div class="nav-item">
-            <NavLink class="nav-link" href="game/list" Match="NavLinkMatch.All">
-                @*<img src="IMG/X/X_modre.png" alt="" class="smol-iconka x">*@
-                <span class="bi cross" aria-hidden="true"></span> Výběr úloh
-            </NavLink>
-        </div>
-
-        @*
-        <div class="nav-item">
-            <NavLink class="nav-link" href="historie-her">
-                $1$<img src="IMG/O/O_modre.png" alt="" class="smol-iconka o">#1#
-                <span class="bi circle" aria-hidden="true"></span> Historie úloh
-            </NavLink>
-        </div>
-
-        <div class="nav-item">
-            <NavLink class="nav-link" href="moje-ulohy">
-                $1$<img src="/IMG/X/X_modre.png" alt="" class="smol-iconka x">#1#
-                <span class="bi cross" aria-hidden="true"></span> Moje úlohy
-            </NavLink>
-        </div>*@
-        <div class="nav-item">
-            <NavLink class="nav-link" href="game/editor">
-                @*<img src="/IMG/O/O_modre.png" alt="" class="smol-iconka o">*@
-                <span class="bi circle" aria-hidden="true"></span> Vytvořit novou úlohu
-            </NavLink>
-        </div>
-    </nav>
-    @*<span id="changelog">v 1.0 - Changelog Debug</span>*@
-</div>
+    </div>
+    <div class="nav-item">
+        <NavLink class="nav-link" href="game/editor">
+            <span class="bi circle" aria-hidden="true"></span> Vytvořit novou úlohu
+        </NavLink>
+    </div>
+</nav>
+@*<span id="changelog">v 1.0 - Changelog Debug</span>*@
