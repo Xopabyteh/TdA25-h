@@ -19,7 +19,8 @@ public class BadRequestResponseMiddleware : IMiddleware
         {
             var error = new ErrorResponse(
                 400,
-                $"Bad request: {ex.Message}");
+                $"Bad request: {ex.Message}",
+                null);
 
             context.Response.StatusCode = 400;
             context.Response.ContentType = "application/json";

@@ -48,16 +48,26 @@ public class Game
     }
 
     /// <summary>
-    /// Updates the game with new values
-    /// and recalculates the game state
+    /// Validates the game (might return errors),
+    /// Updates the game with new values,
+    /// and recalculates the game state,
     /// </summary>
-    public void Update(string name, GameDifficulty difficulty, GameBoard board)
+    public ErrorOr<Unit> Update(string name, GameDifficulty difficulty, GameBoard board)
     {
+        // Validate board
+        var boardValidationErrors = ValidateBoard(board);
+        if (boardValidationErrors.Count > 0)
+        {
+            return ErrorOr<Unit>.From(boardValidationErrors);
+        }
+        
         Name = name;
         Difficulty = difficulty;
         Board = board;
 
         GameState = GetGameState();
+
+        return Unit.Value;
     }
 
     /// <summary>

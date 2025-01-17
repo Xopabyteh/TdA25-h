@@ -40,11 +40,13 @@ public static class UpdateGame
             return ErrorResults.ValidationError(newBoardResult.Errors);
 
         // Update properties
-        game.Update(
+        var updateResult = game.Update(
             request.Name,
             request.Difficulty,
             newBoardResult.Value
         );
+        if(updateResult.IsError)
+            return ErrorResults.ValidationError(updateResult.Errors);
 
         // Persist
         db.GamesDbSet.Update(game);

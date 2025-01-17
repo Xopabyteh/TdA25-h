@@ -171,6 +171,9 @@ public partial class GameEditor : IAsyncDisposable
         if(jsModule is null)
             return;
         
+        if(RequestModel.Name is null)
+            return; // Handled by html validation...
+
         var board = await jsModule.InvokeAsync<string[][]>("getGameField", disposeCts.Token);
 
         // Check if we have a loaded game (we have a GameId)
@@ -191,10 +194,7 @@ public partial class GameEditor : IAsyncDisposable
                     await _toastService.SuccessAsync("Uloženo");
                     return;
                 },
-                async error =>
-                {
-                    await _toastService.ErrorAsync(error.Message);
-                }
+                async errorResponse => await HandleErrorResponse(errorResponse)
             );
         } else
         {
@@ -219,19 +219,21 @@ public partial class GameEditor : IAsyncDisposable
                     await _toastService.SuccessAsync("Uloženo");
                     return;
                 },
-                async error =>
-                {
-                    var firstError = error.Errors.First();
-                    if(firstError.Key == nameof(SharedErrors.Game.UnbalancedSymbolAmountError))
-                    {
-
-                    }
-                    await _toastService.ErrorAsync(error.Message);
-                }
+                async errorResponse => await HandleErrorResponse(errorResponse)
             );
         }
     }
 
+    private async Task HandleErrorResponse(ErrorResponse errorResponse)
+    {
+        if(errorResponse.TryFindError(nameof(SharedErrors.Game.UnbalancedSymbolAmountError), out var error))
+        {
+            await _toastService.ErrorAsync("Nesprávný počet symbolů");
+            return;
+        } 
+
+        await _toastService.ErrorAsync(errorResponse.Message);
+    }
 
     public async ValueTask DisposeAsync()
     {
