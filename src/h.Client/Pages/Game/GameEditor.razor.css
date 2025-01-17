@@ -27,41 +27,6 @@
     padding: 5px;
 }
 
-.difficulty-selector {
-    display: grid;
-    /*grid-template-areas:
-        "left right bulb"
-        "slider slider bulb";*/
-    grid-template-areas:
-        "left right"
-        "slider slider";
-
-    grid-template-columns: 1fr 1fr auto;
-    row-gap: 0.3rem;
-    grid-column-gap: 1.6rem;
-}
-
-    .difficulty-selector .left {
-        grid-area: left;
-    }
-
-    .difficulty-selector .right {
-        grid-area: right;
-    }
-
-    .difficulty-selector .left,
-    .difficulty-selector .right {
-        color: #C0C0C0;
-        font-size: 0.75rem;
-    }
-
-    .difficulty-selector .bulb {
-        grid-area: bulb;
-    }
-
-    .difficulty-selector .slider {
-        grid-area: slider;
-    }
 
 .pick {
     display: grid;
@@ -70,13 +35,18 @@
     gap: 0.75rem;
 }
 
+.panel {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
     .panel button {
         border: none;
         padding: 10px;
         background: none;
         border-radius: 8px;
         aspect-ratio: 1/1;
-        transition: background-color .1s;
     }
 
     .panel button:hover {
@@ -113,6 +83,23 @@
         min-width: 50%;
     }
 
-    .pick button img {
-        width: 20px;
-    }
+/*
+.cross-btn {
+    background: none;
+    width: 20px;
+    height: 20px;
+    border: solid 1px firebrick;
+}
+
+.circle-btn {
+    background: none;
+    width: 20px;
+    height: 20px;
+    border: solid 1px firebrick;
+}*/
+
+.vytvorit {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

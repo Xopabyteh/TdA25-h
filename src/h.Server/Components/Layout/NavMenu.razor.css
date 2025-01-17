@@ -24,15 +24,17 @@
     position: relative;
     width: 1.25rem;
     height: 1.25rem;
-    margin-right: 0.75rem;
+    margin: 0.5rem;
     top: -1px;
     background-size: cover;
+    padding: 10px;
 }
 
 .nav-item {
     font-size: 1rem;
     padding-bottom: 0.5rem;
     border-radius: 0.75rem;
+    min-width: 205px;
 }
 
 .nav-item:first-of-type {
@@ -60,7 +62,6 @@
     color: white;
     font-weight: bold;
     text-decoration: none;
-    padding-left: 0.5rem;
 }
 
 .nav-item ::deep a.active .cross {
@@ -72,19 +73,10 @@
 }
 
 .nav-item ::deep .nav-link:hover {
-    background-color: #0070BB;
-    color: white;
-    padding-left: 0.5rem;
+    background-color: #a2daff;
+    color: #000;
+    font-weight: normal;
 }
-
-.nav-item ::deep .nav-link:hover .circle {
-    background-image: url("/IMG/O/O_bile.svg");
-}
-
-.nav-item ::deep .nav-link:hover .cross {
-    background-image: url("/IMG/X/X_bile.svg");
-}
-
  
 .nav-scrollable {
     display: flex;
@@ -119,4 +111,11 @@
 
 .circle {
     background-image: url("/IMG/O/O_modre.svg");
+}
+
+.nav {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
