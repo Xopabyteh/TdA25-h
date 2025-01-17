@@ -38,6 +38,7 @@ public partial class GameIndex : IAsyncDisposable
 
     private bool showSaveGameDialog;
     private SaveGameModel saveGameModel = new();
+    private string[][]? saveModelBoard;
 
     private bool showWinnerDialog;
     private bool didXWin;
@@ -133,6 +134,19 @@ public partial class GameIndex : IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Opens dialog and loads board to display
+    /// </summary>
+    private async Task HandleOpenSaveDialog()
+    {
+        if(jsModule is null)
+            return; // Only in prerendering scenario
+
+        saveModelBoard = await jsModule.InvokeAsync<string[][]>("getGameField", disposeCts.Token);
+
+        showSaveGameDialog = true;
+    }
+
     private async Task HandleSaveGame()
     {
         if(jsModule is null)
@@ -141,12 +155,13 @@ public partial class GameIndex : IAsyncDisposable
         if(saveGameModel.Name is null)
             return; // Handled by html validation...
 
-        var board = await jsModule.InvokeAsync<string[][]>("getGameField", disposeCts.Token);
+        if(saveModelBoard is null)
+            return; // Hopefully not...
 
         var request = new CreateNewGameRequest(
             saveGameModel.Name,
             GameDifficulty.FromValue(saveGameModel.Difficulty),
-            board
+            saveModelBoard
         );
 
         var result = await _gameService.CreateGameAsync(request);

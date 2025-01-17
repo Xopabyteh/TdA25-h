@@ -32,7 +32,8 @@
 <div class="save-popup" style="@(!showSaveGameDialog ? "display: none" : "")">
     <div class="save-card">
         <div class="game-field mini" @ref="gameFieldRef">
-            @for (int y = 0; y < 15; y++)
+            @if(saveModelBoard is not null)
+            for (int y = 0; y < 15; y++)
             {
                 @* "data-cell-hover-symbol" set via js *@
                 <div class="game-field-row mini-row">
@@ -41,15 +42,16 @@
                         int id1D = y * 15 + x;
                         var xCopy = x;
                         var yCopy = y;
-
+                        var symbol = saveModelBoard![y][x];
                         string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
 
-                        <div class="cell empty"
+                        <div class="cell"
                              style="width: 25px; background-color: @background; border: none; display: flex; align-items: center; justify-content: center"
                              data-x="@xCopy"
                              data-y="@yCopy">
-                            @* Symbols added via js *@
-                            @* <img src="" /> *@
+                            @if (!string.IsNullOrEmpty(symbol)) {
+                                <img src="@(symbol.ToUpperInvariant() == "X" ? "/IMG/X/X_cervene.svg" : "/IMG/O/O_modre.svg")" />
+                            }
                         </div>
                     }
                 </div>
@@ -148,7 +150,7 @@
         else // LoadedGame is null
         {
             <div class="save-game">
-                <button @onclick="() => showSaveGameDialog = true" class="save-game-btn primary-button">Uložit hru</button>
+                <button @onclick="HandleOpenSaveDialog" class="save-game-btn primary-button">Uložit hru</button>
             </div>
         }
     </div>

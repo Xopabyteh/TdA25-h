@@ -196,6 +196,10 @@
     height: 25px;
 }
 
+.mini-row > .cell {
+    cursor: initial;
+}
+
 ::deep .save-game-form {
     display: flex;
     flex-direction: column;
