@@ -14,7 +14,7 @@
 
     <EditForm class="panel" FormName="SaveForm" Model="RequestModel" OnValidSubmit="HandleSaveGame">
         <div class="jmeno sheet">
-            <input @bind="RequestModel.Name" placeholder="Jméno úlohy" required/>
+            <input @bind="RequestModel.Name" placeholder="Jméno úlohy" class="text-input" required/>
             <button class="save-btn" type="submit">
                 <img src="/IMG/icons/save.svg" alt="save">
             </button>

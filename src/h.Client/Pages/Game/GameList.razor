@@ -8,7 +8,7 @@
 <div class="cards-pane">
     <h2 class="game-list-h2">
         <span>Výběr úloh</span>
-        <a href="/game" style="text-decoration: none; position: absolute; right: 15vw;"><button id="new-game">Hrát hru</button></a>
+        <a href="/game" style="text-decoration: none; position: absolute; right: 15vw;"><button id="new-game primary-button">Hrát hru</button></a>
     </h2>
     
     <div class="game-cards">
@@ -204,11 +204,11 @@
             </InputRadioGroup>
         </Dropdown>
         <Dropdown Title="Název úlohy">
-            <InputText class="name-filter" @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
+            <InputText class="name-filter text-input" @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
         </Dropdown>
         <div class="filter-buttons">
-            <button class="btn-filter" @onclick="HandleFilterClick">Filtrovat</button>
-            <button class="btn-cancel-filters" @onclick="HandleFilterReset">Zrušít filtry</button>
+            <button class="btn-filter primary-button" @onclick="HandleFilterClick">Filtrovat</button>
+            <button class="btn-cancel-filters secondary-button" @onclick="HandleFilterReset">Zrušít filtry</button>
         </div>
     </div>
 </div>
