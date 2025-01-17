@@ -21,18 +21,8 @@
 }
 
 #new-game {
-    background: #0070BB;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    align-content: center;
-    padding: 5px 60px;
     margin: 2px 0;
     margin-right: 22px;
-    cursor: pointer;
-    height: 40px;
-    font-size: 16px;
-    font-weight: normal;
 }
 
 .cards-pane {
