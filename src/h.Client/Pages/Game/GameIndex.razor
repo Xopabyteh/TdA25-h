@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="win-r3">
-            <a class="new-game primary-button" href="@PageRoutes.Game.GameIndexWithParam(gameId: null)">Nová hra</a>
+            <button class="new-game primary-button" @onclick="HandleNewGameClick">Nová hra</button>
             <a class="back-to-list secondary-button" href="@PageRoutes.Game.GameList">Zpět na výběr</a>
         </div>
     </div>
@@ -80,7 +80,7 @@
                 <h3>Ukončit hru</h3>
             </a>
             <div class="game-name">
-                <h2>@(LoadedGame?.Name ?? "Nová hra")</h2>
+                <h2>@(loadedGame?.Name ?? "Nová hra")</h2>
             </div>
             <div class="turn">
                 @if (xOnTurn)
@@ -126,20 +126,20 @@
         <div class="round">
             <h3>@(turnI). kolo</h3>
         </div>
-        @if(LoadedGame is not null)
+        @if(loadedGame is not null)
         {
             <div class="addit-info">
                 <div class="info">
                     <h3 style="color: #0070BB">Obtížnost</h3>
-                    <span>@LoadedGame.Value.Difficulty.Name</span>
+                    <span>@loadedGame.Value.Difficulty.Name</span>
                 </div>
                 <div class="info">
                     <h3 style="color: #0070BB">Vytvoření hry</h3>
-                    <span>@LoadedGame.Value.CreatedAt.ToShortDateString()</span>
+                    <span>@loadedGame.Value.CreatedAt.ToShortDateString()</span>
                 </div>
                 <div class="info">
                     <h3 style="color: #0070BB">Poslední úprava</h3>
-                    <span>@LoadedGame.Value.UpdatedAt.ToShortDateString()</span>
+                    <span>@loadedGame.Value.UpdatedAt.ToShortDateString()</span>
                 </div>
             </div>
         }

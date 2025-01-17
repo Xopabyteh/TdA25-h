@@ -18,6 +18,7 @@ const ortoAndDiagonalDirections = [
 ];
 
 // Properties are all reinitialized when the game is initialized (due to js module system)
+let gameFieldElementRef;
 let gameField = []; // [y][x], y - row, x - column
 let fieldWidth = 15;
 let fieldHeight = 15;
@@ -34,8 +35,9 @@ export const initializeGame = (
     _loadedField = null // Optional, used when editing existing game
 ) => {
     dotnetRef = _dotnetRef;
+    gameFieldElementRef = _gameFieldElementRef;
 
-    symbolOnMove = SYMBOL_X;
+    symbolOnMove = SYMBOL_X; // X always starts
     moveIndex = 0;
 
     fieldWidth = _fieldWidth;
@@ -50,6 +52,11 @@ export const initializeGame = (
         }
     }
 
+    // Load existing field (if any) 
+    if (_loadedField) {
+        loadGame(_loadedField);
+    }
+
     // Add onclick event to each cell
     const cells = _gameFieldElementRef.querySelectorAll('.cell');
     cells.forEach(cell => {
@@ -60,6 +67,13 @@ export const initializeGame = (
             () => handleCellClick(cell, x, y)
         );
     });
+
+    // Sync with .NET
+    dotnetRef.invokeMethodAsync(
+        'OnGameFullyInitialized',
+        symbolOnMove == SYMBOL_X,
+        moveIndex
+    );
 }
 
 const handleCellClick = (
@@ -178,6 +192,39 @@ const isWinningSequence = (
     return false;
 }
 
+/**
+ * Loads the board and calculates
+ * who is on move and what is the move index
+ */
+const loadGame = (field) => {
+    let xCount = 0;
+    let oCount = 0;
+
+    for (let y = 0; y < fieldHeight; y++) {
+        for (let x = 0; x < fieldWidth; x++) {
+            if (field[y][x] !== SYMBOL_EMPTY) {
+                const cellElement = gameFieldElementRef.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                trySetSymbol(x, y, field[y][x], cellElement);
+
+                if (field[y][x] === SYMBOL_X) {
+                    xCount++;
+                } else {
+                    oCount++;
+                }
+            }
+        }
+    }
+
+    // Calculate who is on move (X always starts)
+    symbolOnMove = xCount > oCount
+        ? SYMBOL_O
+        : SYMBOL_X;
+
+    // Calculate move index
+    moveIndex = xCount + oCount;
+}
+
 export const getGameField = () => {
     return gameField;
 }
+

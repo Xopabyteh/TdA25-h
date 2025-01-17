@@ -234,7 +234,6 @@ public partial class GameEditor : IAsyncDisposable
 
         await _toastService.ErrorAsync(errorResponse.Message);
     }
-
     public async ValueTask DisposeAsync()
     {
         disposeCts.Cancel();

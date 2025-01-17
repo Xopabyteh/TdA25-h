@@ -195,7 +195,7 @@
     height: 25px;
 }
 
-.save-game-form {
+::deep .save-game-form {
     display: flex;
     flex-direction: column;
     gap: 10px;

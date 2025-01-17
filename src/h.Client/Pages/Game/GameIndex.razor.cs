@@ -4,10 +4,7 @@ using h.Contracts.Games;
 using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace h.Client.Pages.Game;
 
@@ -30,7 +27,8 @@ public partial class GameIndex : IAsyncDisposable
     private ElementReference gameFieldRef;
     private DotNetObjectReference<GameIndex>? dotNetRef;
 
-    private GameResponse? LoadedGame;
+    private GameResponse? loadedGame;
+    private TaskCompletionSource gameLoadedTcs = new();
 
     private bool xOnTurn = true;
     private int moveI;
@@ -54,10 +52,18 @@ public partial class GameIndex : IAsyncDisposable
         if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return; // Prerendering...
 
-        if (GameId is null)
-            return;
+        // Try load game
+        try
+        {
+            if (GameId is null)
+                return;
 
-        LoadedGame = await _gameService.LoadGameAsync(GameId.Value);
+            loadedGame = await _gameService.LoadGameAsync(GameId.Value);
+        } 
+        finally
+        {
+            gameLoadedTcs.SetResult();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -73,16 +79,26 @@ public partial class GameIndex : IAsyncDisposable
             disposeCts.Token,
             "./Pages/Game/GameIndex.razor.js");
 
-        //await gameLoadedTcs.Task; // Wait until game is loaded so we can send it to the js module
+        await gameLoadedTcs.Task; // Wait until game is loaded so we can send it to the js module
         await jsModule.InvokeVoidAsync(
             "initializeGame",
             disposeCts.Token,
             gameFieldRef,
             dotNetRef,
             15,
-            15
-            //loadedGame?.Board
+            15,
+            loadedGame?.Board
         );
+    }
+
+    [JSInvokable]
+    public void OnGameFullyInitialized(bool xOnTurn, int moveI)
+    {
+        this.xOnTurn = xOnTurn;
+        this.moveI = moveI;
+        this.turnI = GetTurnI(moveI); 
+
+        StateHasChanged();
     }
 
     /// <summary>
@@ -93,10 +109,17 @@ public partial class GameIndex : IAsyncDisposable
     {
         this.xOnTurn = xOnTurn;
         this.moveI = moveI;
-        this.turnI = moveI / 2; // When both players moved, turnI is incremented
+        this.turnI = GetTurnI(moveI); 
 
         StateHasChanged();
     }
+
+    /// <summary>
+    /// When both players moved, turnI is incremented,
+    /// calculates turnI from moveI
+    /// </summary>
+    private int GetTurnI(int moveI)
+        => moveI / 2;
 
     /// <summary>
     /// Called when game reached end and winner is determined
@@ -145,6 +168,13 @@ public partial class GameIndex : IAsyncDisposable
         );
     }
 
+    private void HandleNewGameClick()
+    {
+        _navigationManager.NavigateTo(
+            PageRoutes.Game.GameIndexWithParam(gameId: null),
+            forceLoad: true
+        );
+    }
 
 
     public ValueTask DisposeAsync()
