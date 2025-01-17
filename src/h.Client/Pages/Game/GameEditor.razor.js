@@ -1,5 +1,5 @@
-﻿const X_IMG_PATH = '/img/X/X_cervene.svg';
-const O_IMG_PATH = '/img/O/O_modre.svg';
+﻿const X_IMG_PATH = '/IMG/X/X_cervene.svg';
+const O_IMG_PATH = '/IMG/O/O_modre.svg';
 
 // 'X' or 'O' or '' for eraser
 const PENCIL_X = 'X';

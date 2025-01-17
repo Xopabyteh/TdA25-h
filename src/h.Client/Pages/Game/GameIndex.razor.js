@@ -2,8 +2,8 @@
 const SYMBOL_O = 'O';
 const SYMBOL_EMPTY = '';
 
-const X_IMG_PATH = '/img/X/X_cervene.svg';
-const O_IMG_PATH = '/img/O/O_modre.svg';
+const X_IMG_PATH = '/IMG/X/X_cervene.svg';
+const O_IMG_PATH = '/IMG/O/O_modre.svg';
 const SYMBOLS_IN_ROW_FOR_WIN = 5;
 const ortoAndDiagonalDirections = [
     { x: 0, y: 1 },
