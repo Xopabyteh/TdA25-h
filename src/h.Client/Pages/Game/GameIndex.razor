@@ -5,7 +5,7 @@
 @rendermode InteractiveWebAssembly
 @layout NoNavLayout
 
-<div class="win-popup">
+<div class="win-popup" style="@(!showWinnerDialog ? "display: none" : "")">
     <div class="win-card">
         <div class="win-r1">
             <h3>Gratulujeme!</h3>
@@ -13,16 +13,22 @@
         <div class="win-r2">
             <h3>VYHRÁVÁ HRÁČ</h3>
             <div class="winner">
-                <img src="/IMG/X/X_cervene.svg" alt="X" style="height: 15px; width: 15px">
+                @if(didXWin)
+                {
+                    <img src="/IMG/X/X_cervene.svg" alt="X" style="height: 15px; width: 15px">
+                } else
+                {
+                    <img src="/IMG/O/O_modre.svg" alt="O" style="height: 15px; width: 15px">
+                }
             </div>
         </div>
         <div class="win-r3">
-            <button class="new-game primary-button">Nová hra</button>
-            <a href="/game/list"><button class="back-to-list secondary-button">Zpět na výběr</button></a>
+            <a class="new-game primary-button" href="@PageRoutes.Game.GameIndexWithParam(gameId: null)">Nová hra</a>
+            <a class="back-to-list secondary-button" href="@PageRoutes.Game.GameList">Zpět na výběr</a>
         </div>
     </div>
 </div>
-<div class="save-popup">
+<div class="save-popup" style="@(!showSaveGameDialog ? "display: none" : "")">
     <div class="save-card">
         <div class="game-field mini" @ref="gameFieldRef">
             @for (int y = 0; y < 15; y++)
@@ -51,17 +57,17 @@
         </div>
         <div class="save-info">
             <h2>Uložit úlohu</h2>
-            <form action="" class="save-game-form">
-                <input type="text" class="text-input" placeholder="Jméno úlohy">
+            <EditForm class="save-game-form" Model="saveGameModel" OnValidSubmit="HandleSaveGame">
+                <input @bind="saveGameModel.Name" type="text" class="text-input" placeholder="Jméno úlohy" required>
                 <div class="difficulty-selector sheet">
                     <div class="left">Nejjednodušší</div>
                     <div class="right">Nejobtížnější</div>
-                    <input class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)"/>
+                    <input @bind="saveGameModel.Difficulty" class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)"/>
                     @* <img class="bulb"/> *@
                 </div>
-                <button class="save-game primary-button">Uložit hru</button>
-                <button class="exit-save-menu secondary-button">Zrušit</button>
-            </form>
+                <button type="submit" class="save-game primary-button">Uložit hru</button>
+                <button type="button" @onclick="() => showSaveGameDialog = false" class="exit-save-menu secondary-button">Zrušit</button>
+            </EditForm>
         </div>
     </div>
 </div>
@@ -69,14 +75,12 @@
 <div class="card">
     <div class="primary-column">
         <div class="info-row">
-            <a href="/game/list">
-                <button class="to-games">
-                    <img src="/IMG/icons/end-game-arrow.svg" alt="back" style="height: 15px">
-                    <h3>Ukončit hru</h3>
-                </button>
+            <a href="/game/list" class="to-games">
+                <img src="/IMG/icons/end-game-arrow.svg" alt="back" style="height: 15px">
+                <h3>Ukončit hru</h3>
             </a>
             <div class="game-name">
-                <h2>Placeholder</h2>
+                <h2>@(LoadedGame?.Name ?? "Nová hra")</h2>
             </div>
             <div class="turn">
                 @if (xOnTurn)
@@ -120,25 +124,31 @@
     </div>
     <div class="secondary-column">
         <div class="round">
-            <h3>10. kolo</h3>
+            <h3>@(turnI). kolo</h3>
         </div>
-        <div class="addit-info" style="display: @(IsVisible ? "flex" : "none")">
-            <div class="info">
-                <h3 style="color: #0070BB">Obtížnost</h3>
-                <span>Placeholder</span>
+        @if(LoadedGame is not null)
+        {
+            <div class="addit-info">
+                <div class="info">
+                    <h3 style="color: #0070BB">Obtížnost</h3>
+                    <span>@LoadedGame.Value.Difficulty.Name</span>
+                </div>
+                <div class="info">
+                    <h3 style="color: #0070BB">Vytvoření hry</h3>
+                    <span>@LoadedGame.Value.CreatedAt.ToShortDateString()</span>
+                </div>
+                <div class="info">
+                    <h3 style="color: #0070BB">Poslední úprava</h3>
+                    <span>@LoadedGame.Value.UpdatedAt.ToShortDateString()</span>
+                </div>
             </div>
-            <div class="info">
-                <h3 style="color: #0070BB">Vytvoření hry</h3>
-                <span>yyyy-mm-dd hh:mm</span>
+        }
+        else // LoadedGame is null
+        {
+            <div class="save-game">
+                <button @onclick="() => showSaveGameDialog = true" class="save-game-btn primary-button">Uložit hru</button>
             </div>
-            <div class="info">
-                <h3 style="color: #0070BB">Upravení hry</h3>
-                <span>yyyy-mm-dd hh:mm</span>
-            </div>
-        </div>
-        <div class="save-game">
-            <button class="save-game-btn primary-button">Uložit hru</button>
-        </div>
+        }
     </div>
 </div>
 

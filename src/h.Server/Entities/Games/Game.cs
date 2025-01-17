@@ -75,23 +75,18 @@ public class Game
         var symbolAmDif = Math.Abs(xoCount.XsCount - xoCount.OsCount);
         if (symbolAmDif > 1)
         {
-            resultErrors.Add(UnbalancedSymbolAmountError());
+            resultErrors.Add(Contracts.SharedErrors.Game.UnbalancedSymbolAmountError());
         }
 
         if(xoCount.OsCount > xoCount.XsCount)
         {
             // If there are more Os than Xs, the game must have started with O, instead of X
-            resultErrors.Add(IncorrectStartingSymbolError());
+            resultErrors.Add(Contracts.SharedErrors.Game.IncorrectStartingSymbolError());
         }
 
         return resultErrors;
     }
 
-    private static Error UnbalancedSymbolAmountError()
-        => Error.Validation(nameof(UnbalancedSymbolAmountError), "The amount of X and O symbols is not balanced. The amounts must be same, or one off maximum");
-
-    private static Error IncorrectStartingSymbolError()
-        => Error.Validation(nameof(IncorrectStartingSymbolError), "The game must start with X symbol");
 
     /// <summary>
     /// Determine game state based on the board state

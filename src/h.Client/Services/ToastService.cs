@@ -2,6 +2,9 @@
 
 namespace h.Client.Services;
 
+/// <summary>
+/// Both for server and client use.
+/// </summary>
 public class ToastService
 {
     private readonly IJSRuntime _js;

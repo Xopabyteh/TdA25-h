@@ -118,6 +118,7 @@ input[type="text"] {
     font-size: 16px;
     font-weight: normal;
     min-width: 205px;
+    text-align: center;
 }
 
 .secondary-button {
@@ -131,6 +132,7 @@ input[type="text"] {
     cursor: pointer;
     height: 40px;
     min-width: 205px;
+    text-align: center;
 }
 
 .text-input {

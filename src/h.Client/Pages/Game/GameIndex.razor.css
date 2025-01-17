@@ -106,7 +106,7 @@
 
 /*win popup*/
 .win-popup {
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -165,7 +165,7 @@
 
 /*save popup*/
 .save-popup {
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;

@@ -1,5 +1,6 @@
 ﻿using h.Client.Services;
 using h.Client.Services.Game;
+using h.Contracts;
 using h.Contracts.Games;
 using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
@@ -209,15 +210,22 @@ public partial class GameEditor : IAsyncDisposable
                 {
                     GameId = game.Uuid;
                     loadedGame = game;
-                    _navigationManager.NavigateTo(
-                        PageRoutes.Game.GameEditorWithParam(GameId),
-                        forceLoad: false,
-                        replace: false);
+
+                    // Push to history (change url only visually)
+                    //_navigationManager.NavigateTo(
+                    //    PageRoutes.Game.GameEditorWithParam(GameId),
+                    //    forceLoad: false,
+                    //    replace: false);
                     await _toastService.SuccessAsync("Uloženo");
                     return;
                 },
                 async error =>
                 {
+                    var firstError = error.Errors.First();
+                    if(firstError.Key == nameof(SharedErrors.Game.UnbalancedSymbolAmountError))
+                    {
+
+                    }
                     await _toastService.ErrorAsync(error.Message);
                 }
             );

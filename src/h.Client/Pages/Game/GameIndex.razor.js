@@ -1,5 +1,6 @@
-﻿const SYMBOL_X = 0;
-const SYMBOL_O = 1;
+﻿const SYMBOL_X = 'X';
+const SYMBOL_O = 'O';
+const SYMBOL_EMPTY = '';
 
 const X_IMG_PATH = '/img/X/X_cervene.svg';
 const O_IMG_PATH = '/img/O/O_modre.svg';
@@ -45,7 +46,7 @@ export const initializeGame = (
     for (let y = 0; y < fieldHeight; y++) {
         gameField.push([]);
         for (let x = 0; x < fieldWidth; x++) {
-            gameField[y].push();
+            gameField[y].push(SYMBOL_EMPTY);
         }
     }
 
@@ -90,18 +91,9 @@ const handleCellClick = (
     dotnetRef.invokeMethodAsync(
         'OnMoved',
         symbolOnMove == SYMBOL_X,
-        moveIndex,
-        getTurn()
+        moveIndex
     );
 }
-
-/**
- * A turn is when both players have made a move
- */
-const getTurn = () => {
-    return moveIndex % 2;
-}
-
 
 /**
  * Appends img to cell and sets field 2D array value.
@@ -118,7 +110,7 @@ const trySetSymbol = (
     symbol = SYMBOL_X,
     cell = new Element()
 ) => {
-    if (gameField[y][x] !== undefined) {
+    if (gameField[y][x] !== SYMBOL_EMPTY) {
         return false;
     }
 
@@ -184,4 +176,8 @@ const isWinningSequence = (
     }
 
     return false;
+}
+
+export const getGameField = () => {
+    return gameField;
 }
