@@ -1,15 +1,20 @@
-﻿.game-cards {
-    display: flex;
-    gap: 15px;
-    overflow-y: scroll;
-    height: 70vh;
-    flex-wrap: wrap;
+﻿.grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    width:100%;
 }
 
-    /*::deep .game-cards > div:first-child {*/
-        /*first child is Virtualize spacer, so remove first gap.*/
-        /*margin-right: -15px;
-    }*/
+.cards-pane {
+    max-height: var(--display-height);
+    overflow-y: scroll;
+}
+
+.game-cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
 .game-list-h2 {
     display: flex;
@@ -25,9 +30,6 @@
     margin-right: 22px;
 }
 
-.cards-pane {
-    width: calc(100% - 220px);
-}
 
 .game-card {
     background: white;
@@ -145,9 +147,7 @@
 
 
 .filters {
-    width: 200px;
-    position: absolute;
-    right: 25px;
+    width: 260px;
 }
 
     .filters > h2 {

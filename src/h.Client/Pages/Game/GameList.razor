@@ -6,142 +6,144 @@
 
 <PageTitle>Výběr úloh</PageTitle>
 
-<div class="cards-pane">
-    <h2 class="game-list-h2">
-        <span>Výběr úloh</span>
-    </h2>
-    
-    <div class="game-cards">
-        @foreach(var game in filteredGames)
-        {
-            <div class="game-card">
-                <div class="name-diff">
-                    <h3>@game.Name</h3>
-                    <img src="@(ResourceHelper.GetDifficultyBulbImgSrc(game.Difficulty))" alt="@game.Difficulty.Name" class="diff">
-                </div>
+<div class="grid-wrapper">
+    <div class="cards-pane">
+        <h2 class="game-list-h2">
+            <span>Výběr úloh</span>
+        </h2>
 
-                <div class="game-img">
-                    @for (int i = 0; i < game.Board.Length; i++)
-                    {
-                        <div class="row">
-                            @for (int j = 0; j < game.Board[i].Length; j++)
-                            {
-                                (string elem, string imgClass, string alt) = game.Board[i][j] switch
+        <div class="game-cards">
+            @foreach (var game in filteredGames)
+            {
+                <div class="game-card">
+                    <div class="name-diff">
+                        <h3>@game.Name</h3>
+                        <img src="@(ResourceHelper.GetDifficultyBulbImgSrc(game.Difficulty))" alt="@game.Difficulty.Name" class="diff">
+                    </div>
+
+                    <div class="game-img">
+                        @for (int i = 0; i < game.Board.Length; i++)
+                        {
+                            <div class="row">
+                                @for (int j = 0; j < game.Board[i].Length; j++)
                                 {
-                                    "X" => ("/IMG/X/X_cervene.svg", "small-x", "X"),
-                                    "O" => ("/IMG/O/O_modre.svg", "small-o", "O"),
-                                    _ => ("", "", "")
-                                };
+                                    (string elem, string imgClass, string alt) = game.Board[i][j] switch
+                                    {
+                                        "X" => ("/IMG/X/X_cervene.svg", "small-x", "X"),
+                                        "O" => ("/IMG/O/O_modre.svg", "small-o", "O"),
+                                        _ => ("", "", "")
+                                    };
 
-                                var divClass = (i % 2 == 0) ^ (j % 2 == 0) ? "col-light" : "col-dark";
+                                    var divClass = (i % 2 == 0) ^ (j % 2 == 0) ? "col-light" : "col-dark";
 
-                                <div class="@divClass">
-                                    <img src="@elem" alt="@alt" class="@imgClass">
-                                </div>
-                            }
+                                    <div class="@divClass">
+                                        <img src="@elem" alt="@alt" class="@imgClass">
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="action-row">
+                        <a class="play" href="@(PageRoutes.Game.GameIndexWithParam(game.Uuid))"><img src="/IMG/icons/play.svg" alt="play"></a>
+                        <div class="secondary-row">
+                            <a class="edit" href="@(PageRoutes.Game.GameEditorWithParam(game.Uuid))"><img src="/IMG/icons/edit.svg" alt="edit"></a>
+                            <button class="delete" @onclick="() => HandleGameDeleteClick(game)"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
                         </div>
-                    }
-                </div>
-                <div class="action-row">
-                    <a class="play" href="@(PageRoutes.Game.GameIndexWithParam(game.Uuid))"><img src="/IMG/icons/play.svg" alt="play"></a>
-                    <div class="secondary-row">
-                        <a class="edit" href="@(PageRoutes.Game.GameEditorWithParam(game.Uuid))"><img src="/IMG/icons/edit.svg" alt="edit"></a>
-                        <button class="delete" @onclick="() => HandleGameDeleteClick(game)"><img src="/IMG/icons/red-bin.svg" alt="delete"></button>
                     </div>
                 </div>
-            </div>   
-        }
+            }
+        </div>
     </div>
-</div>
 
-<div class="filters">
-    <h2 style=" color: #D5D5D5; ">Filtry</h2>
-    
-    <div class="selected">
-        @if(!string.IsNullOrEmpty(appliedFilter.GameName))
-        {
-            <span>@($"\"{appliedFilter.GameName}\"")</span>
-        }
+    <div class="filters">
+        <h2 style=" color: #D5D5D5; ">Filtry</h2>
 
-        @if(appliedFilter.IsBeginner)
-        {
-            <span>Začátečník</span>
-        }
-        @if(appliedFilter.IsEasy)
-        {
-            <span>Jednoduchá</span>
-        }
-        @if(appliedFilter.IsMedium)
-        {
-            <span>Střední</span>
-        }
-        @if(appliedFilter.IsHard)
-        {
-            <span>Těžká</span>
-        }
-        @if(appliedFilter.IsExtreme)
-        {
-            <span>Extrémní</span>
-        }
+        <div class="selected">
+            @if (!string.IsNullOrEmpty(appliedFilter.GameName))
+            {
+                <span>@($"\"{appliedFilter.GameName}\"")</span>
+            }
 
-        @if(appliedFilter.UpdatedWithin is not null)
-        {
-            <span>@($"{appliedFilter.UpdatedWithin.Value.Days} {(appliedFilter.UpdatedWithin.Value.Days == 1 ? "den" : "dní")}")</span>
-        }
-    </div>
-    <div class="filter-wrapper">
-        <HhDropdown Title="Obtížnost">
-            <div class="option">
-                <InputCheckbox @bind-Value="filter.IsBeginner" />
+            @if (appliedFilter.IsBeginner)
+            {
                 <span>Začátečník</span>
-            </div>
-            <div class="option">
-                <InputCheckbox @bind-Value="filter.IsEasy" />
+            }
+            @if (appliedFilter.IsEasy)
+            {
                 <span>Jednoduchá</span>
-            </div>
-            <div class="option">
-                <InputCheckbox @bind-Value="filter.IsMedium" />
+            }
+            @if (appliedFilter.IsMedium)
+            {
                 <span>Střední</span>
-            </div>
-            <div class="option">
-                <InputCheckbox @bind-Value="filter.IsHard" />
+            }
+            @if (appliedFilter.IsHard)
+            {
                 <span>Těžká</span>
-            </div>
-            <div class="option">
-                <InputCheckbox @bind-Value="filter.IsExtreme" />
+            }
+            @if (appliedFilter.IsExtreme)
+            {
                 <span>Extrémní</span>
+            }
+
+            @if (appliedFilter.UpdatedWithin is not null)
+            {
+                <span>@($"{appliedFilter.UpdatedWithin.Value.Days} {(appliedFilter.UpdatedWithin.Value.Days == 1 ? "den" : "dní")}")</span>
+            }
+        </div>
+        <div class="filter-wrapper">
+            <HhDropdown Title="Obtížnost">
+                <div class="option">
+                    <InputCheckbox @bind-Value="filter.IsBeginner" />
+                    <span>Začátečník</span>
+                </div>
+                <div class="option">
+                    <InputCheckbox @bind-Value="filter.IsEasy" />
+                    <span>Jednoduchá</span>
+                </div>
+                <div class="option">
+                    <InputCheckbox @bind-Value="filter.IsMedium" />
+                    <span>Střední</span>
+                </div>
+                <div class="option">
+                    <InputCheckbox @bind-Value="filter.IsHard" />
+                    <span>Těžká</span>
+                </div>
+                <div class="option">
+                    <InputCheckbox @bind-Value="filter.IsExtreme" />
+                    <span>Extrémní</span>
+                </div>
+            </HhDropdown>
+            <HhDropdown Title="Datum úpravy">
+                <InputRadioGroup @bind-Value="filter.UpdatedWithin">
+                    <div class="option">
+                        <InputRadio Value="TimeSpan.FromDays(1)" />
+                        <span>1 den</span>
+                    </div>
+                    <div class="option">
+                        <InputRadio Value="TimeSpan.FromDays(7)" />
+                        <span>1 týden</span>
+                    </div>
+                    <div class="option">
+                        <InputRadio Value="TimeSpan.FromDays(14)" />
+                        <span>2 týdny</span>
+                    </div>
+                    <div class="option">
+                        <InputRadio Value="TimeSpan.FromDays(30)" />
+                        <span>1 měsíc</span>
+                    </div>
+                    <div class="option">
+                        <InputRadio Value="TimeSpan.FromDays(90)" />
+                        <span>3 měsíce</span>
+                    </div>
+                </InputRadioGroup>
+            </HhDropdown>
+            <HhDropdown Title="Název úlohy">
+                <InputText class="name-filter text-input" @bind-Value="filter.GameName" placeholder="Zadejte název úlohy" />
+            </HhDropdown>
+            <div class="filter-buttons">
+                <button class="btn-filter primary-button" @onclick="HandleFilterClick">Filtrovat</button>
+                <button class="btn-cancel-filters secondary-button" @onclick="HandleFilterReset">Zrušít filtry</button>
             </div>
-        </HhDropdown>
-        <HhDropdown Title="Datum úpravy">
-            <InputRadioGroup @bind-Value="filter.UpdatedWithin">
-                <div class="option">
-                    <InputRadio Value="TimeSpan.FromDays(1)" />
-                    <span>1 den</span>
-                </div>
-                <div class="option">
-                    <InputRadio Value="TimeSpan.FromDays(7)" />
-                    <span>1 týden</span>
-                </div>
-                <div class="option">
-                    <InputRadio Value="TimeSpan.FromDays(14)" />
-                    <span>2 týdny</span>
-                </div>
-                <div class="option">
-                    <InputRadio Value="TimeSpan.FromDays(30)" />
-                    <span>1 měsíc</span>
-                </div>
-                <div class="option">
-                    <InputRadio Value="TimeSpan.FromDays(90)" />
-                    <span>3 měsíce</span>
-                </div>
-            </InputRadioGroup>
-        </HhDropdown>
-        <HhDropdown Title="Název úlohy">
-            <InputText class="name-filter text-input" @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
-        </HhDropdown>
-        <div class="filter-buttons">
-            <button class="btn-filter primary-button" @onclick="HandleFilterClick">Filtrovat</button>
-            <button class="btn-cancel-filters secondary-button" @onclick="HandleFilterReset">Zrušít filtry</button>
         </div>
     </div>
 </div>

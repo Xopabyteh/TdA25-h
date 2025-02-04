@@ -1,4 +1,6 @@
 .card {
+    place-self: center;
+
     display: flex;
     flex-direction: row;
 }
