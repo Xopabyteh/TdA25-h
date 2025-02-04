@@ -71,6 +71,51 @@
     user-select: none; /* Standard syntax */
 }
 
+.action-row {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 5px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    height: 15px;
+}
+
+.secondary-row {
+    display: flex;
+    justify-content: right;
+}
+
+
+.col-dark {
+    background: #F9F9F9;
+    width: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-light {
+    background: none;
+    width: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.small-x {
+    height: 10px;
+    width: 10px;
+}
+
+.small-o {
+    height: 10px;
+    width: 10px;
+}
+
+
 .game-card > .action-row .play,
 .game-card > .action-row .edit,
 .game-card > .action-row .delete {

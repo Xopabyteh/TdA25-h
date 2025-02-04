@@ -81,3 +81,7 @@ button {
         scroll-behavior: auto !important;
     }
 }
+
+h1:focus {
+    outline: none;
+}
