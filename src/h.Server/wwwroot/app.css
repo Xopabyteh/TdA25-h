@@ -69,6 +69,10 @@
 
 /*General styles*/
 
+input[type="range"] {
+    accent-color: var(--clr-primary-600);
+}
+
 #TdA-logo {
     height: 55px;
 }
