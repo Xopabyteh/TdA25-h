@@ -34,7 +34,6 @@ public class GameBoard
         return new(PREDEFINED_BOARD_SIDE_SIZE, PREDEFINED_BOARD_SIDE_SIZE);
     }
 
-    // Todo: consider changing to Span2D<>
     public static ErrorOr<GameBoard> Parse(string[][] boardMatrix)
     {
         var gameBoard = CreateNew();

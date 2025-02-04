@@ -21,7 +21,6 @@ public partial class GameEditor : IAsyncDisposable
     [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
     [Inject] protected ToastService _toastService { get; set; } = null!;
 
-
     private IJSObjectReference? jsModule;
     private CancellationTokenSource disposeCts = new();
 
@@ -212,10 +211,13 @@ public partial class GameEditor : IAsyncDisposable
                     loadedGame = game;
 
                     // Push to history (change url only visually)
-                    //_navigationManager.NavigateTo(
-                    //    PageRoutes.Game.GameEditorWithParam(GameId),
-                    //    forceLoad: false,
-                    //    replace: false);
+                    await _js.InvokeVoidAsync("window.history.pushState",
+                        disposeCts.Token,
+                        null,
+                        "", // Whatever title, get's overriden by blazor
+                        PageRoutes.Game.GameEditorWithParam(GameId));
+
+                    // Show success message
                     await _toastService.SuccessAsync("Uloženo");
                     return;
                 },

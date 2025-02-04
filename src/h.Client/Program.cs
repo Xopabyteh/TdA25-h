@@ -1,10 +1,12 @@
 using h.Client.Services;
 using h.Client.Services.Game;
 using h.Contracts;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using System.Text.Json;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Todo: add polly?
 builder.Services.AddSingleton(new HttpClient()

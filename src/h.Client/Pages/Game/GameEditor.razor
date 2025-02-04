@@ -3,7 +3,9 @@
 @attribute [Route(PageRoutes.Game.GameEditor)]
 @rendermode InteractiveWebAssembly
 
-<PageTitle>Vytvořit novou úlohu</PageTitle>
+<PageTitle>
+    @(loadedGame is not null ? "Upravit úlohu" : "Vytvořit novou úlohu")
+</PageTitle>
 
 <div class="vytvorit">
     @if(loadedGame is not null) {
