@@ -50,11 +50,11 @@
     }
 
     .panel button:hover {
-        background: #f5f5f5;
+        background: var(--clr-gray-400);
     }
 
     .pick button.active {
-        background: #f5f5f5;
+        background: var(--clr-gray-400);
     }
 
 
@@ -91,7 +91,7 @@
 
 .line {
     width: 2px;
-    background: #f5f5f5;
+    background: var(--clr-gray-400);
     margin: 0 10px;
     height: 85%;
 }

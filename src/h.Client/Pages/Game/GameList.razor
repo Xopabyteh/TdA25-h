@@ -9,7 +9,6 @@
 <div class="cards-pane">
     <h2 class="game-list-h2">
         <span>Výběr úloh</span>
-        @* <a href="/game" style="text-decoration: none; position: absolute; right: 15vw;"><button class="primary-button new-game">Hrát hru</button></a> *@
     </h2>
     
     <div class="game-cards">
@@ -27,60 +26,18 @@
                         <div class="row">
                             @for (int j = 0; j < game.Board[i].Length; j++)
                             {
-                                string elem;
-                                string imgClass;
-                                string alt;
-
-                                @switch (game.Board[i][j])
+                                (string elem, string imgClass, string alt) = game.Board[i][j] switch
                                 {
-                                    case "X":
-                                        elem = "/IMG/X/X_cervene.svg";
-                                        imgClass = "small-x";
-                                        alt = "X";
-                                        break;
-                                    case "O":
-                                        elem = "/IMG/O/O_modre.svg";
-                                        imgClass = "small-o";
-                                        alt = "O";
-                                        break;
-                                    default:
-                                        elem = "";
-                                        imgClass = "";
-                                        alt = "";
-                                        break;
-                                }
+                                    "X" => ("/IMG/X/X_cervene.svg", "small-x", "X"),
+                                    "O" => ("/IMG/O/O_modre.svg", "small-o", "O"),
+                                    _ => ("", "", "")
+                                };
 
-                                @if (i % 2 == 0)
-                                {
-                                    @if (j % 2 == 0)
-                                    {
-                                        <div class="col-dark">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-light">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    @if (j % 2 == 0)
-                                    {
-                                        <div class="col-light">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-dark">
-                                            <img src="@elem" alt="@alt" class="@imgClass">
-                                        </div>
-                                    }
-                                }
+                                var divClass = (i % 2 == 0) ^ (j % 2 == 0) ? "col-light" : "col-dark";
 
+                                <div class="@divClass">
+                                    <img src="@elem" alt="@alt" class="@imgClass">
+                                </div>
                             }
                         </div>
                     }

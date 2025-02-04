@@ -3,7 +3,7 @@
     width: 50px;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: repeating-conic-gradient(#F9F9F9 0 90deg,#0070BB 0 180deg);
+    background: repeating-conic-gradient(#F9F9F9 0 90deg,var(--clr-primary) 0 180deg);
     animation: l21 1s infinite linear;
 }
 @keyframes l21 {

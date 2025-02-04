@@ -2,6 +2,18 @@
 
 :root {
     font-family: 'Dosis', cursive, sans-serif;
+    --clr-primary-600: #0070BB;
+    --clr-primary-400: #b2d8fb;
+    --clr-secondary-600: #c9343f;
+
+    --clr-gray-500: #d5d5d5;
+    --clr-gray-400: #f9f9f9;
+    
+    --clr-white: #fff;
+    --clr-black: #000;
+
+    --clr-circle: var(--clr-primary-600);
+    --clr-cross: var(--clr-secondary-600);
 }
 
 .blazor-error-boundary {
@@ -16,30 +28,12 @@
 
 /*General styles*/
 
-input[type="text"] {
-    font-family: 'Dosis', cursive, sans-serif;
-    border: #d7d7d7 1px solid;
-}
-
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
-}
-
-.invalid {
-    outline: 1px solid #e50000;
-}
-
-.validation-message {
-    color: #e50000;
-}
-
-
 #TdA-logo {
     height: 55px;
 }
 
 .primary-button {
-    background: #0070BB;
+    background: var(--clr-primary-600);
     color: white;
     border: none;
     border-radius: 4px;
@@ -56,8 +50,8 @@ input[type="text"] {
 
 .secondary-button {
     background: white;
-    border: #0070BB solid 2px;
-    color: #0070BB;
+    border: var(--clr-primary-600) solid 2px;
+    color: var(--clr-primary-600);
     border-radius: 4px;
     align-content: center;
     padding: 5px 60px;

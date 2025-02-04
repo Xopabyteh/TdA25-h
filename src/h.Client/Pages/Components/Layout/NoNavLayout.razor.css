@@ -16,7 +16,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background: #F9F9F9;
+    background: var(--clr-gray-400);
 }
 
 .search-bar {

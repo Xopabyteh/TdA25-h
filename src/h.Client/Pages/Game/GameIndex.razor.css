@@ -137,7 +137,7 @@
 }
 
 .win-r2 {
-    background-color: #0070BB;
+    background-color: var(--clr-primary-600);
     color: white;
     display: flex;
     flex-direction: row;

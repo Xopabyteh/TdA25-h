@@ -36,7 +36,7 @@
 }
 
 .nav-item ::deep .nav-link {
-    color: #000000;
+    color: var(--clr-black);
     background: none;
     border: none;
     border-radius: 4px;
@@ -48,8 +48,8 @@
 }
 
 .nav-item ::deep a.active {
-    background-color: #0070BB;
-    color: white;
+    background-color: var(--clr-primary-600);
+    color: var(--clr-white);
     font-weight: bold;
     text-decoration: none;
 }
@@ -63,8 +63,8 @@
 }
 
 .nav-item ::deep .nav-link:not(.active):hover {
-    background-color: #a2daff;
-    color: #000;
+    background-color: var(--clr-primary-400);
+    color: var(--clr-black);
     font-weight: normal;
 }
 

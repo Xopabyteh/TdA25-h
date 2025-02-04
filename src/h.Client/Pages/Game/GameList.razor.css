@@ -90,7 +90,7 @@
 
 
 .col-dark {
-    background: #F9F9F9;
+    background: var(--clr-gray-400);
     width: 15px;
     display: flex;
     align-items: center;
@@ -129,7 +129,7 @@
 }
 
 .game-card > .action-row > .play {
-    background: #0070BB;
+    background: var(--clr-primary-600);
     border-radius: 4px;
 }
 
@@ -143,15 +143,6 @@
     min-width: 180px;
 }
 
-.selected span {
-    background: #0070BB;
-    color: white;
-    padding: 4px;
-    border-radius: 4px;
-    margin-right: 5px;
-    margin-bottom: 10px;
-    display: inline-block;
-}
 
 .filters {
     width: 200px;
@@ -159,8 +150,27 @@
     right: 25px;
 }
 
+    .filters > h2 {
+        margin-block-end: 1rem;
+    }
+    .filters > .selected > span {
+        background: var(--clr-primary-600);
+        color: white;
+        padding: 6px;
+        border-radius: 4px;
+        margin-right: 5px;
+        margin-bottom: 10px;
+        display: inline-block;
+        font-weight: bold;
+    }
+
+        .filters > .selected > span::before {
+            content: url(IMG/icons/cross.svg);
+            margin-right: 8px;
+        }
+
 .category-txt {
-    color: #0070BB;
+    color: var(--clr-primary-600);
 }
 
 .filter-wrapper {
@@ -170,7 +180,7 @@
 }
 
     ::deep .filter-wrapper .dropdown {
-        border-top: solid 2px #D5D5D5;
+        border-top: solid 2px var(--clr-gray-500);
         padding: 10px;
     }
 
@@ -179,16 +189,16 @@
         }
 
 .option {
-    color: #D5D5D5;
+    color: var(--clr-gray-500);
     border: none;
 }
 
     .option input[type="checkbox"]:checked + span {
-        color: #0070BB;
+        color: var(--clr-primary-600);
     }
 
     .option input[type="radio"]:checked + span {
-        color: #0070BB;
+        color: var(--clr-primary-600);
     }
 
 .filter-buttons {

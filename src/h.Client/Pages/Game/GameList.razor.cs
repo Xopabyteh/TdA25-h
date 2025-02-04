@@ -29,35 +29,6 @@ public partial class GameList
 
         return LoadFillteredGamesAsync();
     }
-    //protected override void OnInitialized()
-    //{
-    //    games = new()
-    //    {
-    //        new(Guid.NewGuid(),
-    //            DateTime.Now,
-    //            DateTime.Now,
-    //            "Armagedon",
-    //            Primitives.Games.GameDifficulty.Easy,
-    //            Primitives.Games.GameState.Opening,
-    //            [
-    //                ["O", "X", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["O", "X", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "X", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "O", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "X", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "X", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "O", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //                ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    //            ]),
-    //    };
-    //}
 
     private async Task HandleGameDeleteClick(GameResponse game)
     {
@@ -65,26 +36,7 @@ public partial class GameList
         
         games = await _GameService.LoadAllGamesAsync();
         await LoadFillteredGamesAsync();
-        //await virtualizeRef.RefreshDataAsync();
     }
-
-    //private async ValueTask<ItemsProviderResult<GameResponse>> GetRows(ItemsProviderRequest request)
-    //{
-    //    if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
-    //        return new ItemsProviderResult<GameResponse>(Array.Empty<GameResponse>(), 0); // Prerendering
-
-    //    if (games is null)
-    //    {
-    //        games = await _GameService.LoadAllGamesAsync();
-    //    }
-
-    //    var filteredGames = appliedFilter.ApplyTo(games).ToArray();
-
-    //    return new ItemsProviderResult<GameResponse>(
-    //        filteredGames.Skip(request.StartIndex).Take(request.Count),
-    //        filteredGames.Length
-    //    );
-    //}
         
     private async Task LoadFillteredGamesAsync()
     {
@@ -103,7 +55,6 @@ public partial class GameList
     {
         appliedFilter = filter with {};
         await LoadFillteredGamesAsync();
-        //await virtualizeRef.RefreshDataAsync();
     }
 
     private async Task HandleFilterReset()
@@ -111,7 +62,6 @@ public partial class GameList
         filter = new();
         appliedFilter = new();
         await LoadFillteredGamesAsync();
-        //await virtualizeRef.RefreshDataAsync();
     }
 
     public record FilterModel

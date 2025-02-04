@@ -18,7 +18,7 @@
 
     .difficulty-selector .left,
     .difficulty-selector .right {
-        color: #C0C0C0;
+        color: var(--clr-gray-600);
         font-size: 0.75rem;
     }
 
