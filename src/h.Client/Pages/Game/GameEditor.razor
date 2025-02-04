@@ -31,12 +31,7 @@
             <button type="button" class="back-btn" @onclick="HandleHistoryBack"><img src="/IMG/icons/back.svg" alt="back"></button>
             <button type="button" class="forth-btn" @onclick="HandleHistoryForth"><img src="/IMG/icons/forth.svg" alt="forth"></button>
         </div>
-        <div class="difficulty-selector sheet">
-            <div class="left">Nejjednodušší</div>
-            <div class="right">Nejobtížnější</div>
-            <input class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)" @bind="RequestModel.Difficulty" @bind:event="oninput"/>
-            <img class="bulb" src="@(ResourceHelper.GetDifficultyBulbImgSrc(GameDifficulty.FromValue(RequestModel.Difficulty)))"/>
-        </div>
+        <HhDifficultySelector @bind-Value="RequestModel.Difficulty"/>
     </EditForm>
     
     <div class="game-field" @ref="gameFieldRef">

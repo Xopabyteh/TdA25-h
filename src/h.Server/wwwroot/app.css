@@ -88,36 +88,3 @@ input[type="text"] {
     place-content: center;
     align-items: center;
 }
-
-.difficulty-selector {
-    display: grid;
-    grid-template-areas:
-        "left right bulb"
-        "slider slider bulb";
-    grid-template-columns: 1fr 1fr 2rem;
-    row-gap: 0.3rem;
-    grid-column-gap: 1.6rem;
-}
-
-    .difficulty-selector .left {
-        grid-area: left;
-    }
-
-    .difficulty-selector .right {
-        grid-area: right;
-    }
-
-    .difficulty-selector .left,
-    .difficulty-selector .right {
-        color: #C0C0C0;
-        font-size: 0.75rem;
-    }
-
-    .difficulty-selector .bulb {
-        grid-area: bulb;
-        place-self: center;
-    }
-
-    .difficulty-selector .slider {
-        grid-area: slider;
-    }

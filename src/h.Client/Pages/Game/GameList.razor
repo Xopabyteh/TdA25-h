@@ -133,7 +133,7 @@
         }
     </div>
     <div class="filter-wrapper">
-        <Dropdown Title="Obtížnost">
+        <HhDropdown Title="Obtížnost">
             <div class="option">
                 <InputCheckbox @bind-Value="filter.IsBeginner" />
                 <span>Začátečník</span>
@@ -154,8 +154,8 @@
                 <InputCheckbox @bind-Value="filter.IsExtreme" />
                 <span>Extrémní</span>
             </div>
-        </Dropdown>
-        <Dropdown Title="Datum úpravy">
+        </HhDropdown>
+        <HhDropdown Title="Datum úpravy">
             <InputRadioGroup @bind-Value="filter.UpdatedWithin">
                 <div class="option">
                     <InputRadio Value="TimeSpan.FromDays(1)" />
@@ -178,10 +178,10 @@
                     <span>3 měsíce</span>
                 </div>
             </InputRadioGroup>
-        </Dropdown>
-        <Dropdown Title="Název úlohy">
+        </HhDropdown>
+        <HhDropdown Title="Název úlohy">
             <InputText class="name-filter text-input" @bind-Value="filter.GameName" placeholder="Zadejte název úlohy"/>
-        </Dropdown>
+        </HhDropdown>
         <div class="filter-buttons">
             <button class="btn-filter primary-button" @onclick="HandleFilterClick">Filtrovat</button>
             <button class="btn-cancel-filters secondary-button" @onclick="HandleFilterReset">Zrušít filtry</button>

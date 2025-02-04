@@ -62,12 +62,7 @@
             <h2>Uložit úlohu</h2>
             <EditForm class="save-game-form" Model="saveGameModel" OnValidSubmit="HandleSaveGame">
                 <input @bind="saveGameModel.Name" type="text" class="text-input" placeholder="Jméno úlohy" required>
-                <div class="difficulty-selector sheet">
-                    <div class="left">Nejjednodušší</div>
-                    <div class="right">Nejobtížnější</div>
-                    <input @bind="saveGameModel.Difficulty" @bind:event="oninput" class="slider" type="range" min="0" max="@(GameDifficulty.List.Count-1)"/>
-                    <img class="bulb" src="@(ResourceHelper.GetDifficultyBulbImgSrc(GameDifficulty.FromValue(saveGameModel.Difficulty)))" />
-                </div>
+                <HhDifficultySelector @bind-Value="saveGameModel.Difficulty"/>
                 <button type="submit" class="save-game primary-button">Uložit hru</button>
                 <button type="button" @onclick="() => showSaveGameDialog = false" class="exit-save-menu secondary-button">Zrušit</button>
             </EditForm>
