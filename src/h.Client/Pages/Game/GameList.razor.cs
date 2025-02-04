@@ -20,7 +20,7 @@ public partial class GameList
     private GameResponse[] filteredGames = Array.Empty<GameResponse>();
     private FilterModel filter = new(); // Filters to be used
     private FilterModel appliedFilter = new(); // Copied from filters when applied
-    //private Virtualize<GameResponse> virtualizeRef;
+    private bool removingFilter = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -62,6 +62,19 @@ public partial class GameList
         filter = new();
         appliedFilter = new();
         await LoadFillteredGamesAsync();
+    }
+
+    private async Task RemoveFilterAsync(Action<FilterModel> modifyDelegate)
+    {
+        if (removingFilter)
+            return;
+
+        removingFilter = true;
+
+        modifyDelegate(filter);
+        await HandleFilterClick();
+            
+        removingFilter = false;
     }
 
     public record FilterModel

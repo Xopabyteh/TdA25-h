@@ -61,33 +61,33 @@
         <div class="selected">
             @if (!string.IsNullOrEmpty(appliedFilter.GameName))
             {
-                <span>@($"\"{appliedFilter.GameName}\"")</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.GameName = null)">@($"\"{appliedFilter.GameName}\"")</span>
             }
 
             @if (appliedFilter.IsBeginner)
             {
-                <span>Začátečník</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.IsBeginner = false)">Začátečník</span>
             }
             @if (appliedFilter.IsEasy)
             {
-                <span>Jednoduchá</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.IsEasy = false)">Jednoduchá</span>
             }
             @if (appliedFilter.IsMedium)
             {
-                <span>Střední</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.IsMedium = false)">Střední</span>
             }
             @if (appliedFilter.IsHard)
             {
-                <span>Těžká</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.IsHard = false)">Těžká</span>
             }
             @if (appliedFilter.IsExtreme)
             {
-                <span>Extrémní</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.IsExtreme = false)">Extrémní</span>
             }
 
             @if (appliedFilter.UpdatedWithin is not null)
             {
-                <span>@($"{appliedFilter.UpdatedWithin.Value.Days} {(appliedFilter.UpdatedWithin.Value.Days == 1 ? "den" : "dní")}")</span>
+                <span @onclick="async () => await RemoveFilterAsync(f => f.UpdatedWithin = null)">@($"{appliedFilter.UpdatedWithin.Value.Days} {(appliedFilter.UpdatedWithin.Value.Days == 1 ? "den" : "dní")}")</span>
             }
         </div>
         <div class="filter-wrapper">

@@ -79,7 +79,7 @@
     border: none;
     border-radius: 4px;
     align-content: center;
-    padding: 5px 60px;
+    padding: 0.3em 3.5em;
     margin: 2px 0;
     cursor: pointer;
     height: 40px;
@@ -87,6 +87,7 @@
     font-weight: normal;
     min-width: 205px;
     text-align: center;
+    font-weight: bold;
 }
 
 .secondary-button {
@@ -95,12 +96,13 @@
     color: var(--clr-primary-600);
     border-radius: 4px;
     align-content: center;
-    padding: 5px 60px;
+    padding: 0.3em 3.5em;
     margin: 2px 0;
     cursor: pointer;
     height: 40px;
     min-width: 205px;
     text-align: center;
+    font-weight: bold;
 }
 
 .text-input {
