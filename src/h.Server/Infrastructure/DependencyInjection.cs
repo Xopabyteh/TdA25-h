@@ -7,9 +7,14 @@ using h.Primitives.Games;
 using h.Server.Components.Services;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -68,6 +73,24 @@ public static class DependencyInjection
             var autoSetUpdatedAtInterceptor = serviceProvider.GetRequiredService<AutoSetUpdatedAtDbSaveInterceptor>();
             options.AddInterceptors(autoSetUpdatedAtInterceptor);
         });
+
+        // Auth
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(jwtOptions =>
+            {
+	            jwtOptions.Authority = builder.Configuration["Auth:Jwt:Authority"];
+	            jwtOptions.Audience = builder.Configuration["Auth:Jwt:Audience"];
+                jwtOptions.TokenValidationParameters = new()
+                {
+                    ValidateIssuer = true,
+		            ValidateAudience = true,
+		            ValidateIssuerSigningKey = true,
+		            ValidAudiences = builder.Configuration.GetSection("Auth:Jwt:ValidAudiences").Get<string[]>(),
+		            ValidIssuers = builder.Configuration.GetSection("Auth:Jwt:ValidIssuers").Get<string[]>(),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Auth:Jwt:Key"]!))
+                };
+            });
+        builder.Services.AddAuthorization();
 
         return builder;
     }
