@@ -11,7 +11,6 @@ builder
 
 builder.Services.AddShared();
 
-
 var app = builder.Build();
 
 // Debugging and exception page

@@ -18,5 +18,8 @@ public static class RequestPipeline
         {
             await db.Database.MigrateAsync();
         }
+
+        // Ensure created (+ fire seeds)
+        await db.Database.EnsureCreatedAsync();
     }
 }

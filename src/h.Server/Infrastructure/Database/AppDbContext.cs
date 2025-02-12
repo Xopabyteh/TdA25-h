@@ -1,5 +1,6 @@
 ﻿using h.Server.Entities.Games;
 using h.Server.Entities.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartEnum.EFCore;
 
@@ -7,9 +8,11 @@ namespace h.Server.Infrastructure.Database;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions options) : base(options)
+    private readonly IConfiguration _config;
+    public AppDbContext(DbContextOptions options, IConfiguration config) : base(options)
     {
         // DI, NOOP
+        _config = config;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -17,6 +20,29 @@ public class AppDbContext : DbContext
         base.OnConfiguring(optionsBuilder);
 
         optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    
+        optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
+        {
+            var passwordHasher = new PasswordHasher<object>();
+            var adminUser = await context.Set<User>().FirstOrDefaultAsync(u => u.Email == _config["Auth:AdminUser:Email"]);
+            
+            if(adminUser is null)
+            {
+                var admin = new User
+                {
+                    Email = _config["Auth:AdminUser:Email"]!,
+                    Username = _config["Auth:AdminUser:Username"]!,
+                    PasswordEncrypted = passwordHasher.HashPassword(null!, _config["Auth:AdminUser:Password"]!),
+                    Elo = new(),
+                    WinAmount = 0,
+                    LossAmount = 0,
+                    DrawAmount = 0
+                };
+                
+                context.Set<User>().Add(admin);
+                await context.SaveChangesAsync(cancellationToken);
+            }
+        });
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

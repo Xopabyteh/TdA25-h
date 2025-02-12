@@ -24,8 +24,8 @@ public static class ErrorResults
     /// <summary>
     /// Daný zdroj nebyl nalezen.
     /// </summary>
-    public static IResult NotFound()
-        => Results.NotFound(new ErrorResponse(404, "Resource not found", null));
+    public static IResult NotFound(IReadOnlyCollection<Error>? Errors = null)
+        => Results.NotFound(new ErrorResponse(404, "Resource not found", Errors));
 
     /// <summary>
     /// Server rozumí požadavku (pole jsou správná), ale požadavek obsahuje
@@ -34,6 +34,10 @@ public static class ErrorResults
     public static IResult ValidationError(string reason, IReadOnlyCollection<Error>? Errors = null)
         => Results.UnprocessableEntity(new ErrorResponse(422, $"Semantic error: {reason}", Errors));
 
+    /// <summary>
+    /// Server rozumí požadavku (pole jsou správná), ale požadavek obsahuje
+    /// sémantickou chybu - například je rozměr hry 3x3 a obsahuje znak '@'
+    /// </summary>
     public static IResult ValidationError(IReadOnlyCollection<Error>? errors = null)
         => Results.UnprocessableEntity(new ErrorResponse(
             422,
@@ -41,6 +45,10 @@ public static class ErrorResults
             errors
         ));
 
+    /// <summary>
+    /// Server rozumí požadavku (pole jsou správná), ale požadavek obsahuje
+    /// sémantickou chybu - například je rozměr hry 3x3 a obsahuje znak '@'
+    /// </summary>
     public static IResult ValidationError(ValidationResult validationResult)
     {
         var errors = validationResult.GetValidationProblems();

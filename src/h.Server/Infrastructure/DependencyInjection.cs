@@ -2,17 +2,12 @@
 using FluentValidation;
 using h.Client.Services;
 using h.Client.Services.Game;
-using h.Contracts.Components.Services;
 using h.Primitives.Games;
-using h.Server.Components.Services;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
