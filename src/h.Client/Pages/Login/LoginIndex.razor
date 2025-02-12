@@ -1,0 +1,13 @@
+@using h.Client.Services
+@using h.Primitives.Games
+@attribute [Route(PageRoutes.Login.LoginIndex)]
+@rendermode InteractiveWebAssembly
+@layout LoginLayout
+
+<form action="" class="login-form">
+    <h2>Přihlásit do aplikace</h2>
+    <input type="text" placeholder="Nickname/Email" class="text-input" name="nick-mail">
+    <input type="password" placeholder="Heslo" class="text-input" name="pwd">
+    <button class="primary-button login-btn">Přihlásit se</button>
+    <a href="/register" class="link new-user">Vytvořit nový účet</a>
+</form>
