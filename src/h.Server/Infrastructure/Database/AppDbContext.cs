@@ -1,4 +1,5 @@
 ﻿using h.Server.Entities.Games;
+using h.Server.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using SmartEnum.EFCore;
 
@@ -34,4 +35,5 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Game> GamesDbSet { get; set; }
+    public DbSet<User> UsersDbSet { get; set; }
 }

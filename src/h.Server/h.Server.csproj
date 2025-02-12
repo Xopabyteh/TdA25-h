@@ -19,6 +19,7 @@
     <PackageReference Include="Carter" />
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="FluentValidation.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
