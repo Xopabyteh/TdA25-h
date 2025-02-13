@@ -4,8 +4,10 @@ public static class PageRoutes
     /// <summary>
     /// Temporarily rerouted to <see cref="GameList"/>
     /// </summary>
-    //public const string HomeIndex = "/";
+    
+    public const string HomeIndex = "/index"; /*TODO: zrusit redirect pls*/
 
+    
     public static class Game
     {
         /// <summary>
