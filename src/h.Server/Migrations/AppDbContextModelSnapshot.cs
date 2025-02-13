@@ -60,22 +60,26 @@ namespace h.Server.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<int>("DrawAmount")
+                    b.Property<ulong>("DrawAmount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(0ul);
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("LossAmount")
+                    b.Property<ulong>("LossAmount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(0ul);
 
-                    b.Property<string>("PasswordEncrypted")
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("Roles")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -89,10 +93,10 @@ namespace h.Server.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("WinAmount")
+                    b.Property<ulong>("WinAmount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(0ul);
 
                     b.ComplexProperty<Dictionary<string, object>>("Elo", "h.Server.Entities.Users.User.Elo#ThinkDifferentElo", b1 =>
                         {
@@ -101,6 +105,12 @@ namespace h.Server.Migrations
                         });
 
                     b.HasKey("Uuid");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("UsersDbSet");
                 });

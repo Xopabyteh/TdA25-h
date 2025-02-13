@@ -1,4 +1,5 @@
-﻿using h.Server.Entities.Games;
+﻿using h.Primitives.Users;
+using h.Server.Entities.Games;
 using h.Server.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,11 +33,14 @@ public class AppDbContext : DbContext
                 {
                     Email = _config["Auth:AdminUser:Email"]!,
                     Username = _config["Auth:AdminUser:Username"]!,
-                    PasswordEncrypted = passwordHasher.HashPassword(null!, _config["Auth:AdminUser:Password"]!),
+                    PasswordHash = passwordHasher.HashPassword(null!, _config["Auth:AdminUser:Password"]!),
                     Elo = new(),
                     WinAmount = 0,
                     LossAmount = 0,
-                    DrawAmount = 0
+                    DrawAmount = 0,
+                    Roles = [
+                        UserRole.Admin
+                    ]
                 };
                 
                 context.Set<User>().Add(admin);

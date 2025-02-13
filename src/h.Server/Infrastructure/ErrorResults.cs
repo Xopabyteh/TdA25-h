@@ -58,4 +58,7 @@ public static class ErrorResults
                 .ToArray()
         );
     }
+
+    public static IResult Conflit(string reason, IReadOnlyCollection<Error>? Errors = null)
+        => Results.Conflict(new ErrorResponse(409, $"Conflict: {reason}", Errors));
 }

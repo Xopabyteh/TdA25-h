@@ -20,16 +20,29 @@ namespace h.Server.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "current_timestamp"),
                     Username = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Email = table.Column<string>(type: "TEXT", maxLength: 320, nullable: false),
-                    PasswordEncrypted = table.Column<string>(type: "TEXT", nullable: false),
-                    WinAmount = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    LossAmount = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    DrawAmount = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
+                    Roles = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    WinAmount = table.Column<ulong>(type: "INTEGER", nullable: false, defaultValue: 0ul),
+                    LossAmount = table.Column<ulong>(type: "INTEGER", nullable: false, defaultValue: 0ul),
+                    DrawAmount = table.Column<ulong>(type: "INTEGER", nullable: false, defaultValue: 0ul),
                     Elo_Rating = table.Column<ulong>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UsersDbSet", x => x.Uuid);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersDbSet_Email",
+                table: "UsersDbSet",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersDbSet_Username",
+                table: "UsersDbSet",
+                column: "Username",
+                unique: true);
         }
 
         /// <inheritdoc />

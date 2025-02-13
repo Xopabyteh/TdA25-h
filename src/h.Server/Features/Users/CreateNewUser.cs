@@ -1,4 +1,7 @@
 ﻿using Carter;
+using h.Primitives.Users;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 
 namespace h.Server.Features.Users;
 
@@ -12,8 +15,10 @@ public static class CreateNewUser
         }
     }
 
-    public static async Task<IResult> Handle()
+    public static async Task<IResult> Handle(
+        [FromServices] IAuthenticationService authenticationService,
+        HttpContext httpContext)
     {
-        return Results.Ok();
+        return Results.Ok(httpContext.User.IsInRole(nameof(UserRole.Admin)));
     }
 }

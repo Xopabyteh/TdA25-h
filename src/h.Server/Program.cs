@@ -3,6 +3,7 @@ using h.Contracts;
 using h.Server.Components;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Middleware;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder

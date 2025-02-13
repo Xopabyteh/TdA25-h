@@ -1,15 +1,17 @@
 ﻿using Carter;
 using FluentValidation;
+using h.Contracts.Users;
 using h.Server.Infrastructure;
+using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using LoginRequest = h.Contracts.Users.LoginRequest;
+using LoginUserRequest = h.Contracts.Users.LoginUserRequest;
 
 namespace h.Server.Features.Users;
 
@@ -25,8 +27,11 @@ public static class LoginUser
     public static async Task<IResult> Handle(
         [FromServices] IConfiguration config,
         [FromServices] AppDbContext db,
-        [FromServices] IValidator<LoginRequest> validator,
-        LoginRequest request,
+        [FromServices] IValidator<LoginUserRequest> validator,
+        [FromServices] JwtTokenService tokenService,
+        [FromServices] IAuthenticationService authenticationService,
+        HttpContext httpContext,
+        LoginUserRequest request,
         CancellationToken cancellationToken)
     {
         // Validate
@@ -34,38 +39,44 @@ public static class LoginUser
         if (!validationResult.IsValid)
             return ErrorResults.ValidationError(validationResult);
 
+        // Try get user
         var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Email == request.Nickname, cancellationToken)
             ?? await db.UsersDbSet.FirstOrDefaultAsync(u => u.Username == request.Nickname, cancellationToken);
 
         if(user is null)
             return Results.Unauthorized();
 
+        // Verify password hash
         var passwordHasher = new PasswordHasher<object>();
-        var result = passwordHasher.VerifyHashedPassword(null!, user.PasswordEncrypted, request.Password);
+        var result = passwordHasher.VerifyHashedPassword(null!, user.PasswordHash, request.Password);
         
         if(result is PasswordVerificationResult.Failed)
             return Results.Unauthorized();
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Auth:Jwt:Key"]!));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        // Generate token
+        var token = tokenService.GenerateTokenFor(user);
 
-        var Sectoken = new JwtSecurityToken(
-            issuer: config["Auth:Jwt:Issuer"]!,
-            audience: config["Auth:Jwt:Audience"],
-            claims: [
-                new Claim(JwtRegisteredClaimNames.Sub, user.Uuid.ToString()),
-                new Claim(JwtRegisteredClaimNames.Name, user.Username),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            ],
-            expires: DateTime.Now.AddMinutes(config.GetValue<double>("Auth:Jwt:ExpireInMinutes")),
-            signingCredentials: credentials);
+        // Add token to response
+        httpContext.Response.Headers.Append("Authorization", $"Bearer {token}");
 
-        var token =  new JwtSecurityTokenHandler().WriteToken(Sectoken);
-
-        return Results.Ok(token);
+        // Map and return
+        return Results.Ok(new AuthenticatiionResponse(
+            token,
+            new UserResponse(
+                user.Uuid,
+                user.CreatedAt,
+                user.UpdatedAt,
+                user.Username,
+                user.Email,
+                user.Elo.Rating,
+                user.WinAmount,
+                user.DrawAmount,
+                user.LossAmount
+            )
+        ));
     }
 
-    public class Validator : AbstractValidator<LoginRequest>
+    public class Validator : AbstractValidator<LoginUserRequest>
     {
         public Validator()
         {

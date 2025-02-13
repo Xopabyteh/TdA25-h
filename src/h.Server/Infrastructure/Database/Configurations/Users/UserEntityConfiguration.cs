@@ -21,12 +21,16 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Username)
             .HasMaxLength(256)
             .IsRequired();
+        builder.HasIndex(x => x.Username)
+            .IsUnique();
 
         builder.Property(x => x.Email)
             .HasMaxLength(320)
             .IsRequired();
+        builder.HasIndex(x => x.Email)
+            .IsUnique();
 
-        builder.Property(x => x.PasswordEncrypted)
+        builder.Property(x => x.PasswordHash)
             .IsRequired();
 
         builder.ComplexProperty(x => x.Elo, b=>
@@ -47,5 +51,8 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.DrawAmount)
             .HasDefaultValue(0)
             .IsRequired();
+
+        // Not supported by sqlite
+        builder.PrimitiveCollection(x => x.Roles);
     }
 }

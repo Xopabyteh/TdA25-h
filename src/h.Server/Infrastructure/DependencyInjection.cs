@@ -3,9 +3,12 @@ using FluentValidation;
 using h.Client.Services;
 using h.Client.Services.Game;
 using h.Primitives.Games;
+using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -70,22 +73,31 @@ public static class DependencyInjection
         });
 
         // Auth
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        builder.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtOptions =>
             {
-	            jwtOptions.Authority = builder.Configuration["Auth:Jwt:Authority"];
+	            //jwtOptions.Authority = builder.Configuration["Auth:Jwt:Authority"];
 	            jwtOptions.Audience = builder.Configuration["Auth:Jwt:Audience"];
                 jwtOptions.TokenValidationParameters = new()
                 {
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
 		            ValidateAudience = true,
 		            ValidateIssuerSigningKey = true,
 		            ValidAudiences = builder.Configuration.GetSection("Auth:Jwt:ValidAudiences").Get<string[]>(),
-		            ValidIssuers = builder.Configuration.GetSection("Auth:Jwt:ValidIssuers").Get<string[]>(),
+		            //ValidIssuers = builder.Configuration.GetSection("Auth:Jwt:ValidIssuers").Get<string[]>(),
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Auth:Jwt:Key"]!))
                 };
             });
-        builder.Services.AddAuthorization();
+        
+        builder.Services.AddAuthorization(c =>
+        {
+            c.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                .RequireAuthenticatedUser().Build());
+        });
+
+        builder.Services.AddScoped<JwtTokenService>();
 
         return builder;
     }
