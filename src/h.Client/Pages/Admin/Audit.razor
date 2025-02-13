@@ -1,0 +1,47 @@
+@attribute [Route(PageRoutes.Admin.Audit)]
+@rendermode InteractiveWebAssembly
+
+
+<PageTitle>Audit Log</PageTitle>
+
+<h2>Audit Log</h2>
+
+<table class="data-table">
+    <thead class="audit-head">
+    <tr>
+        <th>#</th>
+        <th>Timestamp</th>
+        <th>IP adresa</th>
+        <th>Akce</th>
+    </tr>
+    </thead>
+    <tbody>
+    <Virtualize Items="@items" Context="item">
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Timestamp</td>
+            <td>@item.IP</td>
+            <td>@item.Action</td>
+        </tr>
+    </Virtualize>
+    </tbody>
+</table>
+
+@code
+{
+    private List<LogAction> items = Enumerable.Range(1, 1000).Select(i => new LogAction()
+    {
+        Id = i,
+        Timestamp = "2024-12-24 12:34:56",
+        IP = "127.0.0.1",
+        Action = "Zabanoval uživatele evzen.rozinka"
+    }).ToList();
+
+    private class LogAction
+    {
+        public int Id { get; set; }
+        public string Timestamp { get; set; }
+        public string IP { get; set; }
+        public string Action { get; set; }
+    }
+}
