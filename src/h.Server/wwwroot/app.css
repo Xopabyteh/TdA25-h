@@ -21,6 +21,11 @@
 }
 
 /*Layout shared*/
+body {
+    display: flex;
+    flex-direction: column;
+}
+
 .page {
     min-height: inherit;
     display: grid;
@@ -28,44 +33,66 @@
     gap: var(--top-bar-to-display-gap);
 }
 
-.display {
+.display {  /*nemazat*/
     display: flex;
-    padding-inline: 1rem;
-    height: 100%;
+    justify-content: left;
 }
 
-.top-bar {
+/*.top-bar {
     height: var(--top-bar-height);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background: var(--clr-gray-400);
+}*/
+
+
+header {   /*nemazat*/
+    background-color: #F9F9F9;
+    display: flex;
+    justify-content: space-between;
+    height: 60px;
+    padding: 20px;
+    box-sizing: content-box;
 }
 
-.navbar {
+.logo {    /*nemazat*/
+    width: 220px;
+}
+
+
+main {   /*nemazat*/
+    padding: 20px;
+    width: 100%;
+}
+
+/*.navbar {
     margin-inline: 1rem;
     margin-block-end: 1rem;
     border-radius: 10px;
     min-width: 250px;
-}
+}*/
 
-.search-bar {
-    justify-content: flex-end;
+aside {   /*new layout css, do not delete!!!*/
     display: flex;
-    padding: 10px;
-    border-radius: 0;
-    width: 500px;
+    flex-direction: column;
+    margin: 20px;
+    padding: 20px;
+    min-width: 230px;
+    height: calc(100vh - 180px);
+    position: sticky;
+    top: 20px;
 }
 
-.header {
+/*.header {
     padding-left: 2rem !important;
     padding-right: 1.5rem !important;
 }
 
 .content {
     width: 100%;
-}
+}*/
 
 /*General styles*/
 
@@ -74,7 +101,7 @@ input[type="range"] {
 }
 
 #TdA-logo {
-    height: 55px;
+    height: 60px;
 }
 
 .primary-button {
@@ -118,7 +145,7 @@ input[type="range"] {
     border: none;
     border-radius: 8px;
     filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
-    padding: 7px;
+    padding: 20px;
 }
 
 .place-center {
@@ -130,6 +157,11 @@ input[type="range"] {
 .link {
     font-weight: bold;
     color: var(--clr-primary-600);
+}
+
+.minor-link {
+    color: var(--clr-primary-600);
+    text-decoration: underline;
 }
 
 /*Blazor garbage*/

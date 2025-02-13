@@ -17,6 +17,8 @@ public static class PageRoutes
         public const string GameList = "/game/list";
         public const string GameEditor = "/game/editor/{gameId:guid?}";
         public static string GameEditorWithParam(Guid? gameId) => $"/game/editor/{gameId}";
+        
+        public const string TestNav = "/test";
     }
     
     public static class Login
