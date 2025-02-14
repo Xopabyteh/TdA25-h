@@ -1,0 +1,23 @@
+@rendermode InteractiveWebAssembly
+@attribute [Route(PageRoutes.Settings.UserSettings)]
+
+<h2>Nastavení účtu</h2>
+
+<form action="" class="settings">
+    <div class="nickname">
+        <h3>Nickname</h3>
+        <input type="text" class="text-input nick" value="evezen" name="nick">
+    </div>
+    <div class="email">
+        <h3>Email</h3>
+        <input type="email" class="text-input mail" value="vaclav.brdek@mensagymnazium.cz" name="mail">
+    </div>
+    <div class="pwd">
+        <h3>Heslo</h3>
+        <button class="secondary-button">Změnit heslo</button>
+    </div>
+    <div class="line"></div>
+    <div class="save">
+        <button class="primary-button">Uložit nastavení</button>
+    </div>
+</form>

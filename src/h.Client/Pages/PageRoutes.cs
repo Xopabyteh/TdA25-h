@@ -32,4 +32,9 @@ public static class PageRoutes
         public const string AdminPanel = "/admin/panel";
         public const string Audit = "/admin/audit";
     }
+    
+    public static class Settings
+    {
+        public const string UserSettings = "/settings";
+    }
 }
