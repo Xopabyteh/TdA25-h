@@ -8,7 +8,10 @@ public static partial class SharedErrors
         public static Error UserNotFound()
             => Error.NotFound(nameof(UserNotFound), "User not found");
 
-        public static Error UserAlreadyExists()
-            => Error.Conflict(nameof(UserAlreadyExists), "User already exists");
+        public static Error UsernameAlreadyTaken()
+            => Error.Conflict(nameof(UsernameAlreadyTaken), "Username already taken");
+
+        public static Error EmailAlreadyTaken()
+            => Error.Conflict(nameof(EmailAlreadyTaken), "Email already taken");
     }
 }

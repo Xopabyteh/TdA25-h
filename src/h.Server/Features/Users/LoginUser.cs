@@ -5,12 +5,9 @@ using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using LoginUserRequest = h.Contracts.Users.LoginUserRequest;
 
 namespace h.Server.Features.Users;
@@ -27,6 +24,7 @@ public static class LoginUser
     public static async Task<IResult> Handle(
         [FromServices] IConfiguration config,
         [FromServices] AppDbContext db,
+        [FromServices] PasswordHashService passwordHashService,
         [FromServices] IValidator<LoginUserRequest> validator,
         [FromServices] JwtTokenService tokenService,
         [FromServices] IAuthenticationService authenticationService,
@@ -47,8 +45,7 @@ public static class LoginUser
             return Results.Unauthorized();
 
         // Verify password hash
-        var passwordHasher = new PasswordHasher<object>();
-        var result = passwordHasher.VerifyHashedPassword(null!, user.PasswordHash, request.Password);
+        var result = passwordHashService.VerifyHashedPassword(user.PasswordHash, request.Password);
         
         if(result is PasswordVerificationResult.Failed)
             return Results.Unauthorized();

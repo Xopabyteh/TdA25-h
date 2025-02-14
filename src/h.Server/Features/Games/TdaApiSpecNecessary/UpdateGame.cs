@@ -7,46 +7,49 @@ using h.Server.Infrastructure;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 
-namespace h.Server.Features.Games;
+namespace h.Server.Features.Games.TdaApiSpecNecessary;
 
-public static class CreateNewGame
+public static class UpdateGame
 {
     public class Endpoint : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/v1/games", Handle);
+            app.MapPut("/api/v1/games/{id}", Handle);
         }
     }
 
     public static async Task<IResult> Handle(
-        [FromBody] CreateNewGameRequest request,
-        [FromServices] AppDbContext db,
-        [FromServices] IValidator<CreateNewGameRequest> validator)
+                [FromRoute] Guid id,
+                [FromBody] UpdateGameRequest request,
+                [FromServices] AppDbContext db,
+                [FromServices] IValidator<UpdateGameRequest> validator)
     {
         // Validate
         var validationResult = validator.Validate(request);
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
             return ErrorResults.ValidationError(validationResult);
 
-        // Map to entity
-        var boardResult = GameBoard.Parse(request.Board);
-        if (boardResult.IsError)
-        {
-            // -> Error while parsing
-            return ErrorResults.ValidationError(boardResult.Errors);
-        }
+        var game = await db.GamesDbSet.FindAsync(id);
 
-        var board = boardResult.Value;
-        var gameResult = Game.CreateNewGame(request.Name, request.Difficulty, board);
-                
-        if(gameResult.IsError)
-            return ErrorResults.ValidationError(gameResult.Errors);
-                
-        var game = gameResult.Value;
-                
+        if (game is null)
+            return ErrorResults.NotFound();
+
+        var newBoardResult = GameBoard.Parse(request.Board);
+        if (newBoardResult.IsError)
+            return ErrorResults.ValidationError(newBoardResult.Errors);
+
+        // Update properties
+        var updateResult = game.Update(
+            request.Name,
+            request.Difficulty,
+            newBoardResult.Value
+        );
+        if (updateResult.IsError)
+            return ErrorResults.ValidationError(updateResult.Errors);
+
         // Persist
-        await db.GamesDbSet.AddAsync(game);
+        db.GamesDbSet.Update(game);
         await db.SaveChangesAsync();
 
         // Map to response
@@ -59,11 +62,11 @@ public static class CreateNewGame
             game.GameState,
             game.Board.BoardMatrixToString()
         );
-                
-        return Results.Created($"/api/games/{game.Id}", response);
+
+        return Results.Ok(response);
     }
 
-    public class Validator : AbstractValidator<CreateNewGameRequest>
+    public class Validator : AbstractValidator<UpdateGameRequest>
     {
         public Validator()
         {

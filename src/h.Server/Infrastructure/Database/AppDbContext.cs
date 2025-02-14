@@ -1,19 +1,25 @@
 ﻿using h.Primitives.Users;
 using h.Server.Entities.Games;
 using h.Server.Entities.Users;
+using h.Server.Infrastructure.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartEnum.EFCore;
 
 namespace h.Server.Infrastructure.Database;
 
+/// <summary>
+/// Responsible for db context configuration and seeding.
+/// </summary>
 public class AppDbContext : DbContext
 {
     private readonly IConfiguration _config;
-    public AppDbContext(DbContextOptions options, IConfiguration config) : base(options)
+    private readonly PasswordHashService passwordHashService;
+    public AppDbContext(DbContextOptions options, IConfiguration config, PasswordHashService passwordHashService) : base(options)
     {
         // DI, NOOP
         _config = config;
+        this.passwordHashService = passwordHashService;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -24,7 +30,6 @@ public class AppDbContext : DbContext
     
         optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
         {
-            var passwordHasher = new PasswordHasher<object>();
             var adminUser = await context.Set<User>().FirstOrDefaultAsync(u => u.Email == _config["Auth:AdminUser:Email"]);
             
             if(adminUser is null)
@@ -33,8 +38,8 @@ public class AppDbContext : DbContext
                 {
                     Email = _config["Auth:AdminUser:Email"]!,
                     Username = _config["Auth:AdminUser:Username"]!,
-                    PasswordHash = passwordHasher.HashPassword(null!, _config["Auth:AdminUser:Password"]!),
-                    Elo = new(),
+                    PasswordHash = passwordHashService.GetPasswordHash(_config["Auth:AdminUser:Password"]!),
+                    Elo = new(0),
                     WinAmount = 0,
                     LossAmount = 0,
                     DrawAmount = 0,

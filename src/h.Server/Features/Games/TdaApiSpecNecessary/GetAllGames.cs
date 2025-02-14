@@ -4,7 +4,7 @@ using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace h.Server.Features.Games;
+namespace h.Server.Features.Games.TdaApiSpecNecessary;
 
 public static class GetAllGames
 {
@@ -19,7 +19,8 @@ public static class GetAllGames
     public static async Task<IResult> Handle([FromServices] AppDbContext db)
     {
         // Get from db
-        var games = await db.GamesDbSet.Select(g => new {
+        var games = await db.GamesDbSet.Select(g => new
+        {
             g.Id,
             g.CreatedAt,
             g.UpdatedAt,

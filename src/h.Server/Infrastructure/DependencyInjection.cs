@@ -96,7 +96,8 @@ public static class DependencyInjection
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
                 .RequireAuthenticatedUser().Build());
         });
-
+        builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<PasswordHashService>();
         builder.Services.AddScoped<JwtTokenService>();
 
         return builder;

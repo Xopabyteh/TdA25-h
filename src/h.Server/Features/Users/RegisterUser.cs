@@ -4,13 +4,10 @@ using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
 using h.Contracts.Users;
 using h.Server.Infrastructure.Database;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using h.Contracts;
 using h.Server.Entities.Users;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 
 namespace h.Server.Features.Users;
 
@@ -26,6 +23,8 @@ public static class RegisterUser
     public static async Task<IResult> Handle(
         [FromServices] IConfiguration config,
         [FromServices] AppDbContext db,
+        [FromServices] UserService userService,
+        [FromServices] PasswordHashService passwordHashService,
         [FromServices] IValidator<RegisterUserRequest> validator,
         [FromServices] JwtTokenService tokenService,
         [FromServices] IAuthenticationService authenticationService,
@@ -39,16 +38,15 @@ public static class RegisterUser
             return ErrorResults.ValidationError(validationResult);
 
         // Check if user exists
-        var userExists = await db.UsersDbSet.AnyAsync(u => u.Email == request.Email || u.Username == request.Username, cancellationToken);
-        if (userExists)
-            return ErrorResults.Conflit("The user already exists", [SharedErrors.User.UserAlreadyExists()]);
+        var nicknameTakenErrors = await userService.NicknameAlreadyRegistered(request.Username, request.Email, cancellationToken);
+        if (nicknameTakenErrors is not null)
+            return ErrorResults.Conflit("The user already exists", nicknameTakenErrors);
         
         // Hash password
-        var passwordHasher = new PasswordHasher<object>();
-        var passwordEncrypted = passwordHasher.HashPassword(null!, request.Password);
+        var passwordHash = passwordHashService.GetPasswordHash(request.Password);
 
         // Create user
-        var user = User.NewUser(request.Username, request.Email, passwordEncrypted);
+        var user = User.NewUser(request.Username, request.Email, passwordHash);
 
         await db.UsersDbSet.AddAsync(user, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
@@ -85,6 +83,8 @@ public static class RegisterUser
             RuleFor(x => x.Password).NotEmpty();
             RuleFor(x => x.Email).NotEmpty();
             RuleFor(x => x.Username).NotEmpty();
+
+            // Todo: Validate password specs
         }
     }
 }
