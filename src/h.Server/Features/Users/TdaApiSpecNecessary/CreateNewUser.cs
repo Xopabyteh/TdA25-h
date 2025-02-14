@@ -59,7 +59,8 @@ public static class CreateNewUser
         await db.SaveChangesAsync(cancellationToken);
 
         // Map and return
-        return Results.Ok(
+        return Results.Created(
+            $"/api/v1/users/{user.Uuid}",
             new UserResponse(
                 user.Uuid,
                 user.CreatedAt,

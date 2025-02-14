@@ -14,6 +14,7 @@ public static class DeleteGame
             app.MapDelete("/api/v1/games/{id}", Handle);
         }
     }
+
     public static async Task<IResult> Handle(
         [FromRoute] Guid id,
         [FromServices] AppDbContext db)
@@ -28,5 +29,4 @@ public static class DeleteGame
 
         return Results.StatusCode(204);
     }
-
 }

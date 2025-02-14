@@ -29,6 +29,6 @@ public static class DeleteUser
         db.UsersDbSet.Remove(user);
         await db.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok();
+        return Results.StatusCode(204);
     }
 }
