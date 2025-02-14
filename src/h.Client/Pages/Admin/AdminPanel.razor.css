@@ -1,0 +1,60 @@
+.admin-options-group {
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+
+.admin-flex-element {
+    display: flex;
+    gap: 80px;
+}
+
+.admin-options-group p {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.edit-button {
+    width: 13px;
+    height: 13px;
+    background-size: contain;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0);
+    background-image: url("/IMG/icons/edit.svg");
+    border: none;
+    background-repeat: no-repeat;
+}
+
+.admin-search {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-top: 30px;
+    padding-bottom: 15px;
+}
+
+.admin-search input {
+    min-width: 300px;
+}
+
+.danger-button {
+    color: white;
+    border: var(--clr-red) solid 2px;
+    background-color: var(--clr-red);
+    border-radius: 4px;
+    align-content: center;
+    padding: 0.3em 3.5em;
+    margin: 2px 0;
+    cursor: pointer;
+    min-width: 205px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.admin-error {
+    padding: 13px 25px;
+    background-color: #f25f5f;
+    color: white;
+    border-radius: 4px;
+    display: none; /*mel by to jinak byt inline-block*/
+}
