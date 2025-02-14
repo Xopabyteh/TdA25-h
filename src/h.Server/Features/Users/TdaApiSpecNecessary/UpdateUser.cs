@@ -54,6 +54,18 @@ public static class UpdateUser
         db.Update(user);    
         await db.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok();
+        var response = new UserResponse(
+            user.Uuid,
+            user.CreatedAt,
+            user.UpdatedAt,
+            user.Username,
+            user.Email,
+            user.Elo.Rating,
+            user.WinAmount,
+            user.DrawAmount,
+            user.LossAmount
+        );
+
+        return Results.Ok(response);
     }
 }
