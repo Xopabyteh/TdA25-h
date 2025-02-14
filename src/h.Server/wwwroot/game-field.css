@@ -18,7 +18,7 @@
 .game-field-row {
     display: flex;
     flex-direction: row;
-    height: 50px;
+    height: 40px;
 }
 
 .col-btn-dark {

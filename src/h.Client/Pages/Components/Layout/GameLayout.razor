@@ -1,6 +1,19 @@
 @inherits LayoutComponentBase
 
-<div class="page">
+
+<header>
+    <NavLink href="/index"> @*TODO: change to "/" later*@
+        <img src="/IMG/Logo/Think-different-Academy_LOGO_oficialni_1 1.svg" id="TdA-logo"/>
+    </NavLink>
+</header>
+<div class="display">
+    <main class="place-center">
+        @Body
+    </main>
+</div>
+
+
+@*<div class="page">
     <header class="top-bar">
         <a href="/">
             <img src="/IMG/Logo/Think-different-Academy_LOGO_oficialni_1 1.svg" alt="Think different Academy" id="TdA-logo">
@@ -12,7 +25,7 @@
             @Body
         </article>
     </div>
-</div>
+</div>*@
 
 
 <div id="blazor-error-ui">

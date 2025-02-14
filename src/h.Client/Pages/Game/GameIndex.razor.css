@@ -207,3 +207,7 @@
     flex-direction: column;
     gap: 10px;
 }
+
+.save-game-btn {
+    box-sizing: border-box;
+}

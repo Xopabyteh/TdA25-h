@@ -4,7 +4,7 @@
 @using h.Primitives.Games
 @attribute [Route(PageRoutes.Game.GameIndex)]
 @rendermode InteractiveWebAssembly
-@layout NoNavLayout
+@layout GameLayout
 
 <PageTitle>Hrát hru</PageTitle>
 
@@ -109,7 +109,7 @@
                         string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
 
                         <div class="cell empty"
-                             style="width: 50px; background-color: @background;"
+                             style="width: 40px; background-color: @background;"
                              data-x="@xCopy"
                              data-y="@yCopy">
 
@@ -142,6 +142,7 @@
                     <h3 style="color: #0070BB">Poslední úprava</h3>
                     <span>@loadedGame.Value.UpdatedAt.ToShortDateString()</span>
                 </div>
+                @*TODO: chybejici tlacitko?*@
             </div>
         }
         else // LoadedGame is null
