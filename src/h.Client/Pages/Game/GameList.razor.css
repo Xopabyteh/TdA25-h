@@ -207,3 +207,7 @@
     justify-content: space-between;
     margin-block-start: 1rem;
 }
+
+.btn-filter, .btn-cancel-filters {
+    box-sizing: border-box;
+}
