@@ -10,3 +10,7 @@
 .text-input {
     min-width: 230px;
 }
+
+.register-btn {
+    box-sizing: border-box;
+}
