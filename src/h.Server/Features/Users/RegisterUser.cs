@@ -5,7 +5,6 @@ using h.Server.Infrastructure.Auth;
 using h.Contracts.Users;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
-using h.Contracts;
 using h.Server.Entities.Users;
 using Microsoft.AspNetCore.Authentication;
 

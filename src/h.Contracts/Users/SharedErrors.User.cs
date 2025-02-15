@@ -8,6 +8,11 @@ public static partial class SharedErrors
         public static Error UserNotFound()
             => Error.NotFound(nameof(UserNotFound), "User not found");
 
+        public class UserNotFoundExceptin : Exception
+        {
+            public UserNotFoundExceptin() : base("User not found") { }
+        }
+
         public static Error UsernameAlreadyTaken()
             => Error.Conflict(nameof(UsernameAlreadyTaken), "Username already taken");
 

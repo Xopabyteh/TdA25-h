@@ -3,8 +3,11 @@ using FluentValidation;
 using h.Client.Services;
 using h.Client.Services.Game;
 using h.Primitives.Games;
+using h.Primitives.Users;
+using h.Server.Features.Matchmaking;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
+using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,7 +59,12 @@ public static class DependencyInjection
 
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
+        // Core
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+
+        // SignalR
+        builder.Services.AddSignalR();
+        builder.Services.AddSingleton(typeof(IHubUserIdMappingService<>), typeof(InMemoryHubUserIdMappingService<>));
 
         // Add EF Core
         builder.Services.AddScoped<AutoSetUpdatedAtDbSaveInterceptor>();
@@ -94,12 +102,30 @@ public static class DependencyInjection
         {
             c.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                .RequireAuthenticatedUser().Build());
+                .RequireAuthenticatedUser()
+                .Build()
+            );
+
+            c.AddPolicy(AppPolicyNames.AbleToJoinMatchmaking, pb =>
+            {
+                pb.RequireAuthenticatedUser();
+                
+                // Assert the user is not an admin
+                pb.RequireAssertion(context =>
+                {
+                    var user = context.User;
+                    return !user.IsInRole(nameof(UserRole.Admin));
+                });
+            });
         });
         builder.Services.AddScoped<UserService>();
         builder.Services.AddScoped<PasswordHashService>();
         builder.Services.AddScoped<JwtTokenService>();
 
+        // Matchmaking
+        builder.Services.AddSingleton<IMatchmakingQueueService, InMemoryMatchmakingQueueService>();
+        builder.Services.AddSingleton<InMemoryMatchmakingService>();
+        builder.Services.AddHostedService<MatchPlayerBackgroundService>();
         return builder;
     }
 }

@@ -1,5 +1,4 @@
-﻿using h.Primitives.Users;
-using h.Server.Entities.Users;
+﻿using h.Server.Entities.Users;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -30,9 +29,9 @@ public class JwtTokenService
             audience: _config["Auth:Jwt:Audience"],
             claims: [
                 // Claims from user
-                new Claim(JwtRegisteredClaimNames.Sub, user.Uuid.ToString()),
-                new Claim(JwtRegisteredClaimNames.Name, user.Username),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Uuid.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
                 
                 // Roles
                 ..claimsFromRoles

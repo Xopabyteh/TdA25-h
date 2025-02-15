@@ -1,9 +1,10 @@
 using Carter;
 using h.Contracts;
+using h.Contracts.Matchmaking;
 using h.Server.Components;
 using h.Server.Infrastructure;
+using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -47,5 +48,7 @@ app.MapRazorComponents<App>()
 app.UseMiddleware<BadRequestResponseMiddleware>();
 
 app.MapCarter();
+
+app.MapHub<MatchmakingHub>(IMatchmakingHubClient.Route);
 
 app.Run();

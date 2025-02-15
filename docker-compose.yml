@@ -6,8 +6,3 @@ services:
     build:
       context: .
       dockerfile: src/h.Server/Dockerfile
-  redis:
-    image: redis
-    container_name: redis
-    ports:
-      - "6379:6379"
