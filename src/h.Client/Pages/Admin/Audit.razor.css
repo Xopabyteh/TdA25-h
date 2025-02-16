@@ -1,11 +1,11 @@
 th {
     font-weight: normal;
-    border-bottom: 1px solid #c0c0c0;
+    border-bottom: 1px solid var(--clr-gray-600);
     text-align: left;
 }
 
 .audit-head {
-    border-bottom: 1px #c0c0c0 solid;
+    border-bottom: 1px var(--clr-gray-600) solid;
 }
 
 .data-table {

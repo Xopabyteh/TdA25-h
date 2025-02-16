@@ -1,0 +1,71 @@
+.secondary-column {
+    display: flex;
+    flex-direction: column;
+    place-self: flex-start;
+    padding: 5px;
+    align-items: center;
+    margin-right: 30px;
+}
+
+.warning {
+    font-size: 17px;
+}
+
+.primary-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+.players {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 50px;
+    align-items: center;
+}
+
+.players img, .turn img {
+    height: 30px;
+    width: 30px;
+}
+
+.turn {
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+}
+
+.divider {
+    background: var(--clr-gray-600);
+    height: 30px;
+    width: 1px;
+}
+
+.p1, .p2 {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+}
+
+.turn-row {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    justify-content: center;
+    gap: 10px;
+}
+
+.elo {
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.round {
+    display: flex;
+    align-items: center;
+    padding: 20px 50px;
+}
