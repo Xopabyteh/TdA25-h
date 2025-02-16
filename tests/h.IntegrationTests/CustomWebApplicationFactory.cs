@@ -1,7 +1,6 @@
 ﻿using h.Contracts.Users;
 using h.Server.Features.Matchmaking;
 using h.Server.Infrastructure.Database;
-using h.Server.Infrastructure.Matchmaking;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -60,9 +59,10 @@ public class CustomWebApplicationFactory
     /// <summary>
     /// Creates a new user and logs into him.
     /// Make sure the test depends on <see cref="h.IntegrationTests.Auth.AuthTests.Login_ValidUser_ReturnsSuccess"/>.
+    /// Don't forget to dispose the client after the test.
     /// </summary>
     /// <returns>HttpClient with authorization header</returns>
-    public async Task<HttpClient> CreateUserAndLoginAsync(
+    public async Task<(HttpClient client, AuthenticationResponse loginResult)> CreateUserAndLoginAsync(
         string nickname,
         ulong eloRating)
     {
@@ -92,10 +92,10 @@ public class CustomWebApplicationFactory
             "Bearer",
             loginResult.Token);
 
-        return client;
+        return (client, loginResult);
     }
 
-    public async Task<HubConnection> CreateSignalRConnection(string hubName, string? jwtToken = null)
+    public HubConnection CreateSignalRConnection(string hubName, string? jwtToken = null)
     {
         var handler = Server.CreateHandler();
 	    var hubConnection = new HubConnectionBuilder()

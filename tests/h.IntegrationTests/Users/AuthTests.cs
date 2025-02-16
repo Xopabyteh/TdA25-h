@@ -6,18 +6,18 @@ namespace h.IntegrationTests.Auth;
 
 public class AuthTests
 {
-    [ClassDataSource<CustomWebApplicationFactory>(Shared = SharedType.PerClass)]
-    public static CustomWebApplicationFactory _classApiFactory { get; set; } = null!;
+    [ClassDataSource<CustomWebApplicationFactory>(Shared = SharedType.PerTestSession)]
+    public static CustomWebApplicationFactory _sessionApiFactory { get; set; } = null!;
     
 
     [Test]
     public async Task Register_ValidUser_ReturnsSuccess()
     {
         // Arrange
-        using var client = _classApiFactory.CreateClient();
+        using var client = _sessionApiFactory.CreateClient();
         var request = new RegisterUserRequest(
-            "user1",
-            "email1@tda.h",
+            "authTestUser1",
+            "authTestEmail1@tda.h",
             "P@ssw0rd"
         );
 
@@ -32,10 +32,10 @@ public class AuthTests
     public async Task Register_InvalidUser_ReturnsBadRequest()
     {
         // Arrange
-        using var client = _classApiFactory.CreateClient();
+        using var client = _sessionApiFactory.CreateClient();
         var request = new RegisterUserRequest(
-            "invaliduser1",
-            "invalidemail1@tda.h",
+            $"invaliduser1",
+            $"invalidemail1@tda.h",
             "password" // Weak (invalid) password
         );
         // Act
@@ -50,9 +50,9 @@ public class AuthTests
     public async Task Login_ValidUser_ReturnsSuccess()
     {
         // Arrange
-        using var client = _classApiFactory.CreateClient();
+        using var client = _sessionApiFactory.CreateClient();
         var request = new LoginUserRequest(
-            "user1",
+            "authTestUser1",
             "P@ssw0rd"
         );
         // Act

@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace h.Server.Features.Matchmaking;
 
+/// <summary>
+/// Module used for joining and leaving the queue.
+/// </summary>
 public static class MatchmakingQueueFeatureModule
 {
     public class Endpoint : ICarterModule
