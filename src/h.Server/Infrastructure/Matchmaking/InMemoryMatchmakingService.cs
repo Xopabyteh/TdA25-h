@@ -123,6 +123,9 @@ public class InMemoryMatchmakingService
         }
     }
 
+    /// <summary>
+    /// Removes a matching - which declines it (but also makes in unaccessible!).
+    /// </summary>
     public ErrorOr<Unit> DeclineAndRemoveMatching(Guid matchingId, Guid userId)
     {
         lock (_playerMatchings)
@@ -134,6 +137,7 @@ public class InMemoryMatchmakingService
                 return SharedErrors.Matchmaking.UserNotPartOfMatching();
 
             RemovePlayerMatchingInternal(matchingId);
+
             return Unit.Value;
         }
     }

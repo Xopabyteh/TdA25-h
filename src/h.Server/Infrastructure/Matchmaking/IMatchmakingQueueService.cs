@@ -5,8 +5,12 @@
 /// </summary>
 public interface IMatchmakingQueueService
 {
-    int AddUserToQueue(Guid userId);
-    bool RemoveUserFromQueue(Guid userId);
-    int AddUserToStartOfQueue(Guid userId);
-    (Guid user1Id, Guid user2Id)? MatchUsers();
+    public int AddUserToQueue(Guid userId);
+    public bool RemoveUserFromQueue(Guid userId);
+    public int AddUserToStartOfQueue(Guid userId);
+    public (Guid user1Id, Guid user2Id)? MatchUsers();
+    /// <summary>
+    /// To simplify testing
+    /// </summary>
+    internal Guid? GetFirstInQueue();
 }

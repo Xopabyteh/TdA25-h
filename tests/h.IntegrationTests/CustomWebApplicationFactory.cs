@@ -99,9 +99,9 @@ public class CustomWebApplicationFactory
     {
         var handler = Server.CreateHandler();
 	    var hubConnection = new HubConnectionBuilder()
-		    .WithUrl($"wss://localhost/{hubName}", o =>
+		    .WithUrl($"ws://localhost/{hubName}", o =>
 		    {
-			    o.HttpMessageHandlerFactory = _ => handler;
+                o.HttpMessageHandlerFactory = _ => handler;
                 // Using JWT bearer token
                 o.AccessTokenProvider = () => Task.FromResult(jwtToken);
             })

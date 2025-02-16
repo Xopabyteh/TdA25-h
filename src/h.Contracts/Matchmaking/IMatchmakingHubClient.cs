@@ -18,5 +18,5 @@ public interface IMatchmakingHubClient
     /// Invoked from server when a match is cancelled:
     /// expired or one of the players rejected the match
     /// </summary>
-    public Task MatchCancelled();
+    public Task MatchCancelled(Guid matchId);
 }

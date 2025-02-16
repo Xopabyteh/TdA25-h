@@ -58,4 +58,14 @@ public class InMemoryMatchmakingQueueService : IMatchmakingQueueService
             return (user1Id, user2Id);
         }
     }
+
+    Guid? IMatchmakingQueueService.GetFirstInQueue()
+    {
+        lock(_queue)
+        {
+            return _queue.Count > 0
+                ? _queue[0]
+                : null;
+        }
+    }
 }
