@@ -58,7 +58,7 @@ public static class RegisterUser
 
         // Map and return
         return Results.Ok(
-            new AuthenticatiionResponse(
+            new AuthenticationResponse(
                 token,
                 new UserResponse(
                     user.Uuid,

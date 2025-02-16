@@ -72,19 +72,17 @@ public class GameTests
     [Fact]
     public void CreateNewGame_GameState_Opening_ClassifiedCorrectly()
     {
-        // Arrange (5x and 5o)
+        // Arrange (4x and 4o)
         var board = GameBoard.CreateNew();
         board.SetSymbolAt(new Int2(0,0), GameSymbol.X);
         board.SetSymbolAt(new Int2(1,0), GameSymbol.O);
         board.SetSymbolAt(new Int2(2,0), GameSymbol.X);
         board.SetSymbolAt(new Int2(3,0), GameSymbol.O);
-        board.SetSymbolAt(new Int2(4,0), GameSymbol.X);
 
         board.SetSymbolAt(new Int2(0,1), GameSymbol.O);
         board.SetSymbolAt(new Int2(1,1), GameSymbol.X);
         board.SetSymbolAt(new Int2(2,1), GameSymbol.O);
         board.SetSymbolAt(new Int2(3,1), GameSymbol.X);
-        board.SetSymbolAt(new Int2(4,1), GameSymbol.O);
 
         // Act
         var game = Game.CreateNewGame("name", GameDifficulty.Easy, board);

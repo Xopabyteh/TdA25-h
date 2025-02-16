@@ -3,7 +3,7 @@
 /// <summary>
 /// Login and register response
 /// </summary>
-public readonly record struct AuthenticatiionResponse(
+public readonly record struct AuthenticationResponse(
     string Token,
     UserResponse User
 );

@@ -57,7 +57,7 @@ public static class LoginUser
         httpContext.Response.Headers.Append("Authorization", $"Bearer {token}");
 
         // Map and return
-        return Results.Ok(new AuthenticatiionResponse(
+        return Results.Ok(new AuthenticationResponse(
             token,
             new UserResponse(
                 user.Uuid,

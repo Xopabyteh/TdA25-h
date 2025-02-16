@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Features.Matchmaking;
 
-public class MatchPlayerBackgroundService : BackgroundService
+public class MatchPlayersBackgroundService : BackgroundService
 {
     private const int MatchUsersEveryMs = 1000;
 
@@ -17,17 +17,17 @@ public class MatchPlayerBackgroundService : BackgroundService
     private readonly IHubContext<MatchmakingHub, IMatchmakingHubClient> _matchmakingHub;
     private readonly IHubUserIdMappingService<MatchmakingHub> _userIdMappingService;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<MatchPlayerBackgroundService> _logger;
+    private readonly ILogger<MatchPlayersBackgroundService> _logger;
 
     private PeriodicTimer timer = new(TimeSpan.FromMilliseconds(MatchUsersEveryMs));
 
-    public MatchPlayerBackgroundService(
+    public MatchPlayersBackgroundService(
         IMatchmakingQueueService matchmakingQueue,
         InMemoryMatchmakingService matchmakingService,
         IHubContext<MatchmakingHub, IMatchmakingHubClient> matchmakingHub,
         IHubUserIdMappingService<MatchmakingHub> userIdMappingService,
         IServiceScopeFactory serviceScopeFactory,
-        ILogger<MatchPlayerBackgroundService> logger)
+        ILogger<MatchPlayersBackgroundService> logger)
     {
         _matchmakingQueue = matchmakingQueue;
         _matchmakingService = matchmakingService;
@@ -50,9 +50,12 @@ public class MatchPlayerBackgroundService : BackgroundService
     /// <summary>
     /// Match users,
     /// Create unaccepted matching,
-    /// Notify clients to accept
+    /// Notify clients to accept.
     /// </summary>
-    private async Task MatchUsers(AppDbContext dbContext)
+    /// <remarks>
+    /// internal for testing purposes.
+    /// </remarks>
+    internal async Task MatchUsers(AppDbContext dbContext)
     {
         // Try find matching
         var potentialMatching = _matchmakingQueue.MatchUsers();

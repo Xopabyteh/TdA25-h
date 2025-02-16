@@ -38,6 +38,8 @@ public static class DependencyInjection
             o.SerializerOptions.Converters.Add(new GameStateJsonConverter());
         });
 
+        builder.Services.AddCors();
+
         return builder;
     }
 
@@ -125,7 +127,7 @@ public static class DependencyInjection
         // Matchmaking
         builder.Services.AddSingleton<IMatchmakingQueueService, InMemoryMatchmakingQueueService>();
         builder.Services.AddSingleton<InMemoryMatchmakingService>();
-        builder.Services.AddHostedService<MatchPlayerBackgroundService>();
+        builder.Services.AddHostedService<MatchPlayersBackgroundService>();
         return builder;
     }
 }

@@ -5,6 +5,7 @@ using h.Server.Components;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
+using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -37,6 +38,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+app.UseCors(c =>
+{
+    c.AllowAnyHeader();
+    c.AllowAnyMethod();
+    c.AllowAnyOrigin();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -52,3 +60,5 @@ app.MapCarter();
 app.MapHub<MatchmakingHub>(IMatchmakingHubClient.Route);
 
 app.Run();
+
+public partial class Program { }
