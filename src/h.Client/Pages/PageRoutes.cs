@@ -1,11 +1,13 @@
-﻿namespace h.Client.Pages;
+﻿using System.Runtime.CompilerServices;
+
+namespace h.Client.Pages;
 public static class PageRoutes
 {
     /// <summary>
     /// Temporarily rerouted to <see cref="GameList"/>
     /// </summary>
     
-    public const string HomeIndex = "/index"; /*TODO: zrusit redirect pls*/
+    public const string HomeIndex = "/";
 
     
     public static class Game
@@ -19,6 +21,12 @@ public static class PageRoutes
         public const string GameList = "/game/list";
         public const string GameEditor = "/game/editor/{gameId:guid?}";
         public static string GameEditorWithParam(Guid? gameId) => $"/game/editor/{gameId}";
+    }
+    
+    public static class Ranked
+    {
+        public const string RankedIndex = "/game/ranked/";
+        public const string RankedQueue = "/game/ranked/queue";
     }
     
     public static class Login
