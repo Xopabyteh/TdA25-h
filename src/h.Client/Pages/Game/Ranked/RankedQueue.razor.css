@@ -1,0 +1,108 @@
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.split-sides {
+    display: flex;
+}
+
+.split-sides .side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    border-left: 1px solid #d1d1d1;
+    border-right: 1px solid #d1d1d1;
+    padding: 31px;
+}
+
+.split-sides .side:first-child {
+    border-left: none;
+}
+
+.split-sides .side:last-child {
+    border-right: none;
+}
+
+.gameinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.queue-show .side {
+    flex: 1;
+    min-width: 0;
+}
+
+.queue-show .side:first-child { align-items: flex-end; } /*Zarovnat napravo*/
+.queue-show .side:last-child { align-items: flex-start; } /*Zarovnat nalevo*/
+
+.user-cont-game {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-cont-game .pfp {
+    width: 50px;
+    height: 50px;
+    background-image: url("/IMG/pfps/pfp-blue.svg");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.user-cont-game .pfp.loader {
+    background-image: url("/IMG/loader.gif");
+    filter: saturate(0%) opacity(40%);
+}
+
+
+.user-cont-game .username {
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+.user-cont-game .status {
+    font-size: 11pt;
+}
+
+.user-cont-game .status.gray {
+    color: #8f8f8f;
+}
+
+.gametools {
+    max-width: 60%;
+}
+
+.not-logged-popup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 69;
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--clr-white);
+    border-radius: 8px;
+    padding: 20px;
+    gap: 10px;
+    align-items: center;
+    max-width: 25%;
+}
+
+.dialog span {
+    text-align: center;
+}
