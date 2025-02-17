@@ -23,10 +23,10 @@ public static class PageRoutes
         public static string GameEditorWithParam(Guid? gameId) => $"/game/editor/{gameId}";
     }
     
-    public static class Ranked
+    public static class Multiplayer /*Multiplayer game*/
     {
-        public const string RankedIndex = "/game/ranked/";
-        public const string RankedQueue = "/game/ranked/queue";
+        public const string MultiplayerIndex = "/multiplayer-game";
+        public const string MultiplayerQueue = "/multiplayer-game/queue";
     }
     
     public static class Login

@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace h.Client.Pages.Game.Ranked;
 
-public partial class RankedIndex
+public partial class MultiplayerIndex
 {
     private bool xOnTurn = true;
     private string turnDisplaySrc = "";
