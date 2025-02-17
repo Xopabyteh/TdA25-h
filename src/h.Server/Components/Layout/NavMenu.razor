@@ -8,26 +8,26 @@
 @*TODO: <a/> na <NavLink/>
 to ale dělá vykutálené skopičiny a fuckupuje to UI*@
 <nav>
-    <a href="/game/list" class="link x" Match="NavLinkMatch.All"> <!--TODO: nastavit co je active -->
+    <NavLink href="/game/list" class="link x" Match="NavLinkMatch.All"> <!--TODO: nastavit co je active -->
         <div class="nav-icon"></div>
         <span>Výběr úloh</span>
-    </a>
-    <a href="/game/editor" class="link o">
+    </NavLink>
+    <NavLink href="/game/editor" class="link o">
         <div class="nav-icon"></div>
         <span>Vytvořit novou úlohu</span>
-    </a>
-    <a href="/settings" class="link x">
+    </NavLink>
+    <NavLink href="/settings" class="link x">
         <div class="nav-icon"></div>
         <span>Nastavení účtu</span> <!--  TODO: Jen když je přihlášen  -->
-    </a>
-    <a href="/game/ranked/queue" class="link o">
+    </NavLink>
+    <NavLink href="/game/ranked/queue" class="link o">
         <div class="nav-icon"></div>
         <span>Ranked hra</span>
-    </a>
-    <a href="" class="link x">
+    </NavLink>
+    <NavLink href="" class="link x">
         <div class="nav-icon"></div>
         <span>Hraj s kamarádem</span>
-    </a>
+    </NavLink>
     <p id="nav-foot">
         <span>v.69</span>
         <a href="/admin/panel">Admin</a><!--  TODO: Jen když je admin  -->
