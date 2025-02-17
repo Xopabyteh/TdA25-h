@@ -2,6 +2,7 @@
 using FluentValidation;
 using h.Client.Services;
 using h.Client.Services.Game;
+using h.Contracts.Matchmaking;
 using h.Primitives.Games;
 using h.Primitives.Users;
 using h.Server.Features.Matchmaking;
@@ -9,7 +10,6 @@ using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
@@ -128,6 +128,9 @@ public static class DependencyInjection
         builder.Services.AddSingleton<IMatchmakingQueueService, InMemoryMatchmakingQueueService>();
         builder.Services.AddSingleton<InMemoryMatchmakingService>();
         builder.Services.AddHostedService<MatchPlayersBackgroundService>();
+        builder.Services.AddHostedService<RemoveExpiredMatchingsBackgroundService>();
+        builder.Services.Configure<MatchmakingOptions>(builder.Configuration.GetSection(MatchmakingOptions.SectionName));
+
         return builder;
     }
 }

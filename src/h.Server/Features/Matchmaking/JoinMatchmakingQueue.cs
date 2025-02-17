@@ -1,4 +1,6 @@
 ﻿using Carter;
+using h.Contracts;
+using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Matchmaking;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +29,11 @@ public static class JoinMatchmakingQueue
     {
         // Todo: make sure he is not already in the queue
         var userId = httpContext.User.GetUserId();
-        var posInQueue = matchmakingQueue.AddUserToQueue(userId);
+        var queueResult = matchmakingQueue.AddUserToQueue(userId);
 
-        return Results.Ok(posInQueue);
+        return queueResult.MatchFirst(
+            position => Results.Ok(position),
+            ErrorResults.FromFirstError
+        );
     }
 }

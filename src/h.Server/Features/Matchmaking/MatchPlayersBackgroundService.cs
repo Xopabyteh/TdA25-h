@@ -94,13 +94,17 @@ public class MatchPlayersBackgroundService : BackgroundService
             if (user1ConnectionId is not null)
             {
                 _logger.LogInformation("Requeuing player {PlayerId} to the start", potentialMatching.Value.user1Id);
-                _matchmakingQueue.AddUserToStartOfQueue(potentialMatching.Value.user1Id);
+                var requeueResult = _matchmakingQueue.AddUserToStartOfQueue(potentialMatching.Value.user1Id);
+                if (requeueResult.IsError)
+                    throw new SharedErrors.Matchmaking.UserAlreadyInQueueException();
             }
             
             if (user2ConnectionId is not null)
             {
                 _logger.LogInformation("Requeuing player {PlayerId} to the start", potentialMatching.Value.user2Id);
-                _matchmakingQueue.AddUserToStartOfQueue(potentialMatching.Value.user2Id);
+                var requeueResult = _matchmakingQueue.AddUserToStartOfQueue(potentialMatching.Value.user2Id);
+                if (requeueResult.IsError)
+                    throw new SharedErrors.Matchmaking.UserAlreadyInQueueException();
             }
             
             return;

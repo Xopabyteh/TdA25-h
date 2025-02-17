@@ -8,6 +8,11 @@ public static partial class SharedErrors
         public static Error UserAlreadyInQueue()
             => Error.Conflict(nameof(UserAlreadyInQueue), "User is already in the queue");
 
+        public class UserAlreadyInQueueException : Exception
+        {
+            public UserAlreadyInQueueException() : base("User is already in the queue") { }
+        }
+
         public static Error MatchingNotFound()
             => Error.NotFound(nameof(MatchingNotFound), "Matching not found");
 

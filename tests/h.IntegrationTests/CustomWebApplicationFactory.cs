@@ -51,9 +51,17 @@ public class CustomWebApplicationFactory
                 services.Single(s => s.ImplementationType == typeof(MatchPlayersBackgroundService))
             );
             services.AddSingleton<MatchPlayersBackgroundService>();
+
+            // Remove matchmaking expiration background service and turn it into a singleton
+            services.Remove(
+                services.Single(s => s.ImplementationType == typeof(RemoveExpiredMatchingsBackgroundService))
+            );
+            services.AddSingleton<RemoveExpiredMatchingsBackgroundService>();
         });
 
         builder.UseEnvironment("Development");
+
+        base.ConfigureWebHost(builder);
     }
 
     /// <summary>

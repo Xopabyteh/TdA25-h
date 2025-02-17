@@ -1,4 +1,5 @@
 ﻿using Carter;
+using h.Contracts;
 using h.Contracts.Matchmaking;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
@@ -42,7 +43,9 @@ public static class DeclineMatch
 
                 // Add other player back to the queue
                 var otherPlayer = matching.Value.GetPlayersInMatch().First(playerId => playerId != userId);
-                matchmakingQueueService.AddUserToStartOfQueue(otherPlayer);
+                var requeueResult = matchmakingQueueService.AddUserToStartOfQueue(otherPlayer);
+                if(requeueResult.IsError)
+                    throw new SharedErrors.Matchmaking.UserAlreadyInQueueException();
 
                 await hubContext.Clients.Clients(connectionIds).MatchCancelled(matchingId);
 

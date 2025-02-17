@@ -1,5 +1,4 @@
 ﻿using h.Contracts.Matchmaking;
-using h.IntegrationTests.Auth;
 using h.Server.Features.Matchmaking;
 using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Matchmaking;
@@ -16,7 +15,7 @@ public class MatchmakingTests
 
 
     [Test]
-    [NotInParallel(Order = 10)]
+    [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_UsersJoinMatch_GetMatched_AndGetNotified)]
     public async Task Matchmaking_UsersJoinMatch_GetMatched_AndGetNotified()
     {
         // Arrange
@@ -103,15 +102,15 @@ public class MatchmakingTests
     }
 
     [Test]
-    [NotInParallel(Order = 20)]
-    public async Task Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel_AndMatchDoesntExist()
+    [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel)]
+    public async Task Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel()
     {
 // Arrange
         var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel_AndMatchDoesntExist)}",
+            $"player1-{nameof(Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel)}",
             eloRating: 400);
         var (client2, auth2) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel_AndMatchDoesntExist)}",
+            $"player2-{nameof(Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel)}",
             eloRating: 400);
         
         await using var hubConnection1 = _sessionApiFactory.CreateSignalRConnection(
@@ -186,7 +185,7 @@ public class MatchmakingTests
     }
 
     [Test]
-    [NotInParallel(Order = 30)]
+    [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_UserDeclinesMath_AndOtherPlayerIsPlacedBackToQueue)]
     public async Task Matchmaking_UserDeclinesMath_AndOtherPlayerIsPlacedBackToQueue()
     {
         // Arrange
@@ -221,4 +220,75 @@ public class MatchmakingTests
         client1.Dispose();
         client2.Dispose();
     }
+
+    [Test]
+    [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_UserCannotJoinQueueTwice)]
+    public async Task Matchmaking_UserCannotJoinQueueTwice()
+    {
+        // Arrange
+        var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(
+            $"player1-{nameof(Matchmaking_UserCannotJoinQueueTwice)}",
+            eloRating: 400);
+
+        // Act
+        var response1 = await client1.PostAsync("/api/v1/matchmaking/join", content: null);
+        var response2 = await client1.PostAsync("/api/v1/matchmaking/join", content: null);
+
+        // Assert
+        await Assert.That(response1.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(response2.StatusCode).IsEqualTo(HttpStatusCode.Conflict);
+    }
+
+    [Test]
+    [NotInParallel(constraintKey: "expired-matchings", Order = MatchmakingTestOrder.Matchmaking_MatchingExpire_RemovesHangingMatchings)]
+    [MethodDataSource(typeof(FastMatchExpirationWebApplicationFactory.MethodDataSource), nameof(FastMatchExpirationWebApplicationFactory.MethodDataSource.Get))]
+    public async Task Matchmaking_MatchingExpire_RemovesHangingMatchings(FastMatchExpirationWebApplicationFactory _testApiFactory)
+    {
+        // Arrange
+        var (client1, auth1) = await _testApiFactory.CreateUserAndLoginAsync(
+            $"player1-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings)}",
+            eloRating: 400);
+
+        var (client2, auth2) = await _testApiFactory.CreateUserAndLoginAsync(
+            $"player2-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings)}",
+            eloRating: 400);
+
+        await using var hubConnection1 = _testApiFactory.CreateSignalRConnection(
+            IMatchmakingHubClient.Route,
+            client1.DefaultRequestHeaders.Authorization!.Parameter);
+
+        await using var hubConnection2 = _testApiFactory.CreateSignalRConnection(
+            IMatchmakingHubClient.Route,
+            client2.DefaultRequestHeaders.Authorization!.Parameter);
+
+        var scope = _testApiFactory.Services.CreateScope();
+        var expiredMatchingsService = scope.ServiceProvider.GetRequiredService<RemoveExpiredMatchingsBackgroundService>();
+        var matchmakingService = scope.ServiceProvider.GetRequiredService<InMemoryMatchmakingService>();
+        
+        await hubConnection1.StartAsync();
+        await hubConnection2.StartAsync();
+        var matching = matchmakingService.RegisterNewPlayerMatching(auth1.User.Uuid, auth2.User.Uuid);
+
+        // Act
+        await Task.Delay(TimeSpan.FromSeconds(FastMatchExpirationWebApplicationFactory.FastMatchExpirationSeconds+1));
+        await expiredMatchingsService.RemoveExpiredMatchings();
+        
+        // Assert
+        await Assert.That(matchmakingService.GetMatching(matching.Id)).IsNull();
+
+        // Dispose
+        await hubConnection1.StopAsync();
+        await hubConnection2.StopAsync();
+
+        client1.Dispose();
+        client2.Dispose();
+    }
+
+    //[Test]
+    //[NotInParallel(Order = MatchmakingTestOrder.Matchmaking_MatchingExpire_RemovesHangingMatchings_AndPlacesAccepteesBackToQueue_AndAccepteesGetNotifiedAboutCancellation)]
+    //public async Task Matchmaking_MatchingExpire_RemovesHangingMatchings_AndPlacesAccepteesBackToQueue_AndAccepteesGetNotifiedAboutCancellation()
+    //{
+    //    // Todo:
+    //    await Assert.That(true).IsTrue();
+    //}
 }

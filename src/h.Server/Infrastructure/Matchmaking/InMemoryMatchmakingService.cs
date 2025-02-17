@@ -1,5 +1,8 @@
 ﻿using ErrorOr;
 using h.Contracts;
+using h.Contracts.Matchmaking;
+using h.Server.Features.Matchmaking;
+using Microsoft.Extensions.Options;
 
 namespace h.Server.Infrastructure.Matchmaking;
 
@@ -8,7 +11,6 @@ namespace h.Server.Infrastructure.Matchmaking;
 /// </summary>
 public class InMemoryMatchmakingService
 {
-    private readonly TimeProvider _timeProvider;
     private readonly Dictionary<Guid, PendingPlayerMatching> _playerMatchings = new(30);
     /// <summary>
     /// Key: PlayerMatching.Id
@@ -18,9 +20,13 @@ public class InMemoryMatchmakingService
     private readonly Dictionary<Guid, List<Guid>> _playerMatchingToAcceptees = new(30); 
     private readonly SortedList<DateTimeOffset, PendingPlayerMatching> _playerMatchingsByCreationTime = new(30);
 
-    public InMemoryMatchmakingService(TimeProvider timeProvider)
+    private readonly TimeProvider _timeProvider;
+    private readonly IOptions<MatchmakingOptions> _matchmakingOptions;
+
+    public InMemoryMatchmakingService(TimeProvider timeProvider, IOptions<MatchmakingOptions> matchmakingOptions)
     {
         _timeProvider = timeProvider;
+        _matchmakingOptions = matchmakingOptions;
     }
 
     /// <summary>
@@ -76,21 +82,37 @@ public class InMemoryMatchmakingService
     /// <summary>
     /// Unregister all expired player matchings.
     /// </summary>
-    public void RemoveExpiredMatchings()
+    /// <returns>List of expired matches along with hanging acceptees (acceptees who's other part hasn't declined the match)</returns>
+    public IReadOnlyCollection<ExpiredMatching> RemoveExpiredMatchings()
     {
-        // Todo: use this method
+        var expiredMatches = new List<ExpiredMatching>();
         lock (_playerMatchings)
         {
-            var timeOfExpiration = _timeProvider.GetUtcNow().AddSeconds(-PendingPlayerMatching.WaitingMatchingTimeoutSeconds);
+            var timeOfExpiration = _timeProvider
+                .GetUtcNow()
+                .AddSeconds(-_matchmakingOptions.Value.MatchingExpiresAfterSeconds);
 
             while (
                 _playerMatchingsByCreationTime.Count > 0
                 && _playerMatchingsByCreationTime.Keys[0] < timeOfExpiration)
             {
                 var matching = _playerMatchingsByCreationTime.Values[0];
+                var acceptees = _playerMatchingToAcceptees[matching.Id];
+                
+                if(acceptees.Count == 2) // Todo: remove magic when rewriting for >2 players
+                    continue; // Potential race condition
+
+                expiredMatches.Add(
+                    new ExpiredMatching(
+                        matching.Id,
+                        acceptees)
+                );
+
                 RemovePlayerMatchingInternal(matching.Id);
             }
         }
+
+        return expiredMatches;
     }
 
     /// <summary>
