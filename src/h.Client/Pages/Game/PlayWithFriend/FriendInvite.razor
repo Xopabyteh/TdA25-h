@@ -1,0 +1,18 @@
+@attribute [Route(PageRoutes.Multiplayer.FriendInvite)]
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Připoj se přes pozvánku</PageTitle>
+
+<div class="center">
+    <h1>Hraj s kamarádem</h1>
+    <div class="invite sheet">
+        <div class="invite-row">
+            <input type="text" placeholder="Kód pozvánky" class="text-input get-code">
+            <button class="primary-button to-friend-game">Hrát</button>
+        </div>
+        <span class="or">nebo</span>
+        <h3 class="blue">
+            <a href="">Vytvořit vlastní hru</a> @*TODO: friend invite generator page*@
+        </h3>
+    </div>
+</div>

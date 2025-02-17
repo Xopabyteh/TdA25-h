@@ -1,0 +1,24 @@
+.blue {
+    color: var(--clr-primary-600);
+}
+
+.invite {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    align-items: center;
+    padding: 2rem;
+}
+
+.to-friend-game {
+    box-sizing: border-box;
+}
+
+.get-code {
+    box-sizing: content-box;
+    min-width: 20rem;
+}
+
+.or {
+    color: var(--clr-gray-600);
+}
