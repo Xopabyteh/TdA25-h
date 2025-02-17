@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace h.Client.Pages.Game.Ranked;
+namespace h.Client.Pages.Game.Multiplayer;
 
 public partial class MultiplayerIndex
 {

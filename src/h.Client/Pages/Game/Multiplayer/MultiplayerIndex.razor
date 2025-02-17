@@ -9,7 +9,58 @@
 
 @*TODO: leave button and binding w BE*@
 
-<div class="secondary-column">
+<div class="game-name sheet">
+    <h1>HODNOCENÁ HRA</h1>
+</div>
+<div class="main-row">
+    <div class="game-field" data-cell-hover-symbol="@(xOnTurn ? "X" : "O")">
+        @for (int y = 0; y < 15; y++)
+        {
+        <div class="game-field-row">
+            @for (int x = 0; x < 15; x++)
+            {
+            int id1D = y * 15 + x;
+            var xCopy = x;
+            var yCopy = y;
+
+            string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
+
+            <div class="cell empty"
+                 style="width: 40px; background-color: @background;"
+                 data-x="@xCopy"
+                 data-y="@yCopy">
+            </div>
+            }
+        </div>
+        }
+    </div>
+    <div class="secondary-column">
+        <div class="players">
+            <div class="p1"></div>
+            <h2 style="color: var(--clr-gray-600)">VS</h2>
+            <div class="p2"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*<div class="secondary-column">
     <button class="secondary-button" style="box-sizing: border-box">Opustit hru</button>
     <span class="warning">Pozor, nezískáš žádné ELO!</span>
 </div>
@@ -64,12 +115,12 @@
                  data-x="@xCopy"
                  data-y="@yCopy">
 
-                @* Symbols added via js *@
-                @* Any inner content is removed when cell is placed !!! *@
-                @* <img src="" /> *@
+                $1$ Symbols added via js #1#
+                $1$ Any inner content is removed when cell is placed !!! #1#
+                $1$ <img src="" /> #1#
             </div>
             }
         </div>
         }
     </div>
-</div>
+</div>*@
