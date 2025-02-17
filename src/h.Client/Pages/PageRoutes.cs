@@ -27,6 +27,9 @@ public static class PageRoutes
     {
         public const string MultiplayerIndex = "/multiplayer-game";
         public const string MultiplayerQueue = "/multiplayer-game/queue";
+        
+        public const string FriendQuery = "/multiplayer-game/friend-query";
+        public const string FriendInvite = "/multiplayer-game/friend-invite";
     }
     
     public static class Login

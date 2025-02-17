@@ -1,0 +1,22 @@
+@attribute [Route(PageRoutes.Multiplayer.FriendQuery)]
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Hraj s kamarádem</PageTitle>
+
+<div class="center">
+    <h1>Hraj s kamarádem</h1>
+    <div class="sheet split-sides">
+        <div class="side">
+            <h2 class="blue">Lokální hra</h2>
+            <img src="/IMG/icons/local_game.svg" alt="" class="friendplay-icon">
+            <p>Hraj na jednom počítači</p>
+            <NavLink href="/game" class="primary-button">Hrát lokálně</NavLink>
+        </div>
+        <div class="side">
+            <h2 class="blue">Online hra</h2>
+            <img src="/IMG/icons/online_game.svg" alt="" class="friendplay-icon">
+            <p>Hraj online přes pozvánku</p>
+            <NavLink href="/multiplayer-game/friend-invite" class="primary-button">Hrát online</NavLink>
+        </div>
+    </div>
+</div>
