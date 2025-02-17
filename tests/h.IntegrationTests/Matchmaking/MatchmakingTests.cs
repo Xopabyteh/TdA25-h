@@ -214,7 +214,7 @@ public class MatchmakingTests
         await Assert.That(matchmakingService.GetMatching(matching.Id)).IsNull();
 
         // Player 1 is back in queue
-        await Assert.That(queueService.GetFirstInQueue()).IsEqualTo(auth1.User.Uuid);
+        await Assert.That(queueService.PeekFirstInQueue()).IsEqualTo(auth1.User.Uuid);
 
         // Dispose
         client1.Dispose();
@@ -240,17 +240,18 @@ public class MatchmakingTests
     }
 
     [Test]
-    [NotInParallel(constraintKey: "expired-matchings", Order = MatchmakingTestOrder.Matchmaking_MatchingExpire_RemovesHangingMatchings)]
+    [NotInParallel(constraintKey: "expired-matchings", Order = MatchmakingTestOrder.Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)]
     [MethodDataSource(typeof(FastMatchExpirationWebApplicationFactory.MethodDataSource), nameof(FastMatchExpirationWebApplicationFactory.MethodDataSource.Get))]
-    public async Task Matchmaking_MatchingExpire_RemovesHangingMatchings(FastMatchExpirationWebApplicationFactory _testApiFactory)
+    public async Task Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified(
+        FastMatchExpirationWebApplicationFactory _testApiFactory)
     {
         // Arrange
         var (client1, auth1) = await _testApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings)}",
+            $"player1-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
             eloRating: 400);
 
         var (client2, auth2) = await _testApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings)}",
+            $"player2-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
             eloRating: 400);
 
         await using var hubConnection1 = _testApiFactory.CreateSignalRConnection(
@@ -265,16 +266,47 @@ public class MatchmakingTests
         var expiredMatchingsService = scope.ServiceProvider.GetRequiredService<RemoveExpiredMatchingsBackgroundService>();
         var matchmakingService = scope.ServiceProvider.GetRequiredService<InMemoryMatchmakingService>();
         
+        var accepteeNotifiedAboutCancellationTcs = new TaskCompletionSource<bool>();
+        var idlePlayerNotifiedAboutCancellationTcs = new TaskCompletionSource<bool>();
+
+        hubConnection1.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
+        {
+            accepteeNotifiedAboutCancellationTcs.TrySetResult(true);
+        });
+
+        hubConnection2.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
+        {
+            idlePlayerNotifiedAboutCancellationTcs.TrySetResult(true);
+        });
+
         await hubConnection1.StartAsync();
         await hubConnection2.StartAsync();
-        var matching = matchmakingService.RegisterNewPlayerMatching(auth1.User.Uuid, auth2.User.Uuid);
 
         // Act
+        var matching = matchmakingService.RegisterNewPlayerMatching(auth1.User.Uuid, auth2.User.Uuid);
+        
         await Task.Delay(TimeSpan.FromSeconds(FastMatchExpirationWebApplicationFactory.FastMatchExpirationSeconds+1));
         await expiredMatchingsService.RemoveExpiredMatchings();
+
+        // Wait for both notifications about cancel (or timeout)
+        await Task.WhenAny(
+            Task.WhenAll(
+                accepteeNotifiedAboutCancellationTcs.Task,
+                idlePlayerNotifiedAboutCancellationTcs.Task
+            ),
+
+            Task.Delay(TimeSpan.FromSeconds(10))
+                .ContinueWith(_ =>
+                {
+                    accepteeNotifiedAboutCancellationTcs.TrySetResult(false);
+                    idlePlayerNotifiedAboutCancellationTcs.TrySetResult(false);
+                })
+        );
         
         // Assert
         await Assert.That(matchmakingService.GetMatching(matching.Id)).IsNull();
+        await Assert.That(accepteeNotifiedAboutCancellationTcs.Task.Result).IsTrue();
+        await Assert.That(idlePlayerNotifiedAboutCancellationTcs.Task.Result).IsTrue();
 
         // Dispose
         await hubConnection1.StopAsync();
@@ -284,11 +316,73 @@ public class MatchmakingTests
         client2.Dispose();
     }
 
-    //[Test]
-    //[NotInParallel(Order = MatchmakingTestOrder.Matchmaking_MatchingExpire_RemovesHangingMatchings_AndPlacesAccepteesBackToQueue_AndAccepteesGetNotifiedAboutCancellation)]
-    //public async Task Matchmaking_MatchingExpire_RemovesHangingMatchings_AndPlacesAccepteesBackToQueue_AndAccepteesGetNotifiedAboutCancellation()
-    //{
-    //    // Todo:
-    //    await Assert.That(true).IsTrue();
-    //}
+    [Test]
+    [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_RemoveingHangingMatchings_PlacesAccepteesBackToQueue)]
+    [MethodDataSource(typeof(FastMatchExpirationWebApplicationFactory.MethodDataSource), nameof(FastMatchExpirationWebApplicationFactory.MethodDataSource.Get))]
+    public async Task Matchmaking_RemoveingHangingMatchings_PlacesAccepteesBackToQueue(
+        FastMatchExpirationWebApplicationFactory _testApiFactory)
+    {
+        // Arrange
+        var (client1, auth1) = await _testApiFactory.CreateUserAndLoginAsync(
+            $"player1-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
+            eloRating: 400);
+
+        var (client2, auth2) = await _testApiFactory.CreateUserAndLoginAsync(
+            $"player2-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
+            eloRating: 400);
+
+        await using var hubConnection1 = _testApiFactory.CreateSignalRConnection(
+            IMatchmakingHubClient.Route,
+            client1.DefaultRequestHeaders.Authorization!.Parameter);
+
+        await using var hubConnection2 = _testApiFactory.CreateSignalRConnection(
+            IMatchmakingHubClient.Route,
+            client2.DefaultRequestHeaders.Authorization!.Parameter);
+
+        var scope = _testApiFactory.Services.CreateScope();
+        var expiredMatchingsService = scope.ServiceProvider.GetRequiredService<RemoveExpiredMatchingsBackgroundService>();
+        var matchmakingService = scope.ServiceProvider.GetRequiredService<InMemoryMatchmakingService>();
+        var queueService = scope.ServiceProvider.GetRequiredService<IMatchmakingQueueService>();
+
+        await hubConnection1.StartAsync();
+        await hubConnection2.StartAsync();
+
+        // Act
+        var matching = matchmakingService.RegisterNewPlayerMatching(auth1.User.Uuid, auth2.User.Uuid);
+        
+        matchmakingService.AcceptMatching(matching.Id, auth1.User.Uuid);
+        
+        await Task.Delay(TimeSpan.FromSeconds(FastMatchExpirationWebApplicationFactory.FastMatchExpirationSeconds+1));
+        await expiredMatchingsService.RemoveExpiredMatchings();
+
+        var queuePeek = queueService.PeekQueue(tryTakeRange: 2).ToArray();
+
+        // Assert
+        await Assert.That(matchmakingService.GetMatching(matching.Id)).IsNull();
+        await Assert.That(queueService.PeekFirstInQueue()).IsEqualTo(auth1.User.Uuid);
+        await Assert.That(queuePeek).DoesNotContain(auth2.User.Uuid);
+
+        // Dispose
+        await hubConnection1.StopAsync();
+        await hubConnection2.StopAsync();
+
+        client1.Dispose();
+        client2.Dispose();
+    }
+
+    [Test]
+    public async Task Matchmaking_AdminCannotJoinMatchmaking()
+    {
+        // Arrange
+        var (client, _) = await _sessionApiFactory.LoginAdminAsync();
+
+        // Act
+        var response = await client.PostAsync("/api/v1/matchmaking/join", content: null);
+        
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Forbidden);
+
+        // Dispose
+        client.Dispose();
+    }
 }

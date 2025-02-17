@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using h.Contracts;
+using System.Runtime.InteropServices;
 
 namespace h.Server.Infrastructure.Matchmaking;
 
@@ -79,13 +80,23 @@ public class InMemoryMatchmakingQueueService : IMatchmakingQueueService
         }
     }
 
-    Guid? IMatchmakingQueueService.GetFirstInQueue()
+    Guid? IMatchmakingQueueService.PeekFirstInQueue()
     {
         lock(_queue)
         {
             return _queue.Count > 0
                 ? _queue[0]
                 : null;
+        }
+    }
+
+    ReadOnlySpan<Guid> IMatchmakingQueueService.PeekQueue(int tryTakeRange)
+    {
+        lock (_queue)
+        {
+            var range = Math.Min(tryTakeRange, _queue.Count);
+            var span = CollectionsMarshal.AsSpan(_queue);
+            return span.Slice(0, range);
         }
     }
 }

@@ -20,8 +20,17 @@ public interface IMatchmakingQueueService
     /// <returns>Error or users place in queue</returns>
     public ErrorOr<int> AddUserToStartOfQueue(Guid userId);
     public (Guid user1Id, Guid user2Id)? MatchUsers();
+  
     /// <summary>
     /// To simplify testing
     /// </summary>
-    internal Guid? GetFirstInQueue();
+    internal Guid? PeekFirstInQueue();
+    /// <summary>
+    /// To simplify testing.
+    /// </summary>
+    /// <param name="tryTakeRange">
+    /// How many users to try to take from the queue.
+    /// If not enough, result will take until end of queue
+    /// </param>
+    internal ReadOnlySpan<Guid> PeekQueue(int tryTakeRange);
 }

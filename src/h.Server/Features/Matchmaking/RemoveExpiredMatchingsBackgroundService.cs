@@ -51,9 +51,6 @@ public class RemoveExpiredMatchingsBackgroundService : BackgroundService
         // Requeue the hanging acceptees and notify them about the expired match
         foreach (var expiredMatch in expiredMatches)
         {
-            if(expiredMatch.HangingAcceptees.Count == 0)
-                continue;
-
             // Requeue the acceptees
             foreach (var hangingAcceptee in expiredMatch.HangingAcceptees)
             {
@@ -62,13 +59,13 @@ public class RemoveExpiredMatchingsBackgroundService : BackgroundService
                     throw new SharedErrors.Matchmaking.UserAlreadyInQueueException();
             }
 
-            // Notify the hanging acceptees about the expired match
-            var connectionIds = expiredMatch.HangingAcceptees
+            // Notify clients about the expired match
+            var connectionIds = expiredMatch.Matching.GetPlayersInMatch()
                 .Select(_hubMapping.GetConnectionId)
                 .Where(connectionId => connectionId is not null)! // This might be a cause of error one day? hopefully not :)
                 .ToArray<string>();
 
-            await _hubContext.Clients.Clients(connectionIds).MatchCancelled(expiredMatch.MatchingId);
+            await _hubContext.Clients.Clients(connectionIds).MatchCancelled(expiredMatch.Matching.Id);
         }
     }
 }

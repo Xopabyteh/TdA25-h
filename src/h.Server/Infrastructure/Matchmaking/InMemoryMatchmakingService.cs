@@ -104,7 +104,7 @@ public class InMemoryMatchmakingService
 
                 expiredMatches.Add(
                     new ExpiredMatching(
-                        matching.Id,
+                        matching,
                         acceptees)
                 );
 

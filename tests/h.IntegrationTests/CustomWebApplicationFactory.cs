@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Data.Common;
@@ -19,16 +20,14 @@ public class CustomWebApplicationFactory
     {
         builder.ConfigureServices(services =>
         {
+            // Re-register AppDbContext to use in-memory database
             var dbContextDescriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
                     typeof(DbContextOptions<AppDbContext>))!;
-
             services.Remove(dbContextDescriptor);
-
             var dbConnectionDescriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
                     typeof(DbConnection))!;
-
             services.Remove(dbConnectionDescriptor);
 
             // Create open SqliteConnection so EF won't automatically close it.
@@ -46,6 +45,7 @@ public class CustomWebApplicationFactory
                 options.UseSqlite(connection);
             });
 
+            
             // Remove matchmaking background service and turn it into a singleton
             services.Remove(
                 services.Single(s => s.ImplementationType == typeof(MatchPlayersBackgroundService))
@@ -57,6 +57,16 @@ public class CustomWebApplicationFactory
                 services.Single(s => s.ImplementationType == typeof(RemoveExpiredMatchingsBackgroundService))
             );
             services.AddSingleton<RemoveExpiredMatchingsBackgroundService>();
+        });
+
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(
+            [
+                new("Auth:AdminUser:Username", "TdA"),
+                new("Auth:AdminUser:Email", "tda@sgc.cz"),
+                new("Auth:AdminUser:Password", "P@ssw0rd-admin")
+            ]);
         });
 
         builder.UseEnvironment("Development");
@@ -88,6 +98,31 @@ public class CustomWebApplicationFactory
         var loginRequest = new LoginUserRequest(
             nickname,
             "P@ssw0rd"
+        );
+
+        // Login user
+        var loginResponse = await client.PostAsJsonAsync("/api/v1/users/login", loginRequest);
+        loginResponse.EnsureSuccessStatusCode();
+
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthenticationResponse>();
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            loginResult.Token);
+
+        return (client, loginResult);
+    }
+
+    /// <summary>
+    /// Logs into the admin user.
+    /// Don't forget to dispose the client after the test.
+    /// </summary>
+    public async Task<(HttpClient client, AuthenticationResponse loginResult)> LoginAdminAsync()
+    {
+        var client = CreateClient();
+        var loginRequest = new LoginUserRequest(
+            "TdA",
+            "P@ssw0rd-admin"
         );
 
         // Login user
