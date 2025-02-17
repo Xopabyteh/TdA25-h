@@ -28,7 +28,7 @@ public static class UpdateGame
         // Validate
         var validationResult = validator.Validate(request);
         if (!validationResult.IsValid)
-            return ErrorResults.ValidationError(validationResult);
+            return ErrorResults.ValidationProblem(validationResult);
 
         var game = await db.GamesDbSet.FindAsync(id);
 
@@ -37,7 +37,7 @@ public static class UpdateGame
 
         var newBoardResult = GameBoard.Parse(request.Board);
         if (newBoardResult.IsError)
-            return ErrorResults.ValidationError(newBoardResult.Errors);
+            return ErrorResults.UnproccessableEntity(newBoardResult.Errors);
 
         // Update properties
         var updateResult = game.Update(
@@ -46,7 +46,7 @@ public static class UpdateGame
             newBoardResult.Value
         );
         if (updateResult.IsError)
-            return ErrorResults.ValidationError(updateResult.Errors);
+            return ErrorResults.UnproccessableEntity(updateResult.Errors);
 
         // Persist
         db.GamesDbSet.Update(game);

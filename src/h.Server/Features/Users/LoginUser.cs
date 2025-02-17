@@ -35,7 +35,7 @@ public static class LoginUser
         // Validate
         var validationResult = validator.Validate(request);
         if (!validationResult.IsValid)
-            return ErrorResults.ValidationError(validationResult);
+            return ErrorResults.ValidationProblem(validationResult);
 
         // Try get user
         var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Email == request.Nickname, cancellationToken)

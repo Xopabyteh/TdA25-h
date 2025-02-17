@@ -32,7 +32,7 @@ public static class CreateNewUser
         // Validate
         var validationResult = validator.Validate(request);
         if (!validationResult.IsValid)
-            return ErrorResults.ValidationError(validationResult);
+            return ErrorResults.ValidationProblem(validationResult);
 
         // Check if user exists
         var nicknameTakenErrors = await userService.NicknameAlreadyRegistered(request.Username, request.Email, cancellationToken);
@@ -79,9 +79,10 @@ public static class CreateNewUser
     {
         public Validator()
         {
+            RuleFor(x => x.Password).SetValidator(new SharedPasswordValidator());
+
             RuleFor(x => x.Username).NotEmpty();
             RuleFor(x => x.Email).NotEmpty();
-            RuleFor(x => x.Password).NotEmpty();
         }
     }
 }

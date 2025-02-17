@@ -27,21 +27,21 @@ public static class CreateNewGame
         // Validate
         var validationResult = validator.Validate(request);
         if (!validationResult.IsValid)
-            return ErrorResults.ValidationError(validationResult);
+            return ErrorResults.ValidationProblem(validationResult);
 
         // Map to entity
         var boardResult = GameBoard.Parse(request.Board);
         if (boardResult.IsError)
         {
             // -> Error while parsing
-            return ErrorResults.ValidationError(boardResult.Errors);
+            return ErrorResults.UnproccessableEntity(boardResult.Errors);
         }
 
         var board = boardResult.Value;
         var gameResult = Game.CreateNewGame(request.Name, request.Difficulty, board);
 
         if (gameResult.IsError)
-            return ErrorResults.ValidationError(gameResult.Errors);
+            return ErrorResults.UnproccessableEntity(gameResult.Errors);
 
         var game = gameResult.Value;
 

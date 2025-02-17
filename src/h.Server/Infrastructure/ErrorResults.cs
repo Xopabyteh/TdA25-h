@@ -31,31 +31,24 @@ public static class ErrorResults
     /// Server rozumí požadavku (pole jsou správná), ale požadavek obsahuje
     /// sémantickou chybu - například je rozměr hry 3x3 a obsahuje znak '@'
     /// </summary>
-    public static IResult ValidationError(string reason, IReadOnlyCollection<Error>? Errors = null)
+    public static IResult UnprocessableEntity(string reason, IReadOnlyCollection<Error>? Errors = null)
         => Results.UnprocessableEntity(new ErrorResponse(422, $"Semantic error: {reason}", Errors));
 
     /// <summary>
     /// Server rozumí požadavku (pole jsou správná), ale požadavek obsahuje
     /// sémantickou chybu - například je rozměr hry 3x3 a obsahuje znak '@'
     /// </summary>
-    public static IResult ValidationError(IReadOnlyCollection<Error>? errors = null)
+    public static IResult UnproccessableEntity(IReadOnlyCollection<Error>? errors = null)
         => Results.UnprocessableEntity(new ErrorResponse(
             422,
             "Semantic error: The content contains semantic errors.",
             errors
         ));
 
-    /// <summary>
-    /// Server rozumí požadavku (pole jsou správná), ale požadavek obsahuje
-    /// sémantickou chybu - například je rozměr hry 3x3 a obsahuje znak '@'
-    /// </summary>
-    public static IResult ValidationError(ValidationResult validationResult)
+    public static IResult ValidationProblem(ValidationResult validationResult)
     {
-        var errors = validationResult.GetValidationProblems();
-        return ValidationError(
-            validationResult.Errors
-                .Select(e => SharedErrors.GeneralValidation(e.ErrorMessage))
-                .ToArray()
+        return Results.ValidationProblem(
+            validationResult.GetValidationProblems()
         );
     }
 
@@ -67,7 +60,7 @@ public static class ErrorResults
 
     public static IResult FromFirstError(Error error) => error.Type switch
     {
-        ErrorType.Validation => ValidationError([error]),
+        ErrorType.Validation => UnproccessableEntity([error]),
         ErrorType.Conflict => Conflit([error]),
         ErrorType.NotFound => NotFound([error]),
         _ => BadRequest([error])

@@ -29,14 +29,18 @@ public class AuthTests
     }
 
     [Test]
-    public async Task Register_InvalidUser_ReturnsBadRequest()
+    [Arguments("password")]
+    [Arguments("P@ssw0r")]
+    [Arguments("HESLO")]
+    [Arguments("h3sl0")]
+    public async Task Register_WeakPassword_ReturnsValidationErrors(string weakPassword)
     {
         // Arrange
         using var client = _sessionApiFactory.CreateClient();
         var request = new RegisterUserRequest(
             $"invaliduser1",
             $"invalidemail1@tda.h",
-            "password" // Weak (invalid) password
+            weakPassword // Weak (invalid) password
         );
         // Act
         var response = await client.PostAsJsonAsync("/api/v1/users/register", request);
