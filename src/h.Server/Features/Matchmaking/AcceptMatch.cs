@@ -5,6 +5,7 @@ using h.Server.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Carter;
+using h.Server.Infrastructure.MultiplayerGames;
 
 namespace h.Server.Features.Matchmaking;
 
@@ -23,6 +24,7 @@ public static class AcceptMatch
         [FromServices] InMemoryMatchmakingService matchmakingService,
         [FromServices] IHubUserIdMappingService<MatchmakingHub> hubUserIdMappingService,
         [FromServices] IHubContext<MatchmakingHub, IMatchmakingHubClient> hubContext,
+        [FromServices] IMultiplayerGameSessionService multiplayerGameSessionService,
         [FromRoute] Guid matchingId,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -43,10 +45,14 @@ public static class AcceptMatch
 
                 await hubContext.Clients.Clients(connectionIds).PlayerAccepted(userId);
 
+                // Create game session if everyone accepted
                 if (remainingAccepteesCount == 0)
                 {
-                    // Todo:
-                    // Start match and notify players
+                    // Create game session
+                    var gameSession = await multiplayerGameSessionService.CreateGameSessionAsync(matching.Value.GetPlayersInMatch());
+
+                    // Notify players about the game session
+                    await hubContext.Clients.Clients(connectionIds).NewGameSessionCreated(gameSession.Id);
                 }
 
                 return Results.Ok();

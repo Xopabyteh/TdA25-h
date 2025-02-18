@@ -1,4 +1,4 @@
-﻿namespace h.Server.Infrastructure;
+﻿namespace h.Primitives;
 
 public readonly record struct Int2(int X, int Y)
 {

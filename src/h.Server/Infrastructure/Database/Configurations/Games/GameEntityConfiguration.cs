@@ -1,4 +1,5 @@
-﻿using h.Server.Entities.Games;
+﻿using h.Primitives.Games;
+using h.Server.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

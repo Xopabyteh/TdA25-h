@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
-using h.Server.Infrastructure;
+using h.Primitives;
+using h.Primitives.Games;
 
 namespace h.Server.Entities.Games;
 

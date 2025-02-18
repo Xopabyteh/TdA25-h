@@ -1,4 +1,5 @@
-﻿using h.Server.Entities.Games;
+﻿using h.Primitives.Games;
+using h.Server.Entities.Games;
 using h.Server.Infrastructure;
 
 namespace h.DomainUnitTests;

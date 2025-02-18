@@ -19,4 +19,9 @@ public interface IMatchmakingHubClient
     /// expired or one of the players rejected the match
     /// </summary>
     public Task MatchCancelled(Guid matchId);
+
+    /// <summary>
+    /// After everyone accepts, a new game session is created
+    /// </summary>
+    public Task NewGameSessionCreated(Guid gameId);
 }

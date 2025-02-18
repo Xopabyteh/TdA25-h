@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace h.Server.Entities.Games;
+namespace h.Primitives.Games;
 
 public enum GameSymbol
 {

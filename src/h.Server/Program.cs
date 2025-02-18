@@ -1,11 +1,12 @@
 using Carter;
 using h.Contracts;
 using h.Contracts.Matchmaking;
+using h.Contracts.MultiplayerGames;
 using h.Server.Components;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
-using System.Runtime.CompilerServices;
+using h.Server.Infrastructure.MultiplayerGames;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -58,6 +59,7 @@ app.UseMiddleware<BadRequestResponseMiddleware>();
 app.MapCarter();
 
 app.MapHub<MatchmakingHub>(IMatchmakingHubClient.Route);
+app.MapHub<MultiplayerGameSessionHub>(IMultiplayerGameSessionHubClient.Route);
 
 app.Run();
 
