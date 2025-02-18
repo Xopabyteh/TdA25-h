@@ -65,6 +65,9 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
         // -> Every1 is ready, start the game, notify clients
         var game = await _gameSessionService.GetGameAsync(gameId);
+        if(game is null)
+            throw new NullReferenceException("Game not found after all players confirmed"); // Should never happen
+
         var gameStartResult = await _gameSessionService.StartGameAsync(gameId);
 
         await Clients.Clients(
@@ -80,18 +83,37 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         );
     }
 
-    //public async Task<ErrorOr<Unit>> PlaceSymbol(Guid gameId, Int2 atPos)
-    //{
-    //    if(Context.User is not { Identity: { IsAuthenticated: true } })
-    //    {
-    //        Context.Abort();
-    //        return Unit.Value;
-    //    }
+    public async Task<ErrorOr<Guid>> PlaceSymbol(Guid gameId, Int2 atPos)
+    {
+        if (Context.User is not { Identity: { IsAuthenticated: true } })
+        {
+            Context.Abort();
+            return default;
+        }
 
-    //    var userId = Context.User.GetUserId();
+        var userId = Context.User.GetUserId();
 
-    //    var result = await _gameSessionService.PlaceSymbol(gameId, userId, atPos);
+        var result = await _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, userId, atPos);
 
-    //    return result;
-    //}
+        if(result.IsError)
+            return result;
+
+        // Notify players about the move
+        var game = await _gameSessionService.GetGameAsync(gameId);
+        if(game is null)
+            throw new NullReferenceException("Game not found after successful move"); // Should never happen
+
+        await Clients.Clients(
+            game.Players
+            .Select(userId => _userIdMappingService.GetConnectionId(userId)
+                ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub>.UserNotPresentException(userId))
+            )
+            .PlayerMadeMove(new(
+                userId,
+                atPos,
+                game.PlayerSymbols[userId]
+            ));
+
+        return result;
+    }
 }

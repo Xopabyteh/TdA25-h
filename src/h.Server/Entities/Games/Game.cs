@@ -5,6 +5,11 @@ using h.Server.Infrastructure;
 
 namespace h.Server.Entities.Games;
 
+/// <summary>
+/// "Piškvorková úloha", due to API spec from previous rounds,
+/// this is simply called a Game. A Multiplayer game session is
+/// defined in <see cref="h.Server.Infrastructure.MultiplayerGames.MultiplayerGameSession"/>.
+/// </summary>
 public class Game
 {
     public Guid Id { get; set; }
