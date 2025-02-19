@@ -466,6 +466,13 @@ public class MatchmakingTests
 
         await Assert.That(client1NotifiedAboutGameSessionTcs.Task.Result)
             .IsEqualTo(client2NotifiedAboutGameSessionTcs.Task.Result);
+
+        // Dispose
+        await hubConnection1.StopAsync();
+        await hubConnection2.StopAsync();
+
+        client1.Dispose();
+        client2.Dispose();
     }
 
     [Test]

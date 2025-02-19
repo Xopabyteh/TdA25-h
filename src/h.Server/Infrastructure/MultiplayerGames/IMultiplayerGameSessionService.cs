@@ -21,7 +21,12 @@ public interface IMultiplayerGameSessionService
     /// </returns>
     public Task<ErrorOr<bool>> ConfirmPlayerLoadedAsync(Guid gameId, Guid playerId);
     public Task<(Guid StartingPlayer, KeyValuePair<Guid, GameSymbol>[] PlayerSymbols)> StartGameAsync(Guid gameId);
-    public Task<ErrorOr<Unit>> PlaceSymbolAsync(Guid gameId, Guid byPlayerId, Int2 atPos);
 
-    public Task<MultiplayerGameSession> GetGameAsync(Guid byGameId);
+    /// <summary>
+    /// Places a symbol and moves the turn to the next player.
+    /// </summary>
+    /// <returns>The new player on turn ID</returns>
+    public Task<ErrorOr<Guid>> PlaceSymbolAsyncAndMoveTurn(Guid gameId, Guid byPlayerId, Int2 atPos);
+
+    public Task<MultiplayerGameSession?> GetGameAsync(Guid byGameId);
 }
