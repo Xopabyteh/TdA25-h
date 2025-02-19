@@ -1,9 +1,7 @@
-﻿using h.Primitives.Games;
-using h.Server.Entities.Games;
+﻿using h.Server.Entities.Games;
+using h.Server.Infrastructure.Database.Configurations.Converters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System.Text.Json;
 
 namespace h.Server.Infrastructure.Database.Configurations.Games;
 
@@ -35,19 +33,5 @@ public class GameEntityConfiguration : IEntityTypeConfiguration<Game>
 
             b.WithOwner();
         });
-    }
-}
-
-public class BoardMatrixConverter : ValueConverter<GameSymbol[][], string>
-{
-    public BoardMatrixConverter()
-        : base(
-            convertToProviderExpression:
-                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
-            
-            convertFromProviderExpression:
-                v => JsonSerializer.Deserialize<GameSymbol[][]>(v, JsonSerializerOptions.Default)!
-        )
-    {
     }
 }

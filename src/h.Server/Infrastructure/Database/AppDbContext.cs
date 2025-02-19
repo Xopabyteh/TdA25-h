@@ -1,8 +1,8 @@
 ﻿using h.Primitives.Users;
 using h.Server.Entities.Games;
+using h.Server.Entities.MultiplayerGames;
 using h.Server.Entities.Users;
 using h.Server.Infrastructure.Auth;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartEnum.EFCore;
 
@@ -71,4 +71,6 @@ public class AppDbContext : DbContext
 
     public DbSet<Game> GamesDbSet { get; set; }
     public DbSet<User> UsersDbSet { get; set; }
+    public DbSet<UserToFinishedRankedGame> UserToFinishedRankedGames { get; set; }
+    public DbSet<FinishedRankedGame> FinishedRankedGames { get; set; }
 }

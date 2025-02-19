@@ -1,6 +1,8 @@
-﻿using h.Server.Entities.Users;
+﻿using h.Server.Entities.MultiplayerGames;
+using h.Server.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace h.Server.Infrastructure.Database.Configurations.Users;
 
@@ -51,8 +53,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.DrawAmount)
             .HasDefaultValue(0)
             .IsRequired();
-
-        // Not supported by sqlite
+        
         builder.PrimitiveCollection(x => x.Roles);
     }
 }

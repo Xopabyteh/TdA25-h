@@ -12,6 +12,12 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
     private readonly ConcurrentDictionary<Guid, MultiplayerGameSession> _gameSessions
         = new(concurrencyLevel: -1, capacity: 30);
 
+    private readonly TimeProvider _timeProvider;
+
+    public InMemoryMultiplayerGameSessionService(TimeProvider timeProvider)
+    {
+        _timeProvider = timeProvider;
+    }
 
     public MultiplayerGameSession CreateGameSession(IReadOnlyList<Guid> players, Guid? forcedStartingPlayer = null)
     {
@@ -49,7 +55,9 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             players,
             board,
             playerSymbols,
-            playerOnTurnIndex
+            playerOnTurnIndex,
+            _timeProvider.GetUtcNow(),
+            TimeSpan.FromSeconds(8) // Todo: moved to shared config
         );
 
         _gameSessions[gameId] = gameSession;

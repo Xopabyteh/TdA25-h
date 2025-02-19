@@ -8,9 +8,9 @@ public static partial class SharedErrors
         public static Error UserNotFound()
             => Error.NotFound(nameof(UserNotFound), "User not found");
 
-        public class UserNotFoundExceptin : Exception
+        public class UserNotFoundException : Exception
         {
-            public UserNotFoundExceptin() : base("User not found") { }
+            public UserNotFoundException() : base("User not found") { }
         }
 
         public static Error UsernameAlreadyTaken()

@@ -371,16 +371,17 @@ public class MatchmakingTests
     }
 
     [Test]
+    [Timeout(20_000)]
     [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession)]
     public async Task Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession()
     {
         // Arrange
         // Arrange
-        var (client1, _) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_UsersJoinMatch_GetMatched_AndGetNotified)}",
+        var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
+            $"player1-{nameof(Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession)}",
             eloRating: 400);
-        var (client2, _) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_UsersJoinMatch_GetMatched_AndGetNotified)}",
+        var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
+            $"player2-{nameof(Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession)}",
             eloRating: 400);
 
         await using var hubConnection1 = _sessionApiFactory.CreateSignalRConnection(
@@ -391,53 +392,31 @@ public class MatchmakingTests
             IMatchmakingHubClient.Route,
             client2.DefaultRequestHeaders.Authorization!.Parameter);
 
-        var playerMatcherBGService = _sessionApiFactory.Services.GetRequiredService<MatchPlayersBackgroundService>();
         var scope = _sessionApiFactory.Services.CreateScope();
+        var playerMatchingService = scope.ServiceProvider.GetRequiredService<InMemoryMatchmakingService>();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var client1FoundMatchTcs = new TaskCompletionSource<FoundMatchingDetailsResponse>();
-        var client2FoundMatchTcs = new TaskCompletionSource<FoundMatchingDetailsResponse>();
         var client1NotifiedAboutGameSessionTcs = new TaskCompletionSource<Guid>();
         var client2NotifiedAboutGameSessionTcs = new TaskCompletionSource<Guid>();
-
-        hubConnection1.On<FoundMatchingDetailsResponse>(
-            nameof(IMatchmakingHubClient.MatchFound),
-            matching => client1FoundMatchTcs.TrySetResult(matching));
-        hubConnection2.On<FoundMatchingDetailsResponse>(
-            nameof(IMatchmakingHubClient.MatchFound),
-            matching => client2FoundMatchTcs.TrySetResult(matching));
-
         hubConnection1.On<Guid>(
             nameof(IMatchmakingHubClient.NewGameSessionCreated),
             gameId => client1NotifiedAboutGameSessionTcs.TrySetResult(gameId));
         hubConnection2.On<Guid>(
             nameof(IMatchmakingHubClient.NewGameSessionCreated),
             gameId => client2NotifiedAboutGameSessionTcs.TrySetResult(gameId));
-
-        // Act
+        
         await hubConnection1.StartAsync();
-        var joinResponse1 = await client1.PostAsync("/api/v1/matchmaking/join", content: null);
-
         await hubConnection2.StartAsync();
-        var joinResponse2 = await client2.PostAsync("/api/v1/matchmaking/join", content: null);
-
-        await playerMatcherBGService.MatchUsers(dbContext);
-
-        // Wait for match to be found (or timeout)
-        var delayTask = Task.Delay(TimeSpan.FromSeconds(10));
-        var resultTask = await Task.WhenAny(
-            Task.WhenAll(client1FoundMatchTcs.Task, client2FoundMatchTcs.Task),
-            delayTask
+        
+        var matching = playerMatchingService.RegisterNewPlayerMatching(
+            client1Auth.User.Uuid,
+            client2Auth.User.Uuid
         );
 
-        if(resultTask == delayTask)
-        {
-            throw new TimeoutException("Expected both users to find a matching, but they didn't");
-        }
-
+        // Act
         // Accept match
-        var acceptResponse1 = await client1.PostAsync($"/api/v1/matchmaking/accept/{client1FoundMatchTcs.Task.Result.MatchId}", content: null);
-        var acceptResponse2 = await client2.PostAsync($"/api/v1/matchmaking/accept/{client2FoundMatchTcs.Task.Result.MatchId}", content: null);
+        var acceptResponse1 = await client1.PostAsync($"/api/v1/matchmaking/accept/{matching.Id}", content: null);
+        var acceptResponse2 = await client2.PostAsync($"/api/v1/matchmaking/accept/{matching.Id}", content: null);
 
         // Wait for notification about game session (or timeout)
         var delayTask2 = Task.Delay(TimeSpan.FromSeconds(10));
@@ -447,16 +426,6 @@ public class MatchmakingTests
         );
 
         // Assert
-        // Matching assertions
-        await Assert.That(joinResponse1.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        await Assert.That(joinResponse1.StatusCode).IsEqualTo(HttpStatusCode.OK);
-
-        await Assert.That(client1FoundMatchTcs.Task.IsCompletedSuccessfully).IsTrue();
-        await Assert.That(client1FoundMatchTcs.Task.IsCompletedSuccessfully).IsTrue();
-
-        await Assert.That(client1FoundMatchTcs.Task.Result.MatchId)
-            .IsEqualTo(client1FoundMatchTcs.Task.Result.MatchId);
-
         // Acceptance assertions
         await Assert.That(acceptResponse1.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(acceptResponse2.StatusCode).IsEqualTo(HttpStatusCode.OK);

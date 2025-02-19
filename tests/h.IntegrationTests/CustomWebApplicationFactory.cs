@@ -93,7 +93,8 @@ public class CustomWebApplicationFactory
         );
 
         // Create user
-        await client.PostAsJsonAsync("/api/v1/users", request);
+        var response = await client.PostAsJsonAsync("/api/v1/users", request);
+        response.EnsureSuccessStatusCode();
 
         var loginRequest = new LoginUserRequest(
             nickname,

@@ -28,26 +28,37 @@ public class MultiplayerGameSession
     /// </summary>
     public bool GameEnded { get; private set; }
     public MultiplayerGameSessionEndResult? EndResult { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; init; }
 
     public Guid PlayerOnTurn => Players.ElementAt(_playerOnTurnIndex);
     private int _playerOnTurnIndex;
+
+    /// <summary>
+    /// How much time each player has for the whole game.
+    /// "Šachové hodiny"
+    /// </summary>
+    private TimeSpan _timerLength;
 
     public MultiplayerGameSession(
         Guid id,
         IReadOnlyCollection<Guid> players,
         GameBoard board,
         Dictionary<Guid, GameSymbol> playerSymbols,
-        int playerOnTurnIndex)
+        int playerOnTurnIndex,
+        DateTimeOffset createdAtUtc,
+        TimeSpan timerLength)
     {
         Id = id;
         Players = players;
         Board = board;
         PlayerSymbols = playerSymbols;
         _playerOnTurnIndex = playerOnTurnIndex;
-        
+
         PlayerTimers = Players.ToDictionary(
-            keySelector: pId => pId, 
+            keySelector: pId => pId,
             elementSelector: pId => new Stopwatch());
+        CreatedAtUtc = createdAtUtc;
+        _timerLength = timerLength;
     }
 
     /// <summary>
@@ -82,5 +93,11 @@ public class MultiplayerGameSession
         PlayerTimers[PlayerOnTurn].Stop();
         GameEnded = true;
         EndResult = endResult;
+    }
+
+    public TimeSpan GetRemainingTime(Guid ofPlayer)
+    {
+        var timer = PlayerTimers[ofPlayer];
+        return _timerLength - timer.Elapsed;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Carter;
-using h.Contracts;
 using h.Contracts.Users;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using h.Server.Infrastructure.Database;
 using FluentValidation;
 using h.Server.Entities.Users;
-using h.Primitives.Users;
 
 namespace h.Server.Features.Users.TdaApiSpecNecessary;
 
@@ -43,17 +41,7 @@ public static class CreateNewUser
         var passwordHash = passwordHashService.GetPasswordHash(request.Password);
 
         // Create user
-        var user = new User()
-        {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = passwordHash,
-            Elo = new()
-            {
-                Rating = request.Elo
-            },
-            Roles = Array.Empty<UserRole>(),
-        };
+        var user = User.NewUser(request.Username, request.Email, passwordHash, request.Elo);
 
         await db.UsersDbSet.AddAsync(user, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);

@@ -78,7 +78,7 @@ public class MatchPlayersBackgroundService : BackgroundService
             .FirstOrDefaultAsync(u => u.Uuid == matching.Player2Id);
 
         if(user1 is null || user2 is null)
-            throw new SharedErrors.User.UserNotFoundExceptin();
+            throw new SharedErrors.User.UserNotFoundException();
 
         // Notify clients
         var user1ConnectionId = _userIdMappingService.GetConnectionId(potentialMatching.Value.user1Id);

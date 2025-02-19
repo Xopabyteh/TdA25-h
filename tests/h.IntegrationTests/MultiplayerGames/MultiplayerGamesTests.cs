@@ -1,7 +1,9 @@
 ﻿using h.Contracts.MultiplayerGames;
 using h.Primitives;
+using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.MultiplayerGames;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace h.IntegrationTests.MultiplayerGames;
@@ -69,14 +71,14 @@ public class MultiplayerGamesTests
 
     [Test]
     [Timeout(30_000)]
-    public async Task MultiplayerGames_PlayersPlayGame_AndOneWins(CancellationToken cancellationToken)
+    public async Task MultiplayerGames_PlayersPlayGame_AndOneWins_AndStatisticsAreSaved(CancellationToken cancellationToken)
     {
         // Arrange
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_PlayersConfirmLoad_AndGameStarts)}",
+            $"player1-{nameof(MultiplayerGames_PlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: 400);
         var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(MultiplayerGames_PlayersConfirmLoad_AndGameStarts)}",
+            $"player2-{nameof(MultiplayerGames_PlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: 400);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -89,6 +91,7 @@ public class MultiplayerGamesTests
         var gameSession = gameSessionService.CreateGameSession(
             [client1Auth.User.Uuid, client2Auth.User.Uuid],
             forcedStartingPlayer: client1Auth.User.Uuid);
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client1Auth.User.Uuid);
         gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client2Auth.User.Uuid);
@@ -136,6 +139,16 @@ public class MultiplayerGamesTests
 
         // Wait for game to end
         await Task.WhenAll(client1GameEndedTcs.Task, client2GameEndedTcs.Task).WaitAsync(cancellationToken);
+        
+        // Assert statistics changed and we can find game in history
+        var player1InDb = await db.UsersDbSet
+            .Include(u => u.UserToFinishedRankedGames)
+            .ThenInclude(ufg => ufg.FinishedRankedGame)
+            .FirstAsync(u => u.Uuid == client1Auth.User.Uuid);
+        var player2InDb = await db.UsersDbSet
+            .Include(u => u.UserToFinishedRankedGames)
+            .ThenInclude(ufg => ufg.FinishedRankedGame)
+            .FirstAsync(u => u.Uuid == client2Auth.User.Uuid);
 
         // Assert
         await Assert.That(client1GameEndedTcs.Task.IsCompletedSuccessfully).IsTrue();
@@ -145,6 +158,15 @@ public class MultiplayerGamesTests
         await Assert.That(client1GameEndedTcs.Task.Result.WinnerId).IsEqualTo(client1Auth.User.Uuid);
 
         await Assert.That(client2GameEndedTcs.Task.Result).IsEqualTo(client1GameEndedTcs.Task.Result);
+
+        await Assert.That(player1InDb.WinAmount == 1).IsTrue();
+        await Assert.That(player2InDb.LossAmount == 1).IsTrue();
+
+        await Assert.That(player1InDb.UserToFinishedRankedGames).HasCount().EqualToOne();
+        await Assert.That(player2InDb.UserToFinishedRankedGames).HasCount().EqualToOne();
+
+        await Assert.That(player1InDb.UserToFinishedRankedGames.First()!.FinishedRankedGame!.Id)
+            .IsEqualTo(player2InDb.UserToFinishedRankedGames.First()!.FinishedRankedGame!.Id);
     }
 }
 

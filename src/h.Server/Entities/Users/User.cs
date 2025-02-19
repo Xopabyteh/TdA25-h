@@ -1,4 +1,5 @@
 ﻿using h.Primitives.Users;
+using h.Server.Entities.MultiplayerGames;
 
 namespace h.Server.Entities.Users;
 
@@ -15,6 +16,9 @@ public class User
     public required string Email { get; set; }
 
     public required UserRole[] Roles { get; set; }
+
+    public ICollection<UserToFinishedRankedGame> UserToFinishedRankedGames { get; }
+        = new List<UserToFinishedRankedGame>(); // Navigation property
 
     /// <summary>
     /// Refers to the password hash.
@@ -40,7 +44,26 @@ public class User
             {
                 Rating = ThinkDifferentElo.INITIAL_ELO
             },
-            Roles = []
+            Roles = [],
+        };
+    }
+
+     public static User NewUser(
+        string username,
+        string email,
+        string passwordHash,
+        ulong eloRating)
+    {
+        return new User()
+        {
+            Username = username,
+            Email = email,
+            PasswordHash = passwordHash,
+            Elo = new()
+            {
+                Rating = eloRating
+            },
+            Roles = [],
         };
     }
 }
