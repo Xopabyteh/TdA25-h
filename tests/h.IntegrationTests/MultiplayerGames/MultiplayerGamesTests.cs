@@ -5,6 +5,7 @@ using h.Server.Infrastructure.MultiplayerGames;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel.DataAnnotations;
 
 namespace h.IntegrationTests.MultiplayerGames;
 public class MultiplayerGamesTests
@@ -71,14 +72,14 @@ public class MultiplayerGamesTests
 
     [Test]
     [Timeout(30_000)]
-    public async Task MultiplayerGames_PlayersPlayGame_AndOneWins_AndStatisticsAreSaved(CancellationToken cancellationToken)
+    public async Task MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved(CancellationToken cancellationToken)
     {
         // Arrange
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_PlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
+            $"player1-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: 400);
-        var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(MultiplayerGames_PlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
+         var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
+            $"player2-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: 400);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -90,11 +91,15 @@ public class MultiplayerGamesTests
         var gameSessionService = scope.ServiceProvider.GetRequiredService<IMultiplayerGameSessionService>();
         var gameSession = gameSessionService.CreateGameSession(
             [client1Auth.User.Uuid, client2Auth.User.Uuid],
-            forcedStartingPlayer: client1Auth.User.Uuid);
+            forcedStartingPlayerId: client1Auth.User.Uuid);
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client1Auth.User.Uuid);
-        gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client2Auth.User.Uuid);
+        // Fabricate identities, but they would be gathered from "GameStarted" event.
+        var client1MultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid);
+        var client2MultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid);
+
+        gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client1MultiplayerIdentity);
+        gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client2MultiplayerIdentity);
 
         var client1GameEndedTcs = new TaskCompletionSource<MultiplayerGameEndedResponse>();
         var client2GameEndedTcs = new TaskCompletionSource<MultiplayerGameEndedResponse>();
@@ -104,11 +109,13 @@ public class MultiplayerGamesTests
         var client1X = 0;
         var client2X = 0;
 
-
         client1Connection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
         {
+            if(response.NextPlayerOnTurn is null)
+                return;
+
             // Place symbols in first row one after another
-            var isOnTurn = response.NextPlayerOnTurn == client1Auth.User.Uuid;
+            var isOnTurn = response.NextPlayerOnTurn!.Value.SessionId == client1MultiplayerIdentity.SessionId;
             if(!isOnTurn)
                 return;
 
@@ -118,8 +125,11 @@ public class MultiplayerGamesTests
 
         client2Connection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
         {
+            if(response.NextPlayerOnTurn is null)
+                return;
+
             // Place symbols in second row with gaps (client2 can't win)
-            var isOnTurn = response.NextPlayerOnTurn == client2Auth.User.Uuid;
+            var isOnTurn = response.NextPlayerOnTurn!.Value.SessionId == client2MultiplayerIdentity.SessionId;
             if (!isOnTurn)
                 return;
 
@@ -155,7 +165,7 @@ public class MultiplayerGamesTests
         await Assert.That(client2GameEndedTcs.Task.IsCompletedSuccessfully).IsTrue();
 
         await Assert.That(client1GameEndedTcs.Task.Result.IsDraw).IsFalse();
-        await Assert.That(client1GameEndedTcs.Task.Result.WinnerId).IsEqualTo(client1Auth.User.Uuid);
+        await Assert.That(client1GameEndedTcs.Task.Result.WinnerId!.Value.SessionId).IsEqualTo(client1MultiplayerIdentity.SessionId);
 
         await Assert.That(client2GameEndedTcs.Task.Result).IsEqualTo(client1GameEndedTcs.Task.Result);
 
@@ -168,5 +178,109 @@ public class MultiplayerGamesTests
         await Assert.That(player1InDb.UserToFinishedRankedGames.First()!.FinishedRankedGame!.Id)
             .IsEqualTo(player2InDb.UserToFinishedRankedGames.First()!.FinishedRankedGame!.Id);
     }
+
+    [Test]
+    [Timeout(30_000)]
+    public async Task MultiplayerGames_GuestGameIsPlayed_AndStatisticsArentSaved(CancellationToken cancellationToken)
+    {
+        // Arrange
+        var (clientUser, clientUserAuth) = await _sessionApiFactory.CreateUserAndLoginAsync(
+            $"player1-{nameof(MultiplayerGames_GuestGameIsPlayed_AndStatisticsArentSaved)}",
+            eloRating: 400);
+
+        var (clientGuest, clientGuestAuth) = await _sessionApiFactory.LoginGuestAsync();
+
+        await using var clientUserConnection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, clientUserAuth.Token);
+        await using var clientGuestConnection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, clientGuestAuth.Token);
+        await clientUserConnection.StartAsync(cancellationToken);
+        await clientGuestConnection.StartAsync(cancellationToken);
+
+        var clientUserMultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(clientUserAuth.User.Uuid);
+        var clientGuestMultiplayerIdentity = MultiplayerGameUserIdentity.FromGuest(clientGuestAuth.GuestId);
+
+        var scope = _sessionApiFactory.Services.CreateScope();
+        var gameSessionService = scope.ServiceProvider.GetRequiredService<IMultiplayerGameSessionService>();
+        var gameSession = gameSessionService.CreateGameSession(
+            [
+                clientUserMultiplayerIdentity,
+                clientGuestMultiplayerIdentity
+            ],
+            forcedStartingPlayerId: clientUserMultiplayerIdentity
+        );
+
+        var clientUserGameEndedTcs = new TaskCompletionSource<MultiplayerGameEndedResponse>();
+        var clientGuestGameEndedTcs = new TaskCompletionSource<MultiplayerGameEndedResponse>();
+
+        // Act
+        // Simulate players playing, client1 wins
+        var clientUserX = 0;
+        var clientGuestX = 0;
+
+        clientUserConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        {
+            if (response.NextPlayerOnTurn is null)
+                return;
+
+            // Place symbols in first row one after another
+            var isOnTurn = response.NextPlayerOnTurn!.Value.SessionId == clientUserAuth.User.Uuid;
+            if (!isOnTurn)
+                return;
+
+            clientUserX++;
+            await clientUserConnection.InvokeAsync("PlaceSymbol", gameSession.Id, new Int2(clientUserX, 0));
+        });
+        clientGuestConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        {
+            if (response.NextPlayerOnTurn is null)
+                return;
+           
+            // Place symbols in second row with gaps (client2 can't win)
+            var isOnTurn = response.NextPlayerOnTurn!.Value.SessionId == clientGuestAuth.GuestId;
+            if (!isOnTurn)
+                return;
+
+            clientGuestX += 2;
+            await clientGuestConnection.InvokeAsync("PlaceSymbol", gameSession.Id, new Int2(clientGuestX, 1));
+        });
+
+        clientUserConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded),
+            clientUserGameEndedTcs.SetResult);
+
+        clientGuestConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded),
+            clientGuestGameEndedTcs.SetResult);
+
+        var gameStartParams = gameSessionService.StartGame(gameSession.Id);
+        
+        // Client1 starts (forced)
+        await clientUserConnection.InvokeAsync("PlaceSymbol", gameSession.Id, new Int2(clientUserX, 0), cancellationToken);
+
+        await Task.WhenAll(clientUserGameEndedTcs.Task, clientGuestGameEndedTcs.Task).WaitAsync(cancellationToken) ;
+
+        var playerUserInDb = await scope.ServiceProvider.GetRequiredService<AppDbContext>().UsersDbSet
+            .Include(u => u.UserToFinishedRankedGames)
+            .ThenInclude(ufg => ufg.FinishedRankedGame)
+            .FirstAsync(u => u.Uuid == clientUserAuth.User.Uuid);
+
+        // Assert
+        await Assert.That(clientUserGameEndedTcs.Task.IsCompletedSuccessfully).IsTrue();
+        await Assert.That(clientGuestGameEndedTcs.Task.IsCompletedSuccessfully).IsTrue();
+
+        await Assert.That(clientUserGameEndedTcs.Task.Result.IsDraw).IsFalse();
+        await Assert.That(clientUserGameEndedTcs.Task.Result.WinnerId!.Value.SessionId).IsEqualTo(clientUserMultiplayerIdentity.SessionId);
+
+        await Assert.That(clientGuestGameEndedTcs.Task.Result).IsEqualTo(clientUserGameEndedTcs.Task.Result);
+
+        // Assert that statistics haven't changed
+        await Assert.That(playerUserInDb.WinAmount == 0).IsTrue();
+        await Assert.That(playerUserInDb.LossAmount == 0).IsTrue();
+        await Assert.That(playerUserInDb.UserToFinishedRankedGames).IsEmpty();
+
+        // Dispose
+        scope.Dispose();
+        clientUser.Dispose();
+        clientGuest.Dispose();
+        await clientUserConnection.StopAsync();
+        await clientGuestConnection.StopAsync();
+    }    
 }
 

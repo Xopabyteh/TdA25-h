@@ -11,7 +11,22 @@ namespace h.Server.Infrastructure.MultiplayerGames;
 /// </summary>
 public interface IMultiplayerGameSessionService
 {
-    public MultiplayerGameSession CreateGameSession(IReadOnlyList<Guid> players, Guid? forcedStartingPlayer = null);
+    /// <summary>
+    /// Create a game session with the given players.
+    /// They may be guests or registered users.
+    /// </summary>
+    public MultiplayerGameSession CreateGameSession(
+        IReadOnlyList<MultiplayerGameUserIdentity> players,
+        MultiplayerGameUserIdentity? forcedStartingPlayerId = null);
+
+    /// <summary>
+    /// Create a game session with the given players.
+    /// They are all registered users with their given userIDs.
+    /// </summary>
+    public MultiplayerGameSession CreateGameSession(
+        IReadOnlyList<Guid> playerIds,
+        Guid? forcedStartingPlayerId = null);
+
     /// <summary>
     /// Confirm that the player has loaded the game.
     /// </summary>
@@ -19,8 +34,8 @@ public interface IMultiplayerGameSessionService
     /// <see langword="true"/> if all players have been confirmed
     /// and game can be safely started with <see cref="StartGame(Guid)"/>
     /// </returns>
-    public ErrorOr<bool> ConfirmPlayerLoaded(Guid gameId, Guid playerId);
-    public (Guid StartingPlayer, KeyValuePair<Guid, GameSymbol>[] PlayerSymbols) StartGame(Guid gameId);
+    public ErrorOr<bool> ConfirmPlayerLoaded(Guid gameId, MultiplayerGameUserIdentity playerId);
+    public (MultiplayerGameUserIdentity StartingPlayer, KeyValuePair<MultiplayerGameUserIdentity, GameSymbol>[] PlayerSymbols) StartGame(Guid gameId);
 
     /// <summary>
     /// Places a symbol and moves the turn to the next player.
@@ -31,7 +46,7 @@ public interface IMultiplayerGameSessionService
     /// The new player on turn ID.
     /// <see langword="null"/> if the game is over - no "next" player to play.
     /// </returns>
-    public ErrorOr<Guid?> PlaceSymbolAsyncAndMoveTurn(Guid gameId, Guid byPlayerId, Int2 atPos);
+    public ErrorOr<MultiplayerGameUserIdentity?> PlaceSymbolAsyncAndMoveTurn(Guid gameId, MultiplayerGameUserIdentity byPlayer, Int2 atPos);
 
     public MultiplayerGameSessionEndResult? GetEndResult(Guid gameId);
 

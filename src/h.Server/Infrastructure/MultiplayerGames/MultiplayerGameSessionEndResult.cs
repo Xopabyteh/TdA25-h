@@ -2,5 +2,5 @@
 
 public record MultiplayerGameSessionEndResult(
     bool IsDraw,
-    Guid? WinnerId
+    MultiplayerGameUserIdentity? WinnerId
 );

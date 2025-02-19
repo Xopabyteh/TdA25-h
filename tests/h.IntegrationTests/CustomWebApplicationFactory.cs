@@ -139,6 +139,26 @@ public class CustomWebApplicationFactory
         return (client, loginResult);
     }
 
+    /// <summary>
+    /// Logs into a guest user.
+    /// Don't forget to dispose the client after the test.
+    /// </summary>
+    public async Task<(HttpClient client, GuestLoginResponse token)> LoginGuestAsync()
+    {
+        var client = CreateClient();
+
+        // Login user
+        var loginResponse = await client.PostAsync("/api/v1/users/guest-login", null);
+        loginResponse.EnsureSuccessStatusCode();
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<GuestLoginResponse>();
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            loginResult.Token);
+        
+        return (client, loginResult);
+    }
+
     public HubConnection CreateSignalRConnection(string hubName, string? jwtToken = null)
     {
         var handler = Server.CreateHandler();

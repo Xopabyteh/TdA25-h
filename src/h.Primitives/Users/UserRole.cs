@@ -7,4 +7,5 @@
 public enum UserRole
 {
     Admin = 0b_0000_0001,
+    Guest = 0b_000_0001 << 1,
 }

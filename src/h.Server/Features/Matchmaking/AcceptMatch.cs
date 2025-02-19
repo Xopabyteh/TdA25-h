@@ -49,7 +49,8 @@ public static class AcceptMatch
                 if (remainingAccepteesCount == 0)
                 {
                     // Create game session
-                    var gameSession = multiplayerGameSessionService.CreateGameSession(matching.Value.GetPlayersInMatch());
+                    var gameSession = multiplayerGameSessionService.CreateGameSession(
+                        matching.Value.GetPlayersInMatch());
 
                     // Notify players about the game session
                     await hubContext.Clients.Clients(connectionIds).NewGameSessionCreated(gameSession.Id);

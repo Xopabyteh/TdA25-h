@@ -7,15 +7,15 @@ namespace h.Server.Infrastructure.MultiplayerGames;
 public class MultiplayerGameSession
 {
     public Guid Id { get; init; }
-    public IReadOnlyCollection<Guid> Players { get; init; }
+    public IReadOnlyCollection<MultiplayerGameUserIdentity> Players { get; init; }
     public GameBoard Board { get; init; }
 
     /// <summary>
     /// Key: PlayerId, Value: Symbol
     /// </summary>
-    public Dictionary<Guid, GameSymbol> PlayerSymbols { get; init; }
-    public Dictionary<Guid, Stopwatch> PlayerTimers { get; init; }
-    public List<Guid> ReadyPlayers { get; init; } = new(2);
+    public Dictionary<MultiplayerGameUserIdentity, GameSymbol> PlayerSymbols { get; init; }
+    public Dictionary<MultiplayerGameUserIdentity, Stopwatch> PlayerTimers { get; init; }
+    public List<MultiplayerGameUserIdentity> ReadyPlayers { get; init; } = new(2);
 
     /// <summary>
     /// Whether the game has started at any time.
@@ -30,7 +30,7 @@ public class MultiplayerGameSession
     public MultiplayerGameSessionEndResult? EndResult { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; init; }
 
-    public Guid PlayerOnTurn => Players.ElementAt(_playerOnTurnIndex);
+    public MultiplayerGameUserIdentity PlayerOnTurn => Players.ElementAt(_playerOnTurnIndex);
     private int _playerOnTurnIndex;
 
     /// <summary>
@@ -41,9 +41,9 @@ public class MultiplayerGameSession
 
     public MultiplayerGameSession(
         Guid id,
-        IReadOnlyCollection<Guid> players,
+        IReadOnlyCollection<MultiplayerGameUserIdentity> players,
         GameBoard board,
-        Dictionary<Guid, GameSymbol> playerSymbols,
+        Dictionary<MultiplayerGameUserIdentity, GameSymbol> playerSymbols,
         int playerOnTurnIndex,
         DateTimeOffset createdAtUtc,
         TimeSpan timerLength)
@@ -95,9 +95,16 @@ public class MultiplayerGameSession
         EndResult = endResult;
     }
 
-    public TimeSpan GetRemainingTime(Guid ofPlayer)
+    public TimeSpan GetRemainingTime(MultiplayerGameUserIdentity ofPlayer)
     {
         var timer = PlayerTimers[ofPlayer];
         return _timerLength - timer.Elapsed;
+    }
+
+    public class GameNotEndedYetException : Exception
+    {
+        public GameNotEndedYetException() : base("Game has not ended yet.")
+        {
+        }
     }
 }

@@ -9,4 +9,15 @@ public static class ClaimsExtensions
         var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return Guid.Parse(userId!);
     }
+
+    /// <summary>
+    /// If user is guest, returns the guest id, otherwise return null
+    /// </summary>
+    public static Guid? GetGuestId(this ClaimsPrincipal claimsPrincipal)
+    {
+        var guestId = claimsPrincipal.FindFirst(ClaimTypes.Anonymous)?.Value;
+        return guestId is null 
+            ? null 
+            : Guid.Parse(guestId);    
+    }
 }

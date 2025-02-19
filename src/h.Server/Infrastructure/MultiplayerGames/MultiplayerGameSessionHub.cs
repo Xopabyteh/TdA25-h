@@ -1,26 +1,26 @@
-﻿using ErrorOr;
-using h.Contracts;
-using h.Contracts.MultiplayerGames;
+﻿using h.Contracts.MultiplayerGames;
 using h.Primitives;
-using h.Server.Entities.MultiplayerGames;
-using h.Server.Infrastructure.Auth;
+using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
 
 public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 {
-    private readonly IHubUserIdMappingService<MultiplayerGameSessionHub> _userIdMappingService;
+    private readonly IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity> _userIdMappingService;
     private readonly IMultiplayerGameSessionService _gameSessionService;
-    private readonly AppDbContext _db;
+    private readonly MultiplayerGameStatisticsService _multiplayerGameStatisticsService;
 
-    public MultiplayerGameSessionHub(IMultiplayerGameSessionService gameSessionService, IHubUserIdMappingService<MultiplayerGameSessionHub> userIdMappingService, AppDbContext db)
+    public MultiplayerGameSessionHub(
+        IMultiplayerGameSessionService gameSessionService,
+        IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity> userIdMappingService,
+        AppDbContext db,
+        MultiplayerGameStatisticsService multiplayerGameStatisticsService)
     {
         _gameSessionService = gameSessionService;
         _userIdMappingService = userIdMappingService;
-        _db = db;
+        this._multiplayerGameStatisticsService = multiplayerGameStatisticsService;
     }
 
     public override async Task OnConnectedAsync()
@@ -32,8 +32,9 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         }
 
         // Add the connection ID to the mapping service
-        var userId = Context.User.GetUserId();
-        _userIdMappingService.Add(Context.ConnectionId, userId);
+        var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
+
+        _userIdMappingService.Add(Context.ConnectionId, identity);
 
         await base.OnConnectedAsync();
     }
@@ -43,8 +44,8 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         // Remove from mapping
         if(Context.User is {Identity: { IsAuthenticated: true } })
         {
-            var userId = Context.User.GetUserId();
-            _userIdMappingService.Remove(userId);
+            var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
+            _userIdMappingService.Remove(identity);
         }
 
         return base.OnDisconnectedAsync(exception);
@@ -59,9 +60,9 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             return;
         }
 
-        var userId = Context.User.GetUserId();
+        var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
 
-        var result = _gameSessionService.ConfirmPlayerLoaded(gameId, userId);
+        var result = _gameSessionService.ConfirmPlayerLoaded(gameId, identity);
         if(result.IsError)
             return;
 
@@ -76,33 +77,37 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
         var gameStartResult = _gameSessionService.StartGame(gameId);
 
-        await Clients.Clients(
-            game.Players
-            .Select(userId => _userIdMappingService.GetConnectionId(userId)
-                ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub>.UserNotPresentException(userId))
-            )
+        var connectionIds =  game.Players.Select(identity => 
+            _userIdMappingService.GetConnectionId(identity)
+            ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(identity)
+        );
+
+        await Clients.Clients(connectionIds)
             .GameStarted(new(
                 gameId,
-                gameStartResult.PlayerSymbols,
-                gameStartResult.StartingPlayer
-            )
-        );
+                MapToDto(gameStartResult.StartingPlayer),
+                game.Players.Select(MapToDto).ToArray(),
+                gameStartResult.PlayerSymbols.Select(u => new KeyValuePair<MultiplayerGameUserIdentityDTO, GameSymbol>(
+                    MapToDto(u.Key),
+                    u.Value
+                )).ToArray()
+            ));
     }
 
-    public async Task<ErrorOr<Guid?>> PlaceSymbol(Guid gameId, Int2 atPos)
+    public async Task PlaceSymbol(Guid gameId, Int2 atPos)
     {
         if (Context.User is not { Identity: { IsAuthenticated: true } })
         {
             Context.Abort();
-            return default;
+            return;
         }
 
-        var userId = Context.User.GetUserId();
+        var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
 
-        var result = _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, userId, atPos);
+        var result = _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, identity, atPos);
 
         if(result.IsError)
-            return result;
+            return;
 
         var game = _gameSessionService.GetGame(gameId);
         if(game is null)
@@ -111,16 +116,16 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         var nextPlayerOnTurn = result.Value;
         var connectionIds = game.Players
             .Select(userId => _userIdMappingService.GetConnectionId(userId)
-                ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub>.UserNotPresentException(userId))
+                ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(identity))
             .ToArray();
 
         // Notify players about the move
         await Clients.Clients(connectionIds)
             .PlayerMadeMove(new(
-                userId,
+                MapToDto(identity),
                 atPos,
-                game.PlayerSymbols[userId],
-                nextPlayerOnTurn
+                game.PlayerSymbols[identity],
+                MapToDto(nextPlayerOnTurn)
             ));
 
         // No next player on turn, the game is over
@@ -131,72 +136,31 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             if(endResult is null)
                 throw new NullReferenceException("No next player on turn but end results are null"); // Should never happen
 
-            var player1Id = game.Players.ElementAt(0);
-            var player2Id = game.Players.ElementAt(1);
-            var player1 = await _db.UsersDbSet.AsTracking().FirstOrDefaultAsync(u => u.Uuid == player1Id)
-                ?? throw new SharedErrors.User.UserNotFoundException();
-            var player2 = await _db.UsersDbSet.AsTracking().FirstOrDefaultAsync(u => u.Uuid == player2Id)
-                ?? throw new SharedErrors.User.UserNotFoundException();
-
-            // Save statistics
-            // Todo: calculate elo
-            if (endResult.IsDraw)
-            {
-                player1.DrawAmount++;
-                player2.DrawAmount++;
-            } else if(endResult.WinnerId == player1Id)
-            {
-                player1.WinAmount++;
-                player2.LossAmount++;
-            }
-            else
-            {
-                player2.WinAmount++;
-                player1.LossAmount++;
-            }
-
-            // Save game
-            var finishedRankedGame = new FinishedRankedGame()
-            {
-                LastBoardState = game.Board,
-                PlayedAt = game.CreatedAtUtc.UtcDateTime,
-                Player1Id = player1Id,
-                Player2Id = player2Id,
-                Player1Symbol = game.PlayerSymbols[player1Id],
-                Player2Symbol = game.PlayerSymbols[player2Id],
-                Player1RemainingTimer = game.GetRemainingTime(player1Id),
-                Player2RemainingTimer = game.GetRemainingTime(player2Id),
-                IsDraw = endResult.IsDraw,
-                WinnerId = endResult.WinnerId
-            };
-
-            _db.FinishedRankedGames.Add(finishedRankedGame);
-            // Todo: what the fuck do we do if this fails?
-            await _db.SaveChangesAsync(); // Save, so we have id for finished game
-
-            _db.UserToFinishedRankedGames.AddRange([
-                new() {
-                    UserId = player1Id,
-                    FinishedRankedGameId = finishedRankedGame.Id
-                },
-                new() {
-                    UserId = player2Id,
-                    FinishedRankedGameId = finishedRankedGame.Id
-                }
-            ]);          
-            // Todo: what the fuck do we do if this fails?
-            await _db.SaveChangesAsync(); // Save finished game to user mappings
+            await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
 
             // Notify players about the game over
             await Clients.Clients(connectionIds)
                 .GameEnded(new(
                     endResult.IsDraw,
-                    endResult.WinnerId
+                    MapToDto(endResult.WinnerId)
                 ));
         }
-
-        return result;
     }
 
     // Todo: leave game
+
+    // Helper methods
+    private MultiplayerGameUserIdentityDTO MapToDto(MultiplayerGameUserIdentity identity)
+        => new(
+            identity.SessionId,
+            identity.IsGuest
+        );
+
+    private MultiplayerGameUserIdentityDTO? MapToDto(MultiplayerGameUserIdentity? identity)
+        => identity is null
+        ? null
+        : new(
+            identity.Value.SessionId,
+            identity.Value.IsGuest
+        );
 }

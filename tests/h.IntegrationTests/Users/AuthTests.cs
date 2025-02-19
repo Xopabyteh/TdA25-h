@@ -23,9 +23,12 @@ public class AuthTests
 
         // Act
         var response = await client.PostAsJsonAsync("/api/v1/users/register", request);
+        var responseResult = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
 
         // Assert
         response.EnsureSuccessStatusCode();
+        await Assert.That(responseResult.Token).IsNotNullOrEmpty();
+        await Assert.That(responseResult.User.Username).IsEqualTo("authTestUser1");
     }
 
     [Test]
@@ -44,7 +47,7 @@ public class AuthTests
         );
         // Act
         var response = await client.PostAsJsonAsync("/api/v1/users/register", request);
-        
+
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
@@ -61,8 +64,26 @@ public class AuthTests
         );
         // Act
         var response = await client.PostAsJsonAsync("/api/v1/users/login", request);
-        
+        var responseResult = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
         // Assert
         response.EnsureSuccessStatusCode();
+        await Assert.That(responseResult.Token).IsNotNullOrEmpty();
+        await Assert.That(responseResult.User.Username).IsEqualTo("authTestUser1");
+    }
+
+    [Test]
+    public async Task GuestLogin_ReturnsGuesstAccount()
+    {
+        // Arrange
+        using var client = _sessionApiFactory.CreateClient();
+
+        // Act
+        var response = await client.PostAsync("/api/v1/users/guest-login", null);
+        var responseResult = await response.Content.ReadFromJsonAsync<GuestLoginResponse>();
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        await Assert.That(responseResult.Token).IsNotNullOrEmpty();
+        await Assert.That(responseResult.GuestId).IsNotEqualTo(Guid.Empty);
     }
 }

@@ -1,4 +1,5 @@
-﻿using h.Server.Entities.Users;
+﻿using h.Primitives.Users;
+using h.Server.Entities.Users;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -35,6 +36,31 @@ public class JwtTokenService
                 
                 // Roles
                 ..claimsFromRoles
+            ],
+            expires: DateTime.Now.AddMinutes(_config.GetValue<double>("Auth:Jwt:ExpireInMinutes")),
+            signingCredentials: credentials);
+
+        var token =  new JwtSecurityTokenHandler().WriteToken(Sectoken);
+
+        return token;
+    }
+
+    public string GenerateGuestToken(Guid guestId)
+    {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Auth:Jwt:Key"]!));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var name = "Návštěvník";
+
+        var Sectoken = new JwtSecurityToken(
+            issuer: _config["Auth:Jwt:Issuer"]!,
+            audience: _config["Auth:Jwt:Audience"],
+            claims: [
+                // Claims from user
+                //new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+                new Claim(ClaimTypes.Anonymous, guestId.ToString()),
+                new Claim(ClaimTypes.Name, name),
+                new Claim(ClaimTypes.Role, nameof(UserRole.Guest))
             ],
             expires: DateTime.Now.AddMinutes(_config.GetValue<double>("Auth:Jwt:ExpireInMinutes")),
             signingCredentials: credentials);

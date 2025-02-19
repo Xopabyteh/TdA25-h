@@ -1,4 +1,5 @@
-﻿using Carter;
+﻿
+using Carter;
 using FluentValidation;
 using h.Client.Services;
 using h.Client.Services.Game;
@@ -68,6 +69,7 @@ public static class DependencyInjection
         // SignalR
         builder.Services.AddSignalR();
         builder.Services.AddSingleton(typeof(IHubUserIdMappingService<>), typeof(InMemoryHubUserIdMappingService<>));
+        builder.Services.AddSingleton(typeof(IHubUserIdMappingService<,>), typeof(InMemoryHubUserIdMappingService<,>));
 
         // Add EF Core
         builder.Services.AddScoped<AutoSetUpdatedAtDbSaveInterceptor>();
@@ -134,6 +136,7 @@ public static class DependencyInjection
 
         // Game
         builder.Services.AddSingleton<IMultiplayerGameSessionService, InMemoryMultiplayerGameSessionService>();
+        builder.Services.AddScoped<MultiplayerGameStatisticsService>();  
 
         return builder;
     }

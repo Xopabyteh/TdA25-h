@@ -19,14 +19,16 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         _timeProvider = timeProvider;
     }
 
-    public MultiplayerGameSession CreateGameSession(IReadOnlyList<Guid> players, Guid? forcedStartingPlayer = null)
+    public MultiplayerGameSession CreateGameSession(
+        IReadOnlyList<MultiplayerGameUserIdentity> players,
+        MultiplayerGameUserIdentity? forcedStartingPlayerId = null)
     {
         var gameId = Guid.NewGuid();
         var board = GameBoard.CreateNew();
 
         // Since we always only have 2 players (for now) and two symbols,
         // we can assign first player to X and second to O
-        var playerSymbols = new Dictionary<Guid, GameSymbol>
+        var playerSymbols = new Dictionary<MultiplayerGameUserIdentity, GameSymbol>
         {
             [players.First()] = GameSymbol.X,
             [players.Last()] = GameSymbol.O
@@ -34,10 +36,10 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
 
         // Who starts?
         int playerOnTurnIndex;
-        if(forcedStartingPlayer is not null)
+        if(forcedStartingPlayerId is not null)
         {
             // Pick forced
-            var forcedIndex = players.ToList().IndexOf(forcedStartingPlayer.Value);
+            var forcedIndex = players.ToList().IndexOf(forcedStartingPlayerId.Value);
             
             if (forcedIndex == -1)
                 throw new Exception("Forced player not found in players list");
@@ -65,7 +67,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         return gameSession;
     }
 
-    public ErrorOr<bool> ConfirmPlayerLoaded(Guid gameId, Guid playerId)
+    public ErrorOr<bool> ConfirmPlayerLoaded(Guid gameId, MultiplayerGameUserIdentity playerId)
     {
         var didFindGame = _gameSessions.TryGetValue(gameId, out var gameSession);
         if(!didFindGame)
@@ -84,7 +86,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             : null;
     }
 
-    public ErrorOr<Guid?> PlaceSymbolAsyncAndMoveTurn(Guid gameId, Guid byPlayerId, Int2 atPos)
+    public ErrorOr<MultiplayerGameUserIdentity?> PlaceSymbolAsyncAndMoveTurn(Guid gameId, MultiplayerGameUserIdentity byPlayerId, Int2 atPos)
     {
         var didFindGame = _gameSessions.TryGetValue(gameId, out var gameSession);
         if (!didFindGame)
@@ -108,7 +110,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         {
             // -> Game not over
             gameSession!.SetNextPlayerOnTurn();
-            return ((Guid?)gameSession!.PlayerOnTurn);
+            return (MultiplayerGameUserIdentity?)gameSession!.PlayerOnTurn;
         }
 
         // Game over 
@@ -119,10 +121,11 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
                 : null
         ));
 
-        return (Guid?)null; // No next player on turn
+        return (MultiplayerGameUserIdentity?)null; // No next player on turn
     }
 
-    public (Guid StartingPlayer, KeyValuePair<Guid, GameSymbol>[] PlayerSymbols) StartGame(Guid gameId)
+    public (MultiplayerGameUserIdentity StartingPlayer, KeyValuePair<MultiplayerGameUserIdentity, GameSymbol>[] PlayerSymbols) StartGame(
+        Guid gameId)
     {
         var didFindGame = _gameSessions.TryGetValue(gameId, out var gameSession);
         if (!didFindGame)
@@ -145,5 +148,15 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             return null;
 
         return gameSession.EndResult;
+    }
+
+    public MultiplayerGameSession CreateGameSession(IReadOnlyList<Guid> playerIds, Guid? forcedStartingPlayerId = null)
+    {
+        return CreateGameSession(
+            playerIds.Select(MultiplayerGameUserIdentity.FromUserId).ToList(),
+            forcedStartingPlayerId: forcedStartingPlayerId is null
+                ? null
+                : MultiplayerGameUserIdentity.FromUserId(forcedStartingPlayerId.Value)
+        );
     }
 }
