@@ -17,8 +17,21 @@ public class MultiplayerGameSession
     public Dictionary<Guid, Stopwatch> PlayerTimers { get; init; }
     public List<Guid> ReadyPlayers { get; init; } = new(2);
 
+    /// <summary>
+    /// Whether the game has started at any time.
+    /// May be true even if the game has ended - because it has started at some point.
+    /// </summary>
+    public bool GameStarted { get; private set; }
+
+    /// <summary>
+    /// Whether the game has ended.
+    /// </summary>
+    public bool GameEnded { get; private set; }
+    public MultiplayerGameSessionEndResult? EndResult { get; private set; }
+
     public Guid PlayerOnTurn => Players.ElementAt(_playerOnTurnIndex);
     private int _playerOnTurnIndex;
+
     public MultiplayerGameSession(
         Guid id,
         IReadOnlyCollection<Guid> players,
@@ -61,5 +74,13 @@ public class MultiplayerGameSession
     public void StartGame()
     {
         PlayerTimers[PlayerOnTurn].Start();
+        GameStarted = true;
+    }
+
+    public void EndGame(MultiplayerGameSessionEndResult endResult)
+    {
+        PlayerTimers[PlayerOnTurn].Stop();
+        GameEnded = true;
+        EndResult = endResult;
     }
 }

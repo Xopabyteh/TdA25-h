@@ -160,6 +160,29 @@ public class GameBoard
         return count;
     }
 
+    /// <summary>
+    /// Checks if there is a winning sequence from the given position.
+    /// Can be used after <see cref="SetSymbolAt(Int2, GameSymbol)"/> to check if the move was winning.
+    /// </summary>
+    public bool IsWinningSymbol(Int2 from, GameSymbol symbol)
+    {
+        foreach (var direction in Int2.OrthoAndDiagonalDirections)
+        {
+            var count = GetSymbolsInRowInDirection(from, direction)
+                        + GetSymbolsInRowInDirection(from, -direction)
+                        - 1; // -1 to not count the same cell twice
+            if (count >= 5)
+                return true;
+        }
+        return false;
+    }
+
+    public bool IsDraw()
+    {
+        // There is no Empty cell
+        return BoardMatrix.All(row => row.All(cell => cell != GameSymbol.None));
+    }
+
     public static Error IncorrectBoardSizeError()
         => Error.Validation(nameof(IncorrectBoardSizeError) ,"Board size does not match specification");
 

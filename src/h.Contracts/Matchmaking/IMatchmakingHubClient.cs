@@ -1,7 +1,7 @@
 ﻿namespace h.Contracts.Matchmaking;
 public interface IMatchmakingHubClient
 {
-    public const string Route = "matchmaking-hub";
+    public const string Route = "hub/matchmaking-hub";
 
     /// <summary>
     /// Invoked from the server when a match is found
