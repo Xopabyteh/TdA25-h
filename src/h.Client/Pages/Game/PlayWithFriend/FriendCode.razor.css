@@ -1,0 +1,48 @@
+.invite-code {
+    letter-spacing: 10px;
+    font-size: 45px;
+}
+
+.invite-link {
+    text-decoration: underline;
+}
+
+.waiting .loader {
+    background-image: url("/IMG/loader.gif");
+    width: 50px;
+    height: 50px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.invite {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.waiting .blue {
+    font-weight: bold;
+}
+
+.blue {
+    color: var(--clr-primary-600);
+}
+
+.waiting {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.code-cont {
+    text-align: center;
+}
+
+.code-info-text {
+    font-size: 18px;
+    text-align: center;
+}
