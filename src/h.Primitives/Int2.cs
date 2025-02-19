@@ -4,6 +4,7 @@ public readonly record struct Int2(int X, int Y)
 {
     public static Int2 operator +(Int2 a, Int2 b) => new Int2(a.X + b.X, a.Y + b.Y);
     public static Int2 operator -(Int2 a, Int2 b) => new Int2(a.X - b.X, a.Y - b.Y);
+    public static Int2 operator -(Int2 a) => new Int2(-a.X, -a.Y);
 
     /// <summary>
     /// Contains all orthogonal and diagonal directions (total 8...)

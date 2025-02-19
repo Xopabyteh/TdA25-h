@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using h.Contracts;
 using h.Contracts.MultiplayerGames;
 using h.Primitives;
 using h.Server.Infrastructure.Auth;
@@ -55,7 +54,7 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
         var userId = Context.User.GetUserId();
 
-        var result = await _gameSessionService.ConfirmPlayerLoadedAsync(gameId, userId);
+        var result = _gameSessionService.ConfirmPlayerLoaded(gameId, userId);
         if(result.IsError)
             return;
 
@@ -64,11 +63,11 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             return;
 
         // -> Every1 is ready, start the game, notify clients
-        var game = await _gameSessionService.GetGameAsync(gameId);
+        var game = _gameSessionService.GetGame(gameId);
         if(game is null)
             throw new NullReferenceException("Game not found after all players confirmed"); // Should never happen
 
-        var gameStartResult = await _gameSessionService.StartGameAsync(gameId);
+        var gameStartResult = _gameSessionService.StartGame(gameId);
 
         await Clients.Clients(
             game.Players
@@ -83,7 +82,7 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         );
     }
 
-    public async Task<ErrorOr<Guid>> PlaceSymbol(Guid gameId, Int2 atPos)
+    public async Task<ErrorOr<Guid?>> PlaceSymbol(Guid gameId, Int2 atPos)
     {
         if (Context.User is not { Identity: { IsAuthenticated: true } })
         {
@@ -93,26 +92,44 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
         var userId = Context.User.GetUserId();
 
-        var result = await _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, userId, atPos);
+        var result = _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, userId, atPos);
 
         if(result.IsError)
             return result;
 
-        // Notify players about the move
-        var game = await _gameSessionService.GetGameAsync(gameId);
+        var game = _gameSessionService.GetGame(gameId);
         if(game is null)
             throw new NullReferenceException("Game not found after successful move"); // Should never happen
 
-        await Clients.Clients(
-            game.Players
+        var nextPlayerOnTurn = result.Value;
+        var connectionIds = game.Players
             .Select(userId => _userIdMappingService.GetConnectionId(userId)
                 ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub>.UserNotPresentException(userId))
-            )
+            .ToArray();
+
+        // Notify players about the move
+        await Clients.Clients(connectionIds)
             .PlayerMadeMove(new(
                 userId,
                 atPos,
-                game.PlayerSymbols[userId]
+                game.PlayerSymbols[userId],
+                nextPlayerOnTurn
             ));
+
+        // No next player on turn, the game is over
+        if(nextPlayerOnTurn is null)
+        {
+            // Notify players about the game over
+            var endResult = _gameSessionService.GetEndResult(gameId);
+            if(endResult is null)
+                throw new NullReferenceException("No next player on turn but end results are null"); // Should never happen
+
+            await Clients.Clients(connectionIds)
+                .GameEnded(new(
+                    endResult.IsDraw,
+                    endResult.WinnerId
+                ));
+        }
 
         return result;
     }

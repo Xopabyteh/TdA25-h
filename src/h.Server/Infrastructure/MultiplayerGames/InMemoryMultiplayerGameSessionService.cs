@@ -13,7 +13,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         = new(concurrencyLevel: -1, capacity: 30);
 
 
-    public Task<MultiplayerGameSession> CreateGameSessionAsync(IReadOnlyCollection<Guid> players)
+    public MultiplayerGameSession CreateGameSession(IReadOnlyList<Guid> players, Guid? forcedStartingPlayer = null)
     {
         var gameId = Guid.NewGuid();
         var board = GameBoard.CreateNew();
@@ -26,9 +26,23 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             [players.Last()] = GameSymbol.O
         };
 
-        // Pick at random
-        // Todo: change to be the other player when doing revenge matches
-        var playerOnTurnIndex = new Random().Next(0, players.Count);
+        // Who starts?
+        int playerOnTurnIndex;
+        if(forcedStartingPlayer is not null)
+        {
+            // Pick forced
+            var forcedIndex = players.ToList().IndexOf(forcedStartingPlayer.Value);
+            
+            if (forcedIndex == -1)
+                throw new Exception("Forced player not found in players list");
+
+            playerOnTurnIndex = forcedIndex;
+        }
+        else
+        {
+            // Pick at random
+            playerOnTurnIndex = new Random().Next(0, players.Count);
+        }
 
         var gameSession = new MultiplayerGameSession(
             gameId,
@@ -40,50 +54,67 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
 
         _gameSessions[gameId] = gameSession;
         
-        return Task.FromResult(gameSession);
+        return gameSession;
     }
 
-    public Task<ErrorOr<bool>> ConfirmPlayerLoadedAsync(Guid gameId, Guid playerId)
+    public ErrorOr<bool> ConfirmPlayerLoaded(Guid gameId, Guid playerId)
     {
         var didFindGame = _gameSessions.TryGetValue(gameId, out var gameSession);
         if(!didFindGame)
-            return Task.FromResult(Error.NotFound(description: "Game not found").ToErrorOr<bool>()); // Turn into shared error if needed
+            return Error.NotFound(description: "Game not found"); // Turn into shared error if needed
     
         gameSession!.ReadyPlayers.Add(playerId);
         
-        return Task.FromResult((gameSession.ReadyPlayers.Count == gameSession.Players.Count).ToErrorOr());
+        return gameSession.ReadyPlayers.Count == gameSession.Players.Count;
     }
 
-    public Task<MultiplayerGameSession?> GetGameAsync(Guid byGameId)
+    public MultiplayerGameSession? GetGame(Guid byGameId)
     {
         var didFindGame = _gameSessions.TryGetValue(byGameId, out var gameSession);
         return didFindGame
-            ? Task.FromResult(gameSession)
-            : Task.FromResult<MultiplayerGameSession?>(null);
+            ? gameSession
+            : null;
     }
 
-    public Task<ErrorOr<Guid>> PlaceSymbolAsyncAndMoveTurn(Guid gameId, Guid byPlayerId, Int2 atPos)
+    public ErrorOr<Guid?> PlaceSymbolAsyncAndMoveTurn(Guid gameId, Guid byPlayerId, Int2 atPos)
     {
         var didFindGame = _gameSessions.TryGetValue(gameId, out var gameSession);
-        if(!didFindGame)
-            return Task.FromResult(Error.NotFound(description: "Game not found").ToErrorOr<Guid>()); // Turn into shared error if needed
-    
+        if (!didFindGame)
+            return Error.NotFound(description: "Game not found"); // Turn into shared error if needed
+
         var isPlayerOnTurn = gameSession!.PlayerOnTurn == byPlayerId;
         if (!isPlayerOnTurn)
-            return Task.FromResult(Error.Forbidden(description: "Not your turn").ToErrorOr<Guid>()); // Turn into shared error if needed
+            return Error.Forbidden(description: "Not your turn"); // Turn into shared error if needed
 
         var symbolAtPlace = gameSession!.Board.GetSymbolAt(atPos);
-        if(symbolAtPlace != GameSymbol.None)
-            return Task.FromResult(Error.Conflict(description: "Space already occupied").ToErrorOr<Guid>()); // Turn into shared error if needed
+        if (symbolAtPlace != GameSymbol.None)
+            return Error.Conflict(description: "Space already occupied"); // Turn into shared error if needed
 
         var playerSymbol = gameSession!.PlayerSymbols[byPlayerId];
         gameSession!.Board.SetSymbolAt(atPos, playerSymbol);
-        gameSession!.SetNextPlayerOnTurn();
+        
+        // Is game over?
+        var isWinningSymbol = gameSession!.Board.IsWinningSymbol(atPos, playerSymbol);
+        var isDraw = gameSession!.Board.IsDraw();
+        if (!isWinningSymbol && !isDraw)
+        {
+            // -> Game not over
+            gameSession!.SetNextPlayerOnTurn();
+            return ((Guid?)gameSession!.PlayerOnTurn);
+        }
 
-        return Task.FromResult(byPlayerId.ToErrorOr());
+        // Game over 
+        gameSession.EndGame(new(
+            isDraw,
+            isWinningSymbol 
+                ? byPlayerId 
+                : null
+        ));
+
+        return (Guid?)null; // No next player on turn
     }
 
-    public Task<(Guid StartingPlayer, KeyValuePair<Guid, GameSymbol>[] PlayerSymbols)> StartGameAsync(Guid gameId)
+    public (Guid StartingPlayer, KeyValuePair<Guid, GameSymbol>[] PlayerSymbols) StartGame(Guid gameId)
     {
         var didFindGame = _gameSessions.TryGetValue(gameId, out var gameSession);
         if (!didFindGame)
@@ -91,9 +122,20 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
 
         gameSession!.StartGame();
 
-        return Task.FromResult((
+        return (
             gameSession!.PlayerOnTurn,
             gameSession!.PlayerSymbols.ToArray()
-        ));
+        );
+    }
+    public MultiplayerGameSessionEndResult? GetEndResult(Guid gameId)
+    {
+        var gameSession = _gameSessions[gameId];
+        if(gameSession is null)
+            throw new SharedErrors.MultiplayerGames.GameNotFoundException();
+
+        if (!gameSession.GameEnded)
+            return null;
+
+        return gameSession.EndResult;
     }
 }
