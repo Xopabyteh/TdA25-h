@@ -9,118 +9,71 @@
 
 @*TODO: leave button and binding w BE*@
 
-<div class="game-name sheet">
-    <h1>HODNOCENÁ HRA</h1>
-</div>
-<div class="main-row">
-    <div class="game-field" data-cell-hover-symbol="@(xOnTurn ? "X" : "O")">
-        @for (int y = 0; y < 15; y++)
-        {
-        <div class="game-field-row">
-            @for (int x = 0; x < 15; x++)
+<div class="center">
+    <h1>Hodnocená hra</h1>
+    <div class="game-window">
+        <div class="game-field" data-cell-hover-symbol="@(xOnTurn ? "X" : "O")">
+            @for (int y = 0; y < 15; y++)
             {
-            int id1D = y * 15 + x;
-            var xCopy = x;
-            var yCopy = y;
+                <div class="game-field-row">
+                    @for (int x = 0; x < 15; x++)
+                    {
+                        int id1D = y * 15 + x;
+                        var xCopy = x;
+                        var yCopy = y;
 
-            string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
+                        string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
 
-            <div class="cell empty"
-                 style="width: 40px; background-color: @background;"
-                 data-x="@xCopy"
-                 data-y="@yCopy">
+                        <div class="cell empty"
+                             style="width: 40px; background-color: @background;"
+                             data-x="@xCopy"
+                             data-y="@yCopy">
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="game-info">
+            <div class="players sheet">
+                <div class="player">
+                    <img src="/IMG/X/X_cervene.svg" alt="">
+                    <b class="username">tvojemama69</b>
+                    <span class="elo">(@(elo1))</span>
+                    <span class="timer turn">08:00</span>
+                </div>
+                <div class="vs">VS</div>
+                <div class="player">
+                    <img src="/IMG/O/O_modre.svg" alt="">
+                    <b class="username">yomama69</b>
+                    <span class="elo">(@(elo2))</span>
+                    <span class="timer">08:00</span>
+                </div>
             </div>
-            }
-        </div>
-        }
-    </div>
-    <div class="secondary-column">
-        <div class="players">
-            <div class="p1"></div>
-            <h2 style="color: var(--clr-gray-600)">VS</h2>
-            <div class="p2"></div>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@*<div class="secondary-column">
-    <button class="secondary-button" style="box-sizing: border-box">Opustit hru</button>
-    <span class="warning">Pozor, nezískáš žádné ELO!</span>
-</div>
-<div class="primary-column">
-    <div class="players sheet">
-        <div class="p1">
-            <img src="/IMG/X/X_cervene.svg" alt="X">
-            <h2>evzen.rozinka
-                <span class="elo">(@(elo1))</span>
-            </h2>
-        </div>
-        <div class="divider"></div>
-        <div class="p2">
-            <img src="/IMG/O/O_modre.svg" alt="O">
-            <h2>evzen.rozinka
-                <span class="elo">(@(elo2))</span>
-            </h2>
-        </div>
-    </div>
-    <div class="turn-row">
-        <div class="sheet round">
-            <h3>@(turnI). kolo</h3>
-        </div>
-        <div class="sheet turn">
-            @if (xOnTurn)
-            {
-                turnDisplaySrc = "/IMG/X/X_cervene.svg";
-                turnDisplayAlt = "X";
-            }
-            else
-            {
-                turnDisplaySrc = "/IMG/O/O_modre.svg";
-                turnDisplayAlt = "O";
-            }
-            <img src=@turnDisplaySrc alt=@turnDisplayAlt>
-        </div>
-    </div>
-    <div class="game-field" data-cell-hover-symbol="@(xOnTurn ? "X" : "O")">
-        @for (int y = 0; y < 15; y++)
-        {
-        <div class="game-field-row">
-            @for (int x = 0; x < 15; x++)
-            {
-            int id1D = y * 15 + x;
-            var xCopy = x;
-            var yCopy = y;
-
-            string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
-
-            <div class="cell empty"
-                 style="width: 40px; background-color: @background;"
-                 data-x="@xCopy"
-                 data-y="@yCopy">
-
-                $1$ Symbols added via js #1#
-                $1$ Any inner content is removed when cell is placed !!! #1#
-                $1$ <img src="" /> #1#
+            <div class="turn-info">
+                <div class="round sheet">
+                    <p>@(turnI). kolo</p>
+                </div>
+                <div class="turn sheet">
+                    @if (xOnTurn)
+                    {
+                        turnDisplaySrc = "/IMG/X/X_cervene.svg";
+                        turnDisplayAlt = "X";
+                    }
+                    else
+                    {
+                        turnDisplaySrc = "/IMG/O/O_modre.svg";
+                        turnDisplayAlt = "O";
+                    }
+                    <img src=@turnDisplaySrc alt=@turnDisplayAlt>
+                </div>
             </div>
-            }
+            <button class="secondary-button">Vzdát se</button>
+            <p>Vzdaní se negativně ovlivní tvé ELO</p>
         </div>
-        }
     </div>
-</div>*@
+    <div class="game-tools">
+        <div class="warning">
+            <p>Použití automatizovaných herních klientů je zakázáno a bude trestáno zablokováním účtu.</p>
+        </div>
+    </div>
+</div>
