@@ -173,6 +173,11 @@ input[type="range"] {
     text-decoration: underline;
 }
 
+.red-link {
+    color: var(--clr-red);
+    text-decoration: underline;
+}
+
 /*Multiplayer a Friendplay*/
 .center {
     display: flex;

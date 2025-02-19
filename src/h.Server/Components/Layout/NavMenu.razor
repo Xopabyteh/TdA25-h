@@ -1,9 +1,32 @@
+@using h.Contracts.MultiplayerGames
 <div class="user">
-    <img src="IMG/pfps/pfp-grey.svg" alt="">
-    <div class="user-info">
-        <p id="nickname">Nepřihlášen</p>
-        <p id="logout"><a href="/login" class="minor-link">Přihlásit se</a></p>
-    </div>
+    @if (!isLogged)
+    {
+        <img src="IMG/pfps/pfp-grey.svg" alt="">
+        <div class="user-info">
+            <p id="nickname">Nepřihlášen</p>
+            <p id="logout"><a href="/login" class="minor-link">Přihlásit se</a></p>
+        </div>
+    }
+    else if(isLogged && !isAdmin)
+    {
+        <img src="/IMG/pfps/pfp-blue.svg"/>
+        <div class="user-info">
+            <p id="nickname">@usn</p>
+            <div class="elo-logout">
+                <p id="elo">ELO: @elo</p>
+                <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <img src="/IMG/pfps/pfp-blue.svg"/>
+        <div class="user-info">
+            <p id="nickname">Admin</p>
+            <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
+        </div>
+    }
 </div>
 
 <nav>
@@ -15,49 +38,32 @@
         <div class="nav-icon"></div>
         <span>Vytvořit novou úlohu</span>
     </NavLink>
-    <NavLink href="/settings" class="link x">
+    <NavLink href="/settings" class="link x" style="@(!isLogged ? "display: none" : "")">
         <div class="nav-icon"></div>
         <span>Nastavení účtu</span> <!--  TODO: Jen když je přihlášen  -->
     </NavLink>
-    <NavLink href="/multiplayer-game/queue" class="link o">
+    <NavLink href="/multiplayer-game/queue" class="@(!isLogged ? "link x" : "link o")">
         <div class="nav-icon"></div>
         <span>Ranked hra</span>
     </NavLink>
-    <NavLink href="/multiplayer-game/friend-query" class="link x">
+    <NavLink href="/multiplayer-game/friend-query" class="@(!isLogged ? "link o" : "link x")">
         <div class="nav-icon"></div>
         <span>Hraj s kamarádem</span>
     </NavLink>
     <p id="nav-foot">
         <span>v.69</span>
-        <a href="/admin/panel">Admin</a><!--  TODO: Jen když je admin  -->
-        <a href="/admin/audit">Audit</a><!--  TODO: Jen když je admin  -->
+        <a href="/admin/panel" style="@(!isAdmin ? "display: none" : "")">Admin</a><!--  TODO: Jen když je admin  -->
+        <a href="/admin/audit" style="@(!isAdmin ? "display: none" : "")">Audit</a><!--  TODO: Jen když je admin  -->
     </p>
 </nav>
 
 
+@code {
+    private bool isAdmin = true;
+    private bool isLogged = true;
 
+    private bool symbolX = true;
 
-
-
-
-
-
-@*
-<nav class="nav sheet">
-    <NavLink href="/game" class="nav-link">
-        <button class="primary-button">Hrát novou hru</button>
-    </NavLink>
-    <hr>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="game/list" Match="NavLinkMatch.All">
-            <span class="bi cross" aria-hidden="true"></span> Výběr úloh
-        </NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="game/editor">
-            <span class="bi circle" aria-hidden="true"></span> Vytvořit novou úlohu
-        </NavLink>
-    </div>
-</nav>
-$1$<span id="changelog">v 1.0 - Changelog Debug</span>#1#
-*@
+    private string usn = "evzen.tvojemama";
+    private int elo = 69;
+}

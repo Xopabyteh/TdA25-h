@@ -16,6 +16,12 @@
     font-size: 15pt;
 }
 
+.elo-logout {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
 nav {
     display: flex;
     flex-direction: column;
