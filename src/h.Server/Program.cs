@@ -14,6 +14,7 @@ builder
     .AddInfrastructure();
 
 builder.Services.AddShared();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

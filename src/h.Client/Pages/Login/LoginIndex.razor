@@ -1,15 +1,31 @@
-@using h.Client.Services
-@using h.Primitives.Games
 @attribute [Route(PageRoutes.Login.LoginIndex)]
 @rendermode InteractiveWebAssembly
 @layout LoginLayout
 
+@inject NavigationManager Navigation
+
+
 <PageTitle>Přihlásit se</PageTitle>
 
-<form action="" class="login-form">
-    <h2>Přihlásit do aplikace</h2>
-    <input type="text" placeholder="Nickname/Email" class="text-input" name="nick-mail">
-    <input type="password" placeholder="Heslo" class="text-input" name="pwd">
-    <button class="primary-button login-btn">Přihlásit se</button>
-    <a href="/register" class="link new-user">Vytvořit nový účet</a>
-</form>
+<div class="invalid-popup" style="@(!showInvalidPopup ? "display: none" : "")">
+    <div class="invalid-card">
+        <h2>Nesprávně zadané údaje</h2>
+        <button class="primary-button" @onclick="HandleClosePopup">Zkusit znovu</button>
+    </div>
+</div>
+
+<div class="form-cont">
+    <EditForm Model="request" OnValidSubmit="HandleLogin" class="login-form" FormName="login">
+        <h2>Přihlásit do aplikace</h2>
+        <input @bind="nickname" type="text" placeholder="Nickname/Email" class="text-input" name="nick-mail">
+        <input @bind="password" type="password" placeholder="Heslo" class="text-input" name="pwd">
+        <button type="submit" class="primary-button login-btn">Přihlásit se</button>
+        <a href="/register" class="link new-user">Vytvořit nový účet</a>
+    </EditForm>
+
+
+    @*@if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p class="error">@errorMessage</p>
+    }*@
+</div>

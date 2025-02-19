@@ -1,4 +1,4 @@
-.login-form {
+.form-cont ::deep .login-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,4 +9,25 @@
 
 .login-btn {
     box-sizing: border-box;
+}
+
+.invalid-popup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 69;
+}
+
+.invalid-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
 }
