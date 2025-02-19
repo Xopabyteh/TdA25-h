@@ -69,6 +69,10 @@ main {   /*nemazat*/
     width: 100%;
 }
 
+.can-copy {
+    user-select: text;
+}
+
 /*.navbar {
     margin-inline: 1rem;
     margin-block-end: 1rem;

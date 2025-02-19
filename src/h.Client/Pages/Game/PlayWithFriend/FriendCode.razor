@@ -1,0 +1,22 @@
+@attribute [Route(PageRoutes.Multiplayer.FriendCode)]
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Pozvánka pro kamaráda</PageTitle>
+
+<div class="center">
+    <h1>Hraj s kamarádem</h1>
+    <div class="invite sheet">
+        <div class="code-cont">
+            <h1 class="invite-code blue can-copy">123456</h1>
+            <span>Kód pozvánky</span>
+        </div>
+        <p class="code-info-text">
+            Tento kód pošli osobě, se kterou chceš hrát. <br> Kód zadejte na
+            <a href="/multiplayer-game/friend-invite" class="invite-link">.../multiplayer-game/friend-invite</a>
+        </p>
+        <div class="waiting">
+            <div class="loader"></div>
+            <span class="blue">Čekám na připojení</span>
+        </div>
+    </div>
+</div>

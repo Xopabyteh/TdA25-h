@@ -12,7 +12,7 @@
 <div class="center">
     <h1>Hodnocená hra</h1>
     <div class="game-window">
-        <div class="game-field" data-cell-hover-symbol="@(xOnTurn ? "X" : "O")">
+        <div class="game-field" data-cell-hover-symbol="@(isPlayerX ? "X" : "O")">
             @for (int y = 0; y < 15; y++)
             {
                 <div class="game-field-row">

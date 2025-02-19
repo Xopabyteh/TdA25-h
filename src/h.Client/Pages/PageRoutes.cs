@@ -30,6 +30,7 @@ public static class PageRoutes
         
         public const string FriendQuery = "/multiplayer-game/friend-query";
         public const string FriendInvite = "/multiplayer-game/friend-invite";
+        public const string FriendCode = "/multiplayer-game/friend-code";
     }
     
     public static class Login

@@ -11,4 +11,6 @@ public partial class MultiplayerIndex
 
     private int elo1 = 100;
     private int elo2 = 100;
+
+    private bool isPlayerX = true;
 }
