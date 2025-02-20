@@ -32,6 +32,15 @@ public struct ThinkDifferentElo
         return EloFromSA(Rating, WIN_SA, wins, draws, losses, opponentRating);
     }
 
+    public ThinkDifferentElo EloAfterLoss(User thisPlayer, User otherPlayer)
+        => EloAfterLoss(thisPlayer.WinAmount, thisPlayer.DrawAmount, thisPlayer.LossAmount, otherPlayer.Elo.Rating);
+
+    public ThinkDifferentElo EloAfterDraw(User thisPlayer, User otherPlayer)
+        => EloAfterDraw(thisPlayer.WinAmount, thisPlayer.DrawAmount, thisPlayer.LossAmount, otherPlayer.Elo.Rating);
+
+    public ThinkDifferentElo EloAfterWin(User thisPlayer, User otherPlayer)
+        => EloAfterWin(thisPlayer.WinAmount, thisPlayer.DrawAmount, thisPlayer.LossAmount, otherPlayer.Elo.Rating);
+
     private static ThinkDifferentElo EloFromSA(double rating, double sA, double wins, double draws, double losses, double opponentRating)
     {
         var eA = ExpectedScoreForA(rating, opponentRating);

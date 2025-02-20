@@ -45,21 +45,29 @@ public class MultiplayerGameStatisticsService
             ?? throw new SharedErrors.User.UserNotFoundException();
 
         // Save statistics
-        // Todo: calculate elo
         if (fromGame.EndResult.IsDraw)
         {
             player1.DrawAmount++;
+            player1.Elo = player1.Elo.EloAfterDraw(player1, player2);
+            
             player2.DrawAmount++;
+            player2.Elo = player2.Elo.EloAfterDraw(player2, player1);
         }
         else if (fromGame.EndResult.WinnerId == player1Id)
         {
             player1.WinAmount++;
+            player1.Elo = player1.Elo.EloAfterWin(player1, player2);
+
             player2.LossAmount++;
+            player2.Elo = player2.Elo.EloAfterLoss(player2, player1);
         }
         else
         {
-            player2.WinAmount++;
             player1.LossAmount++;
+            player1.Elo = player1.Elo.EloAfterLoss(player1, player2);
+
+            player2.WinAmount++;
+            player2.Elo = player2.Elo.EloAfterWin(player2, player1);
         }
 
         // Save game

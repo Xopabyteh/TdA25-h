@@ -75,12 +75,15 @@ public class MultiplayerGamesTests
     public async Task MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved(CancellationToken cancellationToken)
     {
         // Arrange
+        var initialElo1 = 400ul;
+        var initialElo2 = 400ul;
+
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
             $"player1-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
-            eloRating: 400);
+            eloRating: initialElo1);
          var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
             $"player2-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
-            eloRating: 400);
+            eloRating: initialElo2);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
         
@@ -169,9 +172,15 @@ public class MultiplayerGamesTests
 
         await Assert.That(client2GameEndedTcs.Task.Result).IsEqualTo(client1GameEndedTcs.Task.Result);
 
+        // Wins changed
         await Assert.That(player1InDb.WinAmount == 1).IsTrue();
         await Assert.That(player2InDb.LossAmount == 1).IsTrue();
 
+        // Elo changed
+        await Assert.That(player1InDb.Elo.Rating > initialElo1).IsTrue();
+        await Assert.That(player2InDb.Elo.Rating < initialElo2).IsTrue();
+
+        // Game history
         await Assert.That(player1InDb.UserToFinishedRankedGames).HasCount().EqualToOne();
         await Assert.That(player2InDb.UserToFinishedRankedGames).HasCount().EqualToOne();
 
