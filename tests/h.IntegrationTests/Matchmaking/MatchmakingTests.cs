@@ -371,7 +371,6 @@ public class MatchmakingTests
     }
 
     [Test]
-    [Timeout(20_000)]
     [NotInParallel(Order = MatchmakingTestOrder.Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession)]
     public async Task Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession()
     {

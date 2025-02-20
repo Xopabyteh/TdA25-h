@@ -1,8 +1,10 @@
 using Carter;
 using h.Contracts;
+using h.Contracts.GameInvitations;
 using h.Contracts.Matchmaking;
 using h.Contracts.MultiplayerGames;
 using h.Server.Components;
+using h.Server.Features.GameInvitations;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
@@ -61,6 +63,7 @@ app.MapCarter();
 
 app.MapHub<MatchmakingHub>(IMatchmakingHubClient.Route);
 app.MapHub<MultiplayerGameSessionHub>(IMultiplayerGameSessionHubClient.Route);
+app.MapHub<GameInvitationHub>(IGameInvitationHubClient.Route);
 
 app.Run();
 

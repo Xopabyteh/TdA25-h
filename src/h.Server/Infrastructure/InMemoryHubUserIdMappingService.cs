@@ -36,6 +36,21 @@ public class InMemoryHubUserIdMappingService<THub, TIdentity>
             : null;
     }
 
+    public async IAsyncEnumerable<string> GetConnectionIds(IEnumerable<TIdentity> userIds, Func<TIdentity, Task> userNotFoundHandler)
+    {
+        foreach (var userId in userIds)
+        {
+            if (_userIdToConnectionId.TryGetValue(userId, out var connectionId))
+            {
+                yield return connectionId;
+            }
+            else
+            {
+                await userNotFoundHandler(userId);
+            }
+        }
+    }
+
     public void Remove(TIdentity userId)
     {
         _userIdToConnectionId.TryRemove(userId, out _);

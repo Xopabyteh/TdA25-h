@@ -9,6 +9,7 @@ using h.Primitives.Users;
 using h.Server.Features.Matchmaking;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
+using h.Server.Infrastructure.GameInvitations;
 using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
 using h.Server.Infrastructure.MultiplayerGames;
@@ -134,9 +135,12 @@ public static class DependencyInjection
         builder.Services.AddHostedService<RemoveExpiredMatchingsBackgroundService>();
         builder.Services.Configure<MatchmakingOptions>(builder.Configuration.GetSection(MatchmakingOptions.SectionName));
 
-        // Game
+        // MultiplayerGames
         builder.Services.AddSingleton<IMultiplayerGameSessionService, InMemoryMultiplayerGameSessionService>();
         builder.Services.AddScoped<MultiplayerGameStatisticsService>();  
+
+        // GameInvitations
+        builder.Services.AddSingleton<InMemoryInvitationCodeService>();
 
         return builder;
     }

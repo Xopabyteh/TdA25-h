@@ -143,7 +143,7 @@ public class CustomWebApplicationFactory
     /// Logs into a guest user.
     /// Don't forget to dispose the client after the test.
     /// </summary>
-    public async Task<(HttpClient client, GuestLoginResponse token)> LoginGuestAsync()
+    public async Task<(HttpClient client, GuestLoginResponse auth)> LoginGuestAsync()
     {
         var client = CreateClient();
 

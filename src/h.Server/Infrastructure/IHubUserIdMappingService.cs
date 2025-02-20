@@ -22,6 +22,10 @@ public interface IHubUserIdMappingService<THub, TIdentity>
     public void Remove(TIdentity userId);
     public string? GetConnectionId(TIdentity userId);
 
+    /// <summary>
+    /// Get connection ids from identities. If an identity is not found inside the mapping, the userNotFoundHandler is called
+    /// </summary>
+
     public class UserNotPresentInMappingException : Exception
     {
         public UserNotPresentInMappingException(TIdentity userId)
