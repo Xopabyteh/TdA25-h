@@ -1,6 +1,7 @@
 ﻿using Carter;
 using h.Contracts;
 using h.Server.Infrastructure;
+using h.Server.Infrastructure.AuditLog;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ public static class UnbanUserFromRankedMatchmaking
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPut("/api/v1/users/{uuid:guid}/unban", Handle)
+                .AuditMethod(ctx => $"Unbanned user {ctx.HttpContext.GetRouteValue("uuid")}")
                 .RequireAuthorization(nameof(AppPolicies.IsAdmin));
         }
     }
