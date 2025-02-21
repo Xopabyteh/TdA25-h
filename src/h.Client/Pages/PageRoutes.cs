@@ -1,15 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace h.Client.Pages;
+﻿namespace h.Client.Pages;
 public static class PageRoutes
 {
-    /// <summary>
-    /// Temporarily rerouted to <see cref="GameList"/>
-    /// </summary>
-    
     public const string HomeIndex = "/";
 
-    
+    /// <summary>
+    /// Singleplayer game
+    /// </summary>
     public static class Game
     {
         /// <summary>
@@ -23,6 +19,9 @@ public static class PageRoutes
         public static string GameEditorWithParam(Guid? gameId) => $"/game/editor/{gameId}";
     }
     
+    /// <summary>
+    /// Multiplayer game session
+    /// </summary>
     public static class Multiplayer /*Multiplayer game*/
     {
         public const string MultiplayerIndex = "/multiplayer-game";
