@@ -82,7 +82,7 @@ public class CustomWebApplicationFactory
     /// <returns>HttpClient with authorization header</returns>
     public async Task<(HttpClient client, AuthenticationResponse loginResult)> CreateUserAndLoginAsync(
         string nickname,
-        ulong eloRating)
+        int eloRating)
     {
         var client = CreateClient();
         var request = new CreateNewUserRequest(

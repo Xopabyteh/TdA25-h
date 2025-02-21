@@ -39,18 +39,22 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         {
             b.IsRequired();
             b.Property(bx => bx.Rating)
+                .HasColumnType("INTEGER")
                 .IsRequired();
         });
 
         builder.Property(x => x.WinAmount)
             .HasDefaultValue(0)
+            .HasColumnType("INTEGER")
             .IsRequired();
 
         builder.Property(x => x.LossAmount)
             .HasDefaultValue(0)
+            .HasColumnType("INTEGER")
             .IsRequired();
 
         builder.Property(x => x.DrawAmount)
+            .HasColumnType("INTEGER")
             .HasDefaultValue(0)
             .IsRequired();
         

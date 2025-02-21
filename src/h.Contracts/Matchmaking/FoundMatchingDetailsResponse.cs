@@ -12,7 +12,7 @@ public readonly record struct FoundMatchingDetailsResponse(
 public readonly record struct FoundMatchingPlayerDetailDto(
     Guid PlayerId,
     string PlayerName,
-    ulong EloRating
+    int EloRating
 );
 
 

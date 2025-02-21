@@ -4,5 +4,5 @@ public readonly record struct UpdateUserRequest(
     string Username,
     string Email,
     string Password,
-    ulong Elo
+    int Elo
 );

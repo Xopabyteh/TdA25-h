@@ -2,14 +2,14 @@
 
 public struct ThinkDifferentElo
 {
-    public const ulong INITIAL_ELO = 400;
+    public const int INITIAL_ELO = 400;
 
     /// <summary>
     /// Elo should be rounded up
     /// </summary>
-    public ulong Rating { get; set; } = INITIAL_ELO;
+    public int Rating { get; set; } = INITIAL_ELO;
 
-    public ThinkDifferentElo(ulong rating)
+    public ThinkDifferentElo(int rating)
     {
         Rating = rating;
     }
@@ -55,7 +55,7 @@ public struct ThinkDifferentElo
     /// <param name="rA">rating of player A.</param>
     /// <param name="sA">skutečný výsledek (1 za vihru, 0,5 za remfzu, 0 za prohru).</param>
     /// <param name="eA"><see cref="ExpectedScoreForA(double, double)"/></param>
-    private static ulong RatingAfterGameForA(double rA, double sA, double eA, double wins, double draws, double losses)
+    private static int RatingAfterGameForA(double rA, double sA, double eA, double wins, double draws, double losses)
     {
         //R'_A = R_A + 40 * [(S_A - E_A) * (1 + 0.5 * (0.5 - (W + D) / (W + D + L)))].
         const double ALPHA = 0.5;
@@ -67,7 +67,7 @@ public struct ThinkDifferentElo
         var rating = rA + eloDelta;
 
         var ratingCeiled = Math.Ceiling(rating);
-        return (ulong)ratingCeiled;
+        return (int)ratingCeiled;
     }
 
     /// <summary>

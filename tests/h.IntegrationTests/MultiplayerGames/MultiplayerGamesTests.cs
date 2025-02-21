@@ -75,8 +75,8 @@ public class MultiplayerGamesTests
     public async Task MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved(CancellationToken cancellationToken)
     {
         // Arrange
-        var initialElo1 = 400ul;
-        var initialElo2 = 400ul;
+        var initialElo1 = 400;
+        var initialElo2 = 400;
 
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
             $"player1-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
