@@ -13,7 +13,7 @@ public static class LeaveMatchmakingQueue
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost("/api/v1/matchmaking/leave", HandleLeave)
-                .RequireAuthorization(AppPolicyNames.AbleToJoinMatchmaking);
+                .RequireAuthorization(nameof(AppPolicies.AbleToJoinMatchmaking));
         }
     }
 

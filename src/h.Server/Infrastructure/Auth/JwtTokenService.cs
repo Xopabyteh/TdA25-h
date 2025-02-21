@@ -1,6 +1,7 @@
 ﻿using h.Primitives.Users;
 using h.Server.Entities.Users;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -25,6 +26,14 @@ public class JwtTokenService
             .Select(role => new Claim(ClaimTypes.Role, Enum.GetName(role)!))
             .ToArray();
 
+        var appCustomClaimTypes = new List<Claim>(1);
+        if(user.BannedFromRankedMatchmakingAt is not null)
+        {
+            appCustomClaimTypes.Add(new Claim(
+                AppCustomClaimTypes.BannedFromRankedMatchmakingAtUTC,
+                user.BannedFromRankedMatchmakingAt!.Value.ToString(CultureInfo.InvariantCulture)));
+        }
+
         var Sectoken = new JwtSecurityToken(
             issuer: _config["Auth:Jwt:Issuer"]!,
             audience: _config["Auth:Jwt:Audience"],
@@ -33,7 +42,10 @@ public class JwtTokenService
                 new Claim(ClaimTypes.NameIdentifier, user.Uuid.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
-                
+
+                // App custom claims
+                ..appCustomClaimTypes,
+
                 // Roles
                 ..claimsFromRoles
             ],

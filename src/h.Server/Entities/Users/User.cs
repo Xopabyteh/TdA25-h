@@ -30,6 +30,11 @@ public class User
     public int LossAmount { get; set; }
     public int DrawAmount { get; set; }
 
+    /// <summary>
+    /// When <see langword="null"/>, the user is not banned.
+    /// </summary>
+    public DateTime? BannedFromRankedMatchmakingAt { get; set; }
+
     public static User NewUser(
         string username,
         string email,

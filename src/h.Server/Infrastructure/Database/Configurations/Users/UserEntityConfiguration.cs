@@ -1,8 +1,6 @@
-﻿using h.Server.Entities.MultiplayerGames;
-using h.Server.Entities.Users;
+﻿using h.Server.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace h.Server.Infrastructure.Database.Configurations.Users;
 
@@ -59,5 +57,8 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         
         builder.PrimitiveCollection(x => x.Roles);
+
+        builder.Property(x => x.BannedFromRankedMatchmakingAt)
+            .IsRequired(false);
     }
 }

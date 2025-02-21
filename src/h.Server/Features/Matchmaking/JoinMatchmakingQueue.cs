@@ -1,9 +1,10 @@
 ﻿using Carter;
-using h.Contracts;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
+using h.Server.Infrastructure.Database;
 using h.Server.Infrastructure.Matchmaking;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Features.Matchmaking;
 
@@ -14,7 +15,7 @@ public static class JoinMatchmakingQueue
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost("/api/v1/matchmaking/join", HandleJoin)
-                .RequireAuthorization(AppPolicyNames.AbleToJoinMatchmaking);
+                .RequireAuthorization(nameof(AppPolicies.AbleToJoinMatchmaking));
         }
     }
 
@@ -22,13 +23,23 @@ public static class JoinMatchmakingQueue
     /// Adds the user to the matchmaking queue
     /// </summary>
     /// <returns>Position of user in queue (Indexing from 0)</returns>
-    public static IResult HandleJoin(
+    public static async Task<IResult> HandleJoin(
         [FromServices] IMatchmakingQueueService matchmakingQueue,
+        [FromServices] AppDbContext db,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        // Todo: make sure he is not already in the queue
         var userId = httpContext.User.GetUserId();
+        
+        // Make sure user isnt banned
+        var isBanned = await db.UsersDbSet
+            .Where(u => u.Uuid == userId)
+            .Select(u => u.BannedFromRankedMatchmakingAt)
+            .FirstOrDefaultAsync(cancellationToken) is not null;
+        
+        if(isBanned)
+            return Results.Forbid();
+
         var queueResult = matchmakingQueue.AddUserToQueue(userId);
 
         return queueResult.MatchFirst(

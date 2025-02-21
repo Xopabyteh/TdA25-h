@@ -104,26 +104,8 @@ public static class DependencyInjection
                 };
             });
         
-        builder.Services.AddAuthorization(c =>
-        {
-            c.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                .RequireAuthenticatedUser()
-                .Build()
-            );
+        builder.Services.AddAuthorization(o => o.AddAppPolicies());
 
-            c.AddPolicy(AppPolicyNames.AbleToJoinMatchmaking, pb =>
-            {
-                pb.RequireAuthenticatedUser();
-                
-                // Assert the user is not an admin
-                pb.RequireAssertion(context =>
-                {
-                    var user = context.User;
-                    return !user.IsInRole(nameof(UserRole.Admin));
-                });
-            });
-        });
         builder.Services.AddScoped<UserService>();
         builder.Services.AddScoped<PasswordHashService>();
         builder.Services.AddScoped<JwtTokenService>();
