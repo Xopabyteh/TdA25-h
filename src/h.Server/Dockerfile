@@ -9,9 +9,10 @@ EXPOSE 8081
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
-COPY Directory.Build.Props ./
 
 WORKDIR /src
+COPY ["Directory.Build.Props", "/src/"]
+
 COPY ["src/h.Server/h.Server.csproj", "src/h.Server/"]
 COPY ["src/h.Client/h.Client.csproj", "src/h.Client/"]
 RUN dotnet restore "./src/h.Server/h.Server.csproj"
