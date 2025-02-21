@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace h.Client.Pages.Login;
 
@@ -21,7 +22,7 @@ public partial class LoginIndex
     
     [Inject] protected HttpClient _client { get; set; }
     [Inject] protected NavigationManager _navigation { get; set; } = null!;
-    
+
     private async void HandleLogin()
     {
         request = new LoginUserRequest(nickname, password);

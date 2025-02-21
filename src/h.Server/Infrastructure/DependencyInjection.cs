@@ -1,11 +1,9 @@
-﻿
-using Carter;
+﻿using Carter;
 using FluentValidation;
 using h.Client.Services;
 using h.Client.Services.Game;
 using h.Contracts.Matchmaking;
 using h.Primitives.Games;
-using h.Primitives.Users;
 using h.Server.Features.Matchmaking;
 using h.Server.Infrastructure.AuditLog;
 using h.Server.Infrastructure.Auth;
@@ -15,10 +13,10 @@ using h.Server.Infrastructure.Matchmaking;
 using h.Server.Infrastructure.Middleware;
 using h.Server.Infrastructure.MultiplayerGames;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 
 namespace h.Server.Infrastructure;
