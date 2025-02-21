@@ -26,9 +26,14 @@ public class User
     public required string PasswordHash { get; set; }
     
     public ThinkDifferentElo Elo { get; set; }
-    public ulong WinAmount { get; set; }
-    public ulong LossAmount { get; set; }
-    public ulong DrawAmount { get; set; }
+    public int WinAmount { get; set; }
+    public int LossAmount { get; set; }
+    public int DrawAmount { get; set; }
+
+    /// <summary>
+    /// When <see langword="null"/>, the user is not banned.
+    /// </summary>
+    public DateTime? BannedFromRankedMatchmakingAt { get; set; }
 
     public static User NewUser(
         string username,
@@ -52,7 +57,7 @@ public class User
         string username,
         string email,
         string passwordHash,
-        ulong eloRating)
+        int eloRating)
     {
         return new User()
         {

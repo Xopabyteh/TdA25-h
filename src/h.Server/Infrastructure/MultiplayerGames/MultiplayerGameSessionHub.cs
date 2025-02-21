@@ -77,21 +77,28 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
         var gameStartResult = _gameSessionService.StartGame(gameId);
 
-        var connectionIds =  game.Players.Select(identity => 
-            _userIdMappingService.GetConnectionId(identity)
+        var identitiesAndConnections = game.Players.Select(identity => 
+            (
+                identity,
+                connectionId: _userIdMappingService.GetConnectionId(identity)
             ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(identity)
+            )
         );
 
-        await Clients.Clients(connectionIds)
-            .GameStarted(new(
-                gameId,
-                MapToDto(gameStartResult.StartingPlayer),
-                game.Players.Select(MapToDto).ToArray(),
-                gameStartResult.PlayerSymbols.Select(u => new KeyValuePair<MultiplayerGameUserIdentityDTO, GameSymbol>(
-                    MapToDto(u.Key),
-                    u.Value
-                )).ToArray()
-            ));
+        foreach(var identityAndConnection in identitiesAndConnections)
+        {
+            await Clients.Client(identityAndConnection.connectionId)
+                .GameStarted(new(
+                    gameId,
+                    identityAndConnection.identity.SessionId,
+                    MapToDto(gameStartResult.StartingPlayer),
+                    game.Players.Select(MapToDto).ToArray(),
+                    gameStartResult.PlayerSymbols.Select(u => new KeyValuePair<MultiplayerGameUserIdentityDTO, GameSymbol>(
+                        MapToDto(u.Key),
+                        u.Value
+                    )).ToArray()
+                ));
+        }
     }
 
     public async Task PlaceSymbol(Guid gameId, Int2 atPos)

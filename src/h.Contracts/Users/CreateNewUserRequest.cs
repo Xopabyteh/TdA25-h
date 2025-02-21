@@ -3,5 +3,5 @@ public readonly record struct CreateNewUserRequest(
     string Username,
     string Email,
     string Password,
-    ulong Elo
+    int Elo
 );

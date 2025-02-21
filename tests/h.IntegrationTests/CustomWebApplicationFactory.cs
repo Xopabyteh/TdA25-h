@@ -74,6 +74,8 @@ public class CustomWebApplicationFactory
         base.ConfigureWebHost(builder);
     }
 
+    private static int lastNicknameNumber = 0;
+    private static string NewIncrementalNickname() => $"user{++lastNicknameNumber}";
     /// <summary>
     /// Creates a new user and logs into him.
     /// Make sure the test depends on <see cref="h.IntegrationTests.Auth.AuthTests.Login_ValidUser_ReturnsSuccess"/>.
@@ -81,13 +83,13 @@ public class CustomWebApplicationFactory
     /// </summary>
     /// <returns>HttpClient with authorization header</returns>
     public async Task<(HttpClient client, AuthenticationResponse loginResult)> CreateUserAndLoginAsync(
-        string nickname,
-        ulong eloRating)
+        int eloRating)
     {
+        var name = NewIncrementalNickname();
         var client = CreateClient();
         var request = new CreateNewUserRequest(
-            nickname,
-            $"{nickname}@tda.h",
+            name,
+            $"{name}@tda.h",
             "P@ssw0rd",
             eloRating
         );
@@ -97,7 +99,7 @@ public class CustomWebApplicationFactory
         response.EnsureSuccessStatusCode();
 
         var loginRequest = new LoginUserRequest(
-            nickname,
+            name,
             "P@ssw0rd"
         );
 

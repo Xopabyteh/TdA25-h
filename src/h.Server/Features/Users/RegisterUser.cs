@@ -80,9 +80,9 @@ public static class RegisterUser
         public Validator()
         {
             RuleFor(x => x.Password).SetValidator(new SharedPasswordValidator());
+            RuleFor(x => x.Username).SetValidator(new SharedUsernameValidator());
 
             RuleFor(x => x.Email).NotEmpty();
-            RuleFor(x => x.Username).NotEmpty();
         }
     }
 }

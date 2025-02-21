@@ -1,8 +1,6 @@
-﻿using h.Server.Entities.MultiplayerGames;
-using h.Server.Entities.Users;
+﻿using h.Server.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace h.Server.Infrastructure.Database.Configurations.Users;
 
@@ -21,7 +19,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
             .HasDefaultValueSql("current_timestamp");
     
         builder.Property(x => x.Username)
-            .HasMaxLength(256)
+            .HasMaxLength(16)
             .IsRequired();
         builder.HasIndex(x => x.Username)
             .IsUnique();
@@ -39,21 +37,28 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         {
             b.IsRequired();
             b.Property(bx => bx.Rating)
+                .HasColumnType("INTEGER")
                 .IsRequired();
         });
 
         builder.Property(x => x.WinAmount)
             .HasDefaultValue(0)
+            .HasColumnType("INTEGER")
             .IsRequired();
 
         builder.Property(x => x.LossAmount)
             .HasDefaultValue(0)
+            .HasColumnType("INTEGER")
             .IsRequired();
 
         builder.Property(x => x.DrawAmount)
+            .HasColumnType("INTEGER")
             .HasDefaultValue(0)
             .IsRequired();
         
         builder.PrimitiveCollection(x => x.Roles);
+
+        builder.Property(x => x.BannedFromRankedMatchmakingAt)
+            .IsRequired(false);
     }
 }

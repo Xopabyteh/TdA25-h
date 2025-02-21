@@ -1,4 +1,5 @@
 ﻿using h.Primitives.Users;
+using h.Server.Entities.AuditLog;
 using h.Server.Entities.Games;
 using h.Server.Entities.MultiplayerGames;
 using h.Server.Entities.Users;
@@ -73,4 +74,6 @@ public class AppDbContext : DbContext
     public DbSet<User> UsersDbSet { get; set; }
     public DbSet<UserToFinishedRankedGame> UserToFinishedRankedGames { get; set; }
     public DbSet<FinishedRankedGame> FinishedRankedGames { get; set; }
+
+    public DbSet<AuditLogEntry> AuditLogEntries { get; set; }
 }

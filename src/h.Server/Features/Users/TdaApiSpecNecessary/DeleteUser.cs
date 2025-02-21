@@ -1,5 +1,6 @@
 ﻿using Carter;
 using h.Contracts;
+using h.Primitives.Users;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,9 @@ public static class DeleteUser
         var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Uuid == id, cancellationToken);
         if (user is null)
             return ErrorResults.NotFound([SharedErrors.User.UserNotFound()]);
+
+        if(user.Roles.Contains(UserRole.Admin))
+            return ErrorResults.Conflit("Cannot delete admin user"); // Todo: convert to shared error if needed
 
         db.UsersDbSet.Remove(user);
         await db.SaveChangesAsync(cancellationToken);

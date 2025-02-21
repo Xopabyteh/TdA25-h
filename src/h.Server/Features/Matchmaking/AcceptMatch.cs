@@ -16,7 +16,7 @@ public static class AcceptMatch
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost("/api/v1/matchmaking/accept/{matchingId:guid}", Handle)
-                .RequireAuthorization(AppPolicyNames.AbleToJoinMatchmaking);
+                .RequireAuthorization(nameof(AppPolicies.AbleToJoinMatchmaking));
         }
     }
 

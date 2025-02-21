@@ -13,8 +13,8 @@ public readonly record struct UserResponse(
     DateTime UpdatedAt,
     string Username,
     string Email,
-    ulong Elo,
-    ulong Wins,
-    ulong Draws,
-    ulong Losses
+    int Elo,
+    int Wins,
+    int Draws,
+    int Losses
 );

@@ -57,7 +57,6 @@ public static class ErrorResults
 
     public static IResult Conflit(IReadOnlyCollection<Error>? Errors = null)
         => Results.Conflict(new ErrorResponse(409, "Conflict: The resource already exists.", Errors));
-
     public static IResult FromFirstError(Error error) => error.Type switch
     {
         ErrorType.Validation => UnproccessableEntity([error]),

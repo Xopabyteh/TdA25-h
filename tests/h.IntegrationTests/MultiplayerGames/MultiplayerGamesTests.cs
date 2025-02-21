@@ -18,10 +18,8 @@ public class MultiplayerGamesTests
     {
 // Arrange
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_PlayersConfirmLoad_AndGameStarts)}",
             eloRating: 400);
         var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(MultiplayerGames_PlayersConfirmLoad_AndGameStarts)}",
             eloRating: 400);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -62,6 +60,16 @@ public class MultiplayerGamesTests
         await Assert.That(client1GameStartedTcs.Task.Result.GameId == gameSession.Id).IsTrue();
         await Assert.That(client2GameStartedTcs.Task.Result.GameId == gameSession.Id).IsTrue();
 
+        // Session identity
+        await Assert.That(client1GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client1GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client2GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client2GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
+
+        // Session identity matches fabricable identity (Prone to change)
+        await Assert.That(client1GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid).UserId!.Value);
+        await Assert.That(client2GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid).UserId!.Value);
+
         // Dispose
         scope.Dispose();
         client1.Dispose();
@@ -75,14 +83,12 @@ public class MultiplayerGamesTests
     public async Task MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved(CancellationToken cancellationToken)
     {
         // Arrange
-        var initialElo1 = 400ul;
-        var initialElo2 = 400ul;
+        var initialElo1 = 400;
+        var initialElo2 = 400;
 
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: initialElo1);
          var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: initialElo2);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -194,7 +200,6 @@ public class MultiplayerGamesTests
     {
         // Arrange
         var (clientUser, clientUserAuth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_GuestGameIsPlayed_AndStatisticsArentSaved)}",
             eloRating: 400);
 
         var (clientGuest, clientGuestAuth) = await _sessionApiFactory.LoginGuestAsync();

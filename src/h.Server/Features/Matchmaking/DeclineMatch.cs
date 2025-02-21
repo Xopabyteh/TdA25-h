@@ -16,7 +16,7 @@ public static class DeclineMatch
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost("/api/v1/matchmaking/decline/{matchingId:guid}", Handle)
-                .RequireAuthorization(AppPolicyNames.AbleToJoinMatchmaking);
+                .RequireAuthorization(nameof(AppPolicies.AbleToJoinMatchmaking));
         }
     }
     public static async Task<IResult> Handle(
