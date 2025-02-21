@@ -30,8 +30,10 @@ public static class JoinMatchmakingQueue
         CancellationToken cancellationToken)
     {
         var userId = httpContext.User.GetUserId();
-        
+
         // Make sure user isnt banned
+        // (even though we require authorization policy, if user was banned while logged in,
+        // his auth token would still be valid)
         var isBanned = await db.UsersDbSet
             .Where(u => u.Uuid == userId)
             .Select(u => u.BannedFromRankedMatchmakingAt)
