@@ -40,6 +40,7 @@ await app.TryMigrateDbAsync();
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAntiforgery();
 
 app.UseCors(c =>
