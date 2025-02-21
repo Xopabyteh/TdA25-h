@@ -19,7 +19,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
             .HasDefaultValueSql("current_timestamp");
     
         builder.Property(x => x.Username)
-            .HasMaxLength(256)
+            .HasMaxLength(16)
             .IsRequired();
         builder.HasIndex(x => x.Username)
             .IsUnique();

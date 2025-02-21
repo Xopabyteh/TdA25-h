@@ -54,10 +54,7 @@ public class GameInvitationsTests
     [Timeout(20_000)]
     public async Task GameInvitations_PlayerCreatesCode_AnotherJoins_AndGameStarts(CancellationToken cancellationToken)
     {
-        var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"user1-{nameof(GameInvitations_PlayerCreatesCode_AnotherJoins_AndGameStarts)}",
-            400
-        );
+        var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(400);
         var (client2, auth2) = await _sessionApiFactory.LoginGuestAsync();
         await using var userConnection1 = _sessionApiFactory.CreateSignalRConnection(IGameInvitationHubClient.Route, auth1.Token);
         await using var userConnection2 = _sessionApiFactory.CreateSignalRConnection(IGameInvitationHubClient.Route, auth2.Token);

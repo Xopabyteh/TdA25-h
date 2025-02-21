@@ -20,10 +20,8 @@ public class MatchmakingTests
     {
         // Arrange
         var (client1, _) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_UsersJoinMatch_GetMatched_AndGetNotified)}",
             eloRating: 400);
         var (client2, _) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_UsersJoinMatch_GetMatched_AndGetNotified)}",
             eloRating: 400);
 
         await using var hubConnection1 = _sessionApiFactory.CreateSignalRConnection(
@@ -107,10 +105,8 @@ public class MatchmakingTests
     {
 // Arrange
         var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel)}",
             eloRating: 400);
         var (client2, auth2) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_UserDeclinesMatch_AndPlayersGetNotifiedAboutCancel)}",
             eloRating: 400);
         
         await using var hubConnection1 = _sessionApiFactory.CreateSignalRConnection(
@@ -190,10 +186,8 @@ public class MatchmakingTests
     {
         // Arrange
         var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_UserDeclinesMath_AndOtherPlayerIsPlacedBackToQueue)}",
             eloRating: 400);
         var (client2, auth2) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_UserDeclinesMath_AndOtherPlayerIsPlacedBackToQueue)}",
             eloRating: 400);
         
         var scope = _sessionApiFactory.Services.CreateScope();
@@ -227,7 +221,6 @@ public class MatchmakingTests
     {
         // Arrange
         var (client1, auth1) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_UserCannotJoinQueueTwice)}",
             eloRating: 400);
 
         // Act
@@ -247,11 +240,9 @@ public class MatchmakingTests
     {
         // Arrange
         var (client1, auth1) = await _testApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
             eloRating: 400);
 
         var (client2, auth2) = await _testApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
             eloRating: 400);
 
         await using var hubConnection1 = _testApiFactory.CreateSignalRConnection(
@@ -324,11 +315,9 @@ public class MatchmakingTests
     {
         // Arrange
         var (client1, auth1) = await _testApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
             eloRating: 400);
 
         var (client2, auth2) = await _testApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_MatchingExpire_RemovesHangingMatchings_AndUsersGetNotified)}",
             eloRating: 400);
 
         await using var hubConnection1 = _testApiFactory.CreateSignalRConnection(
@@ -377,10 +366,8 @@ public class MatchmakingTests
         // Arrange
         // Arrange
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession)}",
             eloRating: 400);
         var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(Matchmaking_PlayersAccept_AndGetNotifiedAboutNewGameSession)}",
             eloRating: 400);
 
         await using var hubConnection1 = _sessionApiFactory.CreateSignalRConnection(

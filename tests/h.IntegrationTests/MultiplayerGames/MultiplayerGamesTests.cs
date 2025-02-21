@@ -18,10 +18,8 @@ public class MultiplayerGamesTests
     {
 // Arrange
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_PlayersConfirmLoad_AndGameStarts)}",
             eloRating: 400);
         var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(MultiplayerGames_PlayersConfirmLoad_AndGameStarts)}",
             eloRating: 400);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -89,10 +87,8 @@ public class MultiplayerGamesTests
         var initialElo2 = 400;
 
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: initialElo1);
          var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player2-{nameof(MultiplayerGames_AuthedPlayersPlayGame_AndOneWins_AndStatisticsAreSaved)}",
             eloRating: initialElo2);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -204,7 +200,6 @@ public class MultiplayerGamesTests
     {
         // Arrange
         var (clientUser, clientUserAuth) = await _sessionApiFactory.CreateUserAndLoginAsync(
-            $"player1-{nameof(MultiplayerGames_GuestGameIsPlayed_AndStatisticsArentSaved)}",
             eloRating: 400);
 
         var (clientGuest, clientGuestAuth) = await _sessionApiFactory.LoginGuestAsync();
