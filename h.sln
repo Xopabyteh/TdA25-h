@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		src\Directory.Packages.props = src\Directory.Packages.props
+		Directory.Build.props = Directory.Build.props
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -30,6 +30,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "h.IntegrationTests", "tests\h.IntegrationTests\h.IntegrationTests.csproj", "{29CD70F3-33B7-4E0A-8FFE-FFD920F62D45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "h.ValidationTests", "tests\h.ValidationTests\h.ValidationTests.csproj", "{424CB25F-904F-4226-B7B2-7DEBA40E749D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{69829899-807D-4F7B-AE47-DAEBF2D35308}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Packages.props = src\Directory.Packages.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +86,7 @@ Global
 		{FD545E26-B648-4789-AAA5-C8B2C8D8FFFA} = {CDE91293-70E6-4E8E-B5AF-82CA433DDAF9}
 		{29CD70F3-33B7-4E0A-8FFE-FFD920F62D45} = {CDE91293-70E6-4E8E-B5AF-82CA433DDAF9}
 		{424CB25F-904F-4226-B7B2-7DEBA40E749D} = {CDE91293-70E6-4E8E-B5AF-82CA433DDAF9}
+		{69829899-807D-4F7B-AE47-DAEBF2D35308} = {CECCBFC9-81EC-4445-AB28-07CCBC63F673}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68196054-5FCB-4FA5-9E2B-EEBEB6852107}
