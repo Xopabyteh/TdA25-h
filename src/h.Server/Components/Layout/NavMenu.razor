@@ -30,37 +30,47 @@
 </div>
 
 <nav>
-    <NavLink href="/game/list" class="link x" Match="NavLinkMatch.All">
-        <div class="nav-icon"></div>
-        <span>Výběr úloh</span>
-    </NavLink>
-    <NavLink href="/game/editor" class="link o">
-        <div class="nav-icon"></div>
-        <span>Vytvořit novou úlohu</span>
-    </NavLink>
-    <NavLink href="/settings" class="link x" style="@(!isLogged ? "display: none" : "")">
-        <div class="nav-icon"></div>
-        <span>Nastavení účtu</span> <!--  TODO: Jen když je přihlášen  -->
-    </NavLink>
-    <NavLink href="/multiplayer-game/queue" class="@(!isLogged ? "link x" : "link o")">
-        <div class="nav-icon"></div>
-        <span>Ranked hra</span>
-    </NavLink>
-    <NavLink href="/multiplayer-game/friend-query" class="@(!isLogged ? "link o" : "link x")">
-        <div class="nav-icon"></div>
-        <span>Hraj s kamarádem</span>
-    </NavLink>
-    <p id="nav-foot">
-        <span>v.69</span>
-        <a href="/admin/panel" style="@(!isAdmin ? "display: none" : "")">Admin</a><!--  TODO: Jen když je admin  -->
-        <a href="/admin/audit" style="@(!isAdmin ? "display: none" : "")">Audit</a><!--  TODO: Jen když je admin  -->
-    </p>
+    @if (!isAdmin) {
+        <NavLink href="/game/list" class="link x" Match="NavLinkMatch.All">
+            <div class="nav-icon"></div>
+            <span>Výběr úloh</span>
+        </NavLink>
+        <NavLink href="/game/editor" class="link o">
+            <div class="nav-icon"></div>
+            <span>Vytvořit novou úlohu</span>
+        </NavLink>
+        <NavLink href="/settings" class="link x" style="@(!isLogged ? "display: none" : "")">
+            <div class="nav-icon"></div>
+            <span>Nastavení účtu</span> <!--  TODO: Jen když je přihlášen  -->
+        </NavLink>
+        <NavLink href="/multiplayer-game/queue" class="@(!isLogged ? "link x" : "link o")">
+            <div class="nav-icon"></div>
+            <span>Ranked hra</span>
+        </NavLink>
+        <NavLink href="/multiplayer-game/friend-query" class="@(!isLogged ? "link o" : "link x")">
+            <div class="nav-icon"></div>
+            <span>Hraj s kamarádem</span>
+        </NavLink>
+    }
+    else {
+        <NavLink href="/settings" class="link x">
+            <div class="nav-icon"></div>
+            <span>Nastavení účtu</span>
+        </NavLink>
+        <p id="nav-foot">
+            <span>v.69</span>
+            <a href="/admin/panel">Admin</a>
+            <a href="/admin/audit">Audit</a>
+        </p>
+    }
+    
+    
 </nav>
 
 
 @code {
-    private bool isAdmin = true;
-    private bool isLogged = true;
+    private bool isAdmin = false;
+    private bool isLogged = false;
 
     private bool symbolX = true;
 
