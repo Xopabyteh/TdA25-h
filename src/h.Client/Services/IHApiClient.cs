@@ -11,4 +11,6 @@ public interface IHApiClient : IWasmOnly
 
     [Post("/api/v1/users/register")]
     Task<ApiResponse<AuthenticationResponse>> RegisterUser([Body] RegisterUserRequest request);
+    [Post("/api/v1/users/logout")]
+    Task LogoutUser();
 }

@@ -38,6 +38,8 @@ public static class PageRoutes
         public static string LoginIndexWithQuery(string? @return) => $"{LoginIndex}?return={@return}";
         public const string RegisterIndex = "/register";
         public static string RegisterIndexWithQuery(string? @return) => $"{RegisterIndex}?return={@return}";
+        public const string Logout = "/logout";
+        public static string LogoutWithQuery(string? @return) => $"{Logout}?return={@return}";
     }
     
     public static class Admin

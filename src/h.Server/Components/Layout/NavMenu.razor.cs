@@ -12,8 +12,6 @@ public partial class NavMenu
 
     override protected async Task OnInitializedAsync()
     {
-        Console.WriteLine("I RUN!!!");
-
         if(authenticationState is null)
             return;
 
