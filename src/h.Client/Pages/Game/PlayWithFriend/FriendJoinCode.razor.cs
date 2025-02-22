@@ -52,7 +52,7 @@ public partial class FriendJoinCode : IAsyncDisposable
         hubConnection.On<Guid>(nameof(IGameInvitationHubClient.NewGameSessionCreated), gameId =>
         {
             Console.WriteLine($"Match found {gameId}");
-            _sessionStorageService.SetItemAsync(MultiplayerIndex.GameIdSessionStorageKey, gameId);
+            _sessionStorageService.SetItemAsync(MultiplayerGame.GameIdSessionStorageKey, gameId);
 
             _navigationManager.NavigateTo(PageRoutes.Multiplayer.MultiplayerGame);
         });

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.SignalR;
 using Carter;
 using h.Server.Infrastructure.MultiplayerGames;
 using h.Contracts.Users;
+using h.Server.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Features.Matchmaking;
 
@@ -21,11 +23,13 @@ public static class AcceptMatch
         }
     }
 
+    // Todo: switch whole mapping to use multiplayer identity?
     public static async Task<IResult> Handle(
         [FromServices] InMemoryMatchmakingService matchmakingService,
         [FromServices] IHubUserIdMappingService<MatchmakingHub> hubUserIdMappingService,
         [FromServices] IHubContext<MatchmakingHub, IMatchmakingHubClient> hubContext,
         [FromServices] IMultiplayerGameSessionService multiplayerGameSessionService,
+        [FromServices] AppDbContext _db,
         [FromRoute] Guid matchingId,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -50,8 +54,12 @@ public static class AcceptMatch
                 if (remainingAccepteesCount == 0)
                 {
                     // Create game session
-                    var gameSession = multiplayerGameSessionService.CreateGameSession(
-                        matching.Value.GetPlayersInMatch());
+                    var userIdsInMatch = matching.Value.GetPlayersInMatch();
+                    var usersInMatch = await _db.UsersDbSet
+                        .Where(u => userIdsInMatch.Contains(u.Uuid))
+                        .ToArrayAsync();
+
+                    var gameSession = multiplayerGameSessionService.CreateGameSession(usersInMatch);
 
                     // Notify players about the game session
                     await hubContext.Clients.Clients(connectionIds).NewGameSessionCreated(gameSession.Id);

@@ -34,7 +34,7 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
         hubConnection.On<Guid>(nameof(IGameInvitationHubClient.NewGameSessionCreated), gameId =>
         {
             Console.WriteLine($"Found game {gameId}");
-            _sessionStorage.SetItemAsync(MultiplayerIndex.GameIdSessionStorageKey, gameId);
+            _sessionStorage.SetItemAsync(MultiplayerGame.GameIdSessionStorageKey, gameId);
 
             _navigationManager.NavigateTo(PageRoutes.Multiplayer.MultiplayerGame);
         });

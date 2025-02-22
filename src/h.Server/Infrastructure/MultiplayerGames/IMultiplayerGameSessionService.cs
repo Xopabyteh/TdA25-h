@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using h.Primitives;
 using h.Primitives.Games;
+using h.Server.Entities.Users;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
 
@@ -16,16 +17,14 @@ public interface IMultiplayerGameSessionService
     /// They may be guests or registered users.
     /// </summary>
     public MultiplayerGameSession CreateGameSession(
-        IReadOnlyList<MultiplayerGameUserIdentity> players,
+        IReadOnlyCollection<MultiplayerGameUserIdentity> players,
         MultiplayerGameUserIdentity? forcedStartingPlayerId = null);
 
     /// <summary>
     /// Create a game session with the given players.
     /// They are all registered users with their given userIDs.
     /// </summary>
-    public MultiplayerGameSession CreateGameSession(
-        IReadOnlyList<Guid> playerIds,
-        Guid? forcedStartingPlayerId = null);
+    public MultiplayerGameSession CreateGameSession(IReadOnlyCollection<User> players, Guid? forcedStartingPlayerId = null);
 
     /// <summary>
     /// Confirm that the player has loaded the game.

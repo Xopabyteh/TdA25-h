@@ -14,4 +14,12 @@ public static class ResourceHelper
             GameDifficulty.Enum.Extreme => "IMG/Difficulties/Extreme/zarivka_extreme_modre.svg",
             _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
         };
+
+    public static string GetSymbolSrc(GameSymbol symbol)
+        => symbol switch
+        {
+            GameSymbol.X=> "/IMG/X/X_cervene.svg",
+            GameSymbol.O => "/IMG/O/O_modre.svg",
+            _ => throw new ArgumentOutOfRangeException(nameof(symbol), symbol, null)
+        };
 }

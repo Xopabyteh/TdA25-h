@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Game.Multiplayer;
 
-public partial class MultiplayerIndex : IAsyncDisposable
+public partial class MultiplayerGame : IAsyncDisposable
 {
     public const string GameIdSessionStorageKey = "h.multiplayerSession.gameId";
 
@@ -15,6 +15,12 @@ public partial class MultiplayerIndex : IAsyncDisposable
 
     private Guid gameId;
     private HubConnection? hubConnection;
+
+    /// <summary>
+    /// After all players are loaded, the game will start and field can be shown
+    /// </summary>
+    private bool isGameStarted;
+    private MultiplayerGameStartedResponse gameDetails;
 
     private bool xOnTurn = true;
     private string turnDisplaySrc = "";
@@ -27,7 +33,7 @@ public partial class MultiplayerIndex : IAsyncDisposable
     private bool isPlayerX = true;
 
 
-    public MultiplayerIndex(ISessionStorageService sessionStorageService, NavigationManager navigationManager)
+    public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager)
     {
         _sessionStorageService = sessionStorageService;
         _navigationManager = navigationManager;
@@ -50,9 +56,12 @@ public partial class MultiplayerIndex : IAsyncDisposable
             .WithUrl($"{_navigationManager.BaseUri}{IMultiplayerGameSessionHubClient.Route}")
             .Build();
 
-        hubConnection.On<MultiplayerGameStartedResponse>(nameof(IMultiplayerGameSessionHubClient.GameStarted), response =>
+        hubConnection.On<MultiplayerGameStartedResponse>(nameof(IMultiplayerGameSessionHubClient.GameStarted), async response =>
         {
             Console.WriteLine($"Game started {response}");
+            gameDetails = response;
+            isGameStarted = true;
+            await InvokeAsync(StateHasChanged);
         });
 
         hubConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), response =>

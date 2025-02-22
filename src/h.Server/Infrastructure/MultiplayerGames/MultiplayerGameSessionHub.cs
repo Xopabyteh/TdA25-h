@@ -3,6 +3,7 @@ using h.Primitives;
 using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
 
@@ -11,16 +12,18 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
     private readonly IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity> _userIdMappingService;
     private readonly IMultiplayerGameSessionService _gameSessionService;
     private readonly MultiplayerGameStatisticsService _multiplayerGameStatisticsService;
+    private readonly AppDbContext _db;
 
     public MultiplayerGameSessionHub(
         IMultiplayerGameSessionService gameSessionService,
         IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity> userIdMappingService,
-        AppDbContext db,
-        MultiplayerGameStatisticsService multiplayerGameStatisticsService)
+        MultiplayerGameStatisticsService multiplayerGameStatisticsService,
+        AppDbContext db)
     {
         _gameSessionService = gameSessionService;
         _userIdMappingService = userIdMappingService;
-        this._multiplayerGameStatisticsService = multiplayerGameStatisticsService;
+        _multiplayerGameStatisticsService = multiplayerGameStatisticsService;
+        _db = db;
     }
 
     public override async Task OnConnectedAsync()
@@ -85,6 +88,22 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             )
         );
 
+        var nonGuestUserIds = game.Players.Where(u => !u.IsGuest).Select(u => u.UserId!.Value).ToArray();
+        var nonGuestUsersInGame = await _db.UsersDbSet
+            .Where(u => nonGuestUserIds.Contains(u.Uuid))
+            .ToArrayAsync();
+
+        var playersDto = game.Players
+            .Select(u => new MultiplayerGameStartedUserDetail(
+                MapToDto(u),
+                game.PlayerSymbols[u],
+                u.Name,
+                nonGuestUsersInGame.FirstOrDefault(user => user.Uuid == u.UserId!.Value)?.Elo.Rating
+            ))
+            .ToList()
+            .AsReadOnly();
+
+        // Tell each client about his identity and about game details
         foreach(var identityAndConnection in identitiesAndConnections)
         {
             await Clients.Client(identityAndConnection.connectionId)
@@ -92,11 +111,7 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
                     gameId,
                     identityAndConnection.identity.SessionId,
                     MapToDto(gameStartResult.StartingPlayer),
-                    game.Players.Select(MapToDto).ToArray(),
-                    gameStartResult.PlayerSymbols.Select(u => new KeyValuePair<MultiplayerGameUserIdentityDTO, GameSymbol>(
-                        MapToDto(u.Key),
-                        u.Value
-                    )).ToArray()
+                    playersDto
                 ));
         }
     }

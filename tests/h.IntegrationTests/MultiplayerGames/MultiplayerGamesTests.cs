@@ -63,10 +63,10 @@ public class MultiplayerGamesTests
         await Assert.That(client2GameStartedTcs.Task.Result.GameId == gameSession.Id).IsTrue();
 
         // Session identity
-        await Assert.That(client1GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
-        await Assert.That(client1GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
-        await Assert.That(client2GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
-        await Assert.That(client2GameStartedTcs.Task.Result.Players).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client1GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client1GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client2GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client2GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
 
         // Session identity matches fabricable identity (Prone to change)
         await Assert.That(client1GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid).UserId!.Value);
