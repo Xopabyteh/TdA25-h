@@ -1,4 +1,4 @@
-﻿namespace h.Server.Infrastructure.Auth;
+﻿namespace h.Contracts.Auth;
 
 public static class AppCustomClaimTypes
 {

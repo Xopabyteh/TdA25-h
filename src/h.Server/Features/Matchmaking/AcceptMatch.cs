@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Carter;
 using h.Server.Infrastructure.MultiplayerGames;
+using h.Contracts.Users;
 
 namespace h.Server.Features.Matchmaking;
 

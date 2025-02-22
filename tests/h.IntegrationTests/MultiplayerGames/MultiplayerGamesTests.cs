@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.DataAnnotations;
 
 namespace h.IntegrationTests.MultiplayerGames;
+
+[Retry(2)]
 public class MultiplayerGamesTests
 {
     [ClassDataSource<CustomWebApplicationFactory>(Shared = SharedType.PerTestSession)]

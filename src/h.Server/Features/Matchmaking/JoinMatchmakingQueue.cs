@@ -1,4 +1,5 @@
 ﻿using Carter;
+using h.Contracts.Users;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;

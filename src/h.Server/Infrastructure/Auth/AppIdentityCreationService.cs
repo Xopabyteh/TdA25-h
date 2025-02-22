@@ -1,4 +1,5 @@
-﻿using h.Primitives.Users;
+﻿using h.Contracts.Auth;
+using h.Primitives.Users;
 using h.Server.Entities.Users;
 using System.Globalization;
 using System.Security.Claims;

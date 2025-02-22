@@ -1,37 +1,31 @@
 @using h.Contracts.MultiplayerGames
 @inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+
 <div class="user">
-    @if (!isLogged)
-    {
-        <img src="IMG/pfps/pfp-grey.svg" alt="">
-        <div class="user-info">
-            <p id="nickname">Nepřihlášen</p>
-            <p id="logout"><a href="@(PageRoutes.Auth.LoginIndexWithQuery(_navigationManager.Uri))" class="minor-link">Přihlásit se</a></p>
-        </div>
-    }
-    else if(isLogged && !isAdmin)
-    {
-        <img src="/IMG/pfps/pfp-blue.svg"/>
-        <div class="user-info">
-            <p id="nickname">@usn</p>
-            <div class="elo-logout">
-                <p id="elo">ELO: @elo</p>
-                <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
+    <AuthorizeView>
+        <NotAuthorized>
+            <img src="IMG/pfps/pfp-grey.svg" alt="">
+            <div class="user-info">
+                <p id="nickname">Nepřihlášen</p>
+                <p id="login"><a href="@(PageRoutes.Auth.LoginIndexWithQuery(_navigationManager.Uri))" class="minor-link">Přihlásit se</a></p>
             </div>
-        </div>
-    }
-    else
-    {
-        <img src="/IMG/pfps/pfp-blue.svg"/>
-        <div class="user-info">
-            <p id="nickname">Admin</p>
-            <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
-        </div>
-    }
+        </NotAuthorized>
+        <Authorized>
+            <img src="/IMG/pfps/pfp-blue.svg" />
+            <div class="user-info">
+                <p id="nickname">@context.User.Identity!.Name</p>
+                <div class="elo-logout">
+                    <p id="elo">ELO: 100</p>
+                    <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
+                </div>
+            </div>
+        </Authorized>
+    </AuthorizeView>
 </div>
 
 <nav>
-    @if (!isAdmin) {
+    <AuthorizeView Policy="@nameof(AppPolicies.IsNotAdmin)" Context="outter">
         <NavLink href="/game/list" class="link x" Match="NavLinkMatch.All">
             <div class="nav-icon"></div>
             <span>Výběr úloh</span>
@@ -40,41 +34,34 @@
             <div class="nav-icon"></div>
             <span>Vytvořit novou úlohu</span>
         </NavLink>
-        <NavLink href="/settings" class="link x" style="@(!isLogged ? "display: none" : "")">
-            <div class="nav-icon"></div>
-            <span>Nastavení účtu</span> <!--  TODO: Jen když je přihlášen  -->
-        </NavLink>
-        <NavLink href="/multiplayer-game/queue" class="@(!isLogged ? "link x" : "link o")">
-            <div class="nav-icon"></div>
-            <span>Ranked hra</span>
-        </NavLink>
-        <NavLink href="/multiplayer-game/friend-query" class="@(!isLogged ? "link o" : "link x")">
+        <AuthorizeView>
+            <NavLink href="/settings" class="link x">
+                <div class="nav-icon"></div>
+                <span>Nastavení účtu</span>
+            </NavLink>
+        </AuthorizeView>
+        <AuthorizeView>
+            <NavLink href="/multiplayer-game/queue" class="link o">
+                <div class="nav-icon"></div>
+                <span>Ranked hra</span>
+            </NavLink>
+        </AuthorizeView>
+        <NavLink href="/multiplayer-game/friend-query" class="link x">
             <div class="nav-icon"></div>
             <span>Hraj s kamarádem</span>
         </NavLink>
-    }
-    else {
-        <NavLink href="/settings" class="link x">
-            <div class="nav-icon"></div>
-            <span>Nastavení účtu</span>
-        </NavLink>
+        <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
+            <NavLink href="/settings" class="link o">
+                <div class="nav-icon"></div>
+                <span>Nastavení účtu</span>
+            </NavLink>
+        </AuthorizeView>
+    </AuthorizeView>
+    <AuthorizeView Policy="@nameof(AppPolicies.IsAdmin)">
         <p id="nav-foot">
             <span>v.69</span>
             <a href="/admin/panel">Admin</a>
             <a href="/admin/audit">Audit</a>
         </p>
-    }
-    
-    
+    </AuthorizeView>
 </nav>
-
-
-@code {
-    private bool isAdmin = false;
-    private bool isLogged = false;
-
-    private bool symbolX = true;
-
-    private string usn = "evzen.tvojemama";
-    private int elo = 69;
-}

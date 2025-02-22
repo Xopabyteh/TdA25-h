@@ -21,6 +21,7 @@ using h.Server.Components.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -60,8 +61,10 @@ public static class DependencyInjection
                 o.SerializeAllClaims = true;
             }); 
 
+        builder.Services.AddCascadingAuthenticationState();
+
         builder.Services.AddBlazoredSessionStorage();
-        builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+        //builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
         builder.Services.AddTransient<ToastService>();
 
@@ -105,9 +108,9 @@ public static class DependencyInjection
         builder.Services
             .AddAuthentication(o =>
             {
-                o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultScheme = "HybridAuth"; // Custom scheme that tries both
+                o.DefaultAuthenticateScheme = "HybridAuth";
+                o.DefaultChallengeScheme = "HybridAuth";
             })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
@@ -133,6 +136,18 @@ public static class DependencyInjection
                 //    context.Response.StatusCode = 401;
                 //    return Task.CompletedTask;
                 //};
+            })
+             .AddPolicyScheme("HybridAuth", JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    var authHeader = context.Request.Headers["Authorization"];
+                    if (!string.IsNullOrEmpty(authHeader))
+                    {
+                        return JwtBearerDefaults.AuthenticationScheme; // Use JWT if present
+                    }
+                    return CookieAuthenticationDefaults.AuthenticationScheme; // Otherwise, use cookies
+                };
             });
         
         builder.Services.AddAuthorization(o => o.AddAppPolicies());
