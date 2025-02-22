@@ -13,4 +13,10 @@ public interface IHApiClient : IWasmOnly
     Task<ApiResponse<AuthenticationResponse>> RegisterUser([Body] RegisterUserRequest request);
     [Post("/api/v1/users/logout")]
     Task LogoutUser();
+
+    [Post("/api/v1/invitation/create")]
+    Task<int> CreateInviteCode();
+
+    [Post("/api/v1/invitation/join/{roomCode}")]
+    Task<IApiResponse> JoinInviteRoom(int roomCode);
 }
