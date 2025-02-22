@@ -6,9 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Blazored.SessionStorage" />
+	<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+	<PackageReference Include="Microsoft.AspNetCore.Components" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
-    <PackageReference Include="OneOf" />
+	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />
+	  <PackageReference Include="OneOf" />
+	  <PackageReference Include="Refit.HttpClientFactory" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,6 +7,7 @@ using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 using h.Server.Entities.Users;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace h.Server.Features.Users;
 
@@ -20,15 +21,16 @@ public static class RegisterUser
         }
     }
     public static async Task<IResult> Handle(
+        [FromBody]RegisterUserRequest request,
         [FromServices] IConfiguration config,
         [FromServices] AppDbContext db,
         [FromServices] UserService userService,
         [FromServices] PasswordHashService passwordHashService,
         [FromServices] IValidator<RegisterUserRequest> validator,
-        [FromServices] JwtTokenService tokenService,
+        [FromServices] JwtTokenCreationService tokenService,
         [FromServices] IAuthenticationService authenticationService,
+        [FromServices] AppIdentityCreationService identityService,
         HttpContext httpContext,
-        RegisterUserRequest request,
         CancellationToken cancellationToken)
     {
         // Validate
@@ -40,7 +42,7 @@ public static class RegisterUser
         var nicknameTakenErrors = await userService.NicknameAlreadyRegistered(request.Username, request.Email, cancellationToken);
         if (nicknameTakenErrors is not null)
             return ErrorResults.Conflit("The user already exists", nicknameTakenErrors);
-        
+
         // Hash password
         var passwordHash = passwordHashService.GetPasswordHash(request.Password);
 
@@ -49,12 +51,22 @@ public static class RegisterUser
 
         await db.UsersDbSet.AddAsync(user, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
-        
+
+        // Create identity
+        var claims = identityService.GetClaimsForUser(user);
+
         // Generate token
-        var token = tokenService.GenerateTokenFor(user);
+        var token = tokenService.GenerateToken(claims);
 
         // Add token to response
         httpContext.Response.Headers.Append("Authorization", $"Bearer {token}");
+
+        // Sign in with Cookie
+        var principal = identityService.GeneratePrincipalFromClaims(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await httpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal,
+            new AuthenticationProperties { IsPersistent = true });
 
         // Map and return
         return Results.Ok(

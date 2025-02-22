@@ -1,5 +1,4 @@
 using Carter;
-using h.Contracts;
 using h.Contracts.GameInvitations;
 using h.Contracts.Matchmaking;
 using h.Contracts.MultiplayerGames;
@@ -15,7 +14,6 @@ builder
     .AddPresentation()
     .AddInfrastructure();
 
-builder.Services.AddShared();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();

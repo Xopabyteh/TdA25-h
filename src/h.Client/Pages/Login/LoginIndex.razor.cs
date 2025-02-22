@@ -1,47 +1,61 @@
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
 using h.Contracts.Users;
 using Microsoft.AspNetCore.Components;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
+using h.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Login;
 
 public partial class LoginIndex
 {
-    private string nickname = "";
-    private string password = "";
-    private LoginUserRequest request;
-    
-    private string errorMessage = "";
+    [SupplyParameterFromQuery(Name = "return")] string? ReturnUrl { get; set; }
+    [Inject] protected IHApiClient _api { get; set; } = null!;
+    [Inject] protected ToastService _toast { get; set; } = null!;
+    [Inject] protected AuthenticationStateProvider _authProvider { get; set; } = null!;
 
-    private bool showInvalidPopup = false;
-    
-    [Inject] protected HttpClient _client { get; set; }
+
     [Inject] protected NavigationManager _navigation { get; set; } = null!;
 
-    private async void HandleLogin()
-    {
-        request = new LoginUserRequest(nickname, password);
-        var response = await _client.PostAsJsonAsync("api/v1/users/login", request);
+    private bool isLoaded;
+    private bool isBusy;
+    private RequestModel Model { get; set; }
 
-        
-        if (response.IsSuccessStatusCode)
+    protected override void OnInitialized()
+    {
+        // Load after mode is wasm
+        if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+            return;
+
+        Model = new();
+        isLoaded = true;
+    }
+
+    private async Task HandleLogin()
+    {
+        var request = new LoginUserRequest(Model.Nickname, Model.Password);
+        var response = await _api.LoginUser(request);
+            
+        if(response.IsSuccessStatusCode)
         {
-            Console.WriteLine(response + ": " + nickname + " " + password);
-            _navigation.NavigateTo("/");
+            if(_authProvider is WasmAuthenticationStateProvider _wasmAuth)
+            {
+                await _wasmAuth.MarkUserAsAuthenticated(response.Content.Token);
+            } 
+
+            _navigation.NavigateTo(ReturnUrl ?? PageRoutes.HomeIndex);
+            return;
         }
-        else
+        
+        if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            showInvalidPopup = true;
+            await _toast.ErrorAsync("Špatné údaje");
+            return;
         }
     }
 
-    private void HandleClosePopup()
+    private class RequestModel
     {
-        showInvalidPopup = false;
+        public string Nickname { get; set; }
+        public string Password { get; set; }
     }
 }
