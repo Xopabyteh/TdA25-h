@@ -4,7 +4,7 @@ using h.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Runtime.InteropServices;
 
-namespace h.Client.Pages.Login;
+namespace h.Client.Pages.Auth;
 
 public partial class LoginIndex
 {
@@ -12,8 +12,6 @@ public partial class LoginIndex
     [Inject] protected IHApiClient _api { get; set; } = null!;
     [Inject] protected ToastService _toast { get; set; } = null!;
     [Inject] protected AuthenticationStateProvider _authProvider { get; set; } = null!;
-
-
     [Inject] protected NavigationManager _navigation { get; set; } = null!;
 
     private bool isLoaded;
@@ -32,9 +30,10 @@ public partial class LoginIndex
 
     private async Task HandleLogin()
     {
+        isBusy = true;
         var request = new LoginUserRequest(Model.Nickname, Model.Password);
         var response = await _api.LoginUser(request);
-            
+        isBusy = false;
         if(response.IsSuccessStatusCode)
         {
             if(_authProvider is WasmAuthenticationStateProvider _wasmAuth)

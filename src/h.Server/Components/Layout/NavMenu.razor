@@ -1,11 +1,12 @@
 @using h.Contracts.MultiplayerGames
+@inject NavigationManager _navigationManager
 <div class="user">
     @if (!isLogged)
     {
         <img src="IMG/pfps/pfp-grey.svg" alt="">
         <div class="user-info">
             <p id="nickname">Nepřihlášen</p>
-            <p id="logout"><a href="/login" class="minor-link">Přihlásit se</a></p>
+            <p id="logout"><a href="@(PageRoutes.Auth.LoginIndexWithQuery(_navigationManager.Uri))" class="minor-link">Přihlásit se</a></p>
         </div>
     }
     else if(isLogged && !isAdmin)

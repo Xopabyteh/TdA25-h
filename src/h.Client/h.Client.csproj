@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Blazored.FluentValidation" />
 	<PackageReference Include="Blazored.SessionStorage" />
 	<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />

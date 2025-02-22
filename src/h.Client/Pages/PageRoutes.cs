@@ -32,10 +32,12 @@ public static class PageRoutes
         public const string FriendCode = "/multiplayer-game/friend-code";
     }
     
-    public static class Login
+    public static class Auth
     {
         public const string LoginIndex = "/login";
+        public static string LoginIndexWithQuery(string? @return) => $"{LoginIndex}?return={@return}";
         public const string RegisterIndex = "/register";
+        public static string RegisterIndexWithQuery(string? @return) => $"{RegisterIndex}?return={@return}";
     }
     
     public static class Admin

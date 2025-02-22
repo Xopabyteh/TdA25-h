@@ -1,7 +1,7 @@
+
 using Blazored.SessionStorage;
 using h.Client.Services;
 using h.Client.Services.Game;
-using h.Contracts;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

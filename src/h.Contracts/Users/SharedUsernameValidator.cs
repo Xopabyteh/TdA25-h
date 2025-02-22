@@ -10,7 +10,7 @@ public class SharedUsernameValidator : AbstractValidator<string>
     {
         RuleFor(username => username)
             .NotEmpty()
-            .MinimumLength(3)
-            .MaximumLength(16);
+            .MinimumLength(3).WithMessage("Jméno musí mít alespoň 3 znaky")
+            .MaximumLength(16).WithMessage("Jméno může mít maximálně 16 znaků");
     }
 }
