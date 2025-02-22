@@ -7,12 +7,12 @@
 
 <PageTitle>Přihlásit se</PageTitle>
 
-<div class="invalid-popup" style="@(!showInvalidPopup ? "display: none" : "")">
+@* <div class="invalid-popup" style="@(!showInvalidPopup ? "display: none" : "")">
     <div class="invalid-card">
         <h2>Nesprávně zadané údaje</h2>
         <button class="primary-button" @onclick="HandleClosePopup">Zkusit znovu</button>
     </div>
-</div>
+</div> *@
 
 <div class="form-cont">
     <EditForm Model="request" OnValidSubmit="HandleLogin" class="login-form" FormName="login">
