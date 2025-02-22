@@ -1,4 +1,6 @@
-﻿using h.Client.Services;
+﻿using Blazored.SessionStorage;
+using h.Client.Pages.Game.Multiplayer;
+using h.Client.Services;
 using h.Contracts.GameInvitations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -10,6 +12,8 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
 {
     [Inject] protected IHApiClient _api { get; set; } = null!;
     [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
+    [Inject] protected ISessionStorageService _sessionStorage { get; set; } = null!;
+
 
     private HubConnection? hubConnection;
     private bool isLoaded;
@@ -30,6 +34,9 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
         hubConnection.On<Guid>(nameof(IGameInvitationHubClient.NewGameSessionCreated), gameId =>
         {
             Console.WriteLine($"Found game {gameId}");
+            _sessionStorage.SetItemAsync(MultiplayerIndex.GameIdSessionStorageKey, gameId);
+
+            _navigationManager.NavigateTo(PageRoutes.Multiplayer.MultiplayerGame);
         });
 
         await hubConnection.StartAsync();

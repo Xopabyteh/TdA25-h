@@ -24,7 +24,7 @@ public static class PageRoutes
     /// </summary>
     public static class Multiplayer /*Multiplayer game*/
     {
-        public const string MultiplayerIndex = "/multiplayer-game";
+        public const string MultiplayerGame = "/multiplayer-game";
         public const string MultiplayerQueue = "/multiplayer-game/queue";
         
         public const string FriendMatchChooseType = "/multiplayer-game/friend-query";

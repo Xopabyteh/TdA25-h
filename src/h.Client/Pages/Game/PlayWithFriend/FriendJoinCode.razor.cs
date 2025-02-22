@@ -1,4 +1,6 @@
-﻿using h.Client.Services;
+﻿using Blazored.SessionStorage;
+using h.Client.Pages.Game.Multiplayer;
+using h.Client.Services;
 using h.Contracts.GameInvitations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -12,6 +14,8 @@ public partial class FriendJoinCode : IAsyncDisposable
     [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
     [Inject] protected IHApiClient _api { get; set; } = null!;
     [Inject] protected ToastService _toastService { get; set; } = null!;
+    [Inject] protected ISessionStorageService _sessionStorageService { get; set; } = null!;
+
 
     private bool isjoiningRoom;
     private HubConnection? hubConnection;
@@ -48,6 +52,9 @@ public partial class FriendJoinCode : IAsyncDisposable
         hubConnection.On<Guid>(nameof(IGameInvitationHubClient.NewGameSessionCreated), gameId =>
         {
             Console.WriteLine($"Match found {gameId}");
+            _sessionStorageService.SetItemAsync(MultiplayerIndex.GameIdSessionStorageKey, gameId);
+
+            _navigationManager.NavigateTo(PageRoutes.Multiplayer.MultiplayerGame);
         });
 
         await hubConnection.StartAsync();
