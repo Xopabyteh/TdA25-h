@@ -4,6 +4,7 @@ using h.Server.Infrastructure.Database;
 using Carter;
 using h.Contracts.AuditLog;
 using h.Server.Infrastructure.Auth;
+using Microsoft.VisualBasic;
 
 namespace h.Server.Features.AuditLog;
 
@@ -19,14 +20,15 @@ public static class GetAuditLogEntries
     }
 
     public static async Task<IResult> Handle(
-        [FromBody] GetAuditLogEntriesRequest request,
+        [FromQuery] int skip,
+        [FromQuery] int count,
         [FromServices] AppDbContext db,
         CancellationToken cancellationToken)
     {
         var auditLogEntries = await db.AuditLogEntries
             .OrderByDescending(a => a.Id)
-            .Skip(request.Pagination.Skip)
-            .Take(request.Pagination.Count)
+            .Skip(skip)
+            .Take(count)
             .Select(a => new AuditLogEntryResponse(
                 a.Id,
                 a.CreatedAt,
@@ -35,8 +37,10 @@ public static class GetAuditLogEntries
                 a.Arguments,
                 a.IPAdressV4.ToString()
             ))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
         
-        return Results.Ok(auditLogEntries);
+        var totalCount = await db.AuditLogEntries.CountAsync(cancellationToken);
+
+        return Results.Ok(new AuditLogResponse(totalCount, auditLogEntries));
     }
 }

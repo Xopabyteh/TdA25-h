@@ -1,4 +1,5 @@
 ﻿using h.Contracts;
+using h.Contracts.AuditLog;
 using h.Contracts.Components.Services;
 using h.Contracts.Leaderboard;
 using h.Contracts.Users;
@@ -48,4 +49,8 @@ public interface IHApiClient : IWasmOnly
     // Leaderboard
     [Get("/api/v1/leaderboard")]
     Task<LeaderBoardEntryResponse[]> GetLeaderboard(int skip, int count);
+
+    // Admin
+    [Get("/api/v1/auditlog")]
+    Task<AuditLogResponse> GetAuditLog(int skip, int count);
 }

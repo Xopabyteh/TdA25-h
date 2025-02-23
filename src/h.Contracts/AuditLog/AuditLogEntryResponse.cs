@@ -1,6 +1,5 @@
-﻿using System.Net;
+﻿namespace h.Contracts.AuditLog;
 
-namespace h.Contracts.AuditLog;
 public readonly record struct AuditLogEntryResponse(
     int Id,
     DateTime CreatedAt,
