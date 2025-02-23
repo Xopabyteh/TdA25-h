@@ -21,8 +21,8 @@
                 <div class="nav-icon"></div>
                 <span>Vytvořit novou úlohu</span>
             </NavLink>
-            <AuthorizeView>
-                <NavLink href="/settings" class="link x">
+            <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
+                <NavLink href="/settings" class="link o">
                     <div class="nav-icon"></div>
                     <span>Nastavení účtu</span>
                 </NavLink>
@@ -37,12 +37,6 @@
                 <div class="nav-icon"></div>
                 <span>Hraj s kamarádem</span>
             </NavLink>
-            <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
-                <NavLink href="/settings" class="link o">
-                    <div class="nav-icon"></div>
-                    <span>Nastavení účtu</span>
-                </NavLink>
-            </AuthorizeView>
         </AuthorizeView>
         <AuthorizeView Policy="@nameof(AppPolicies.IsAdmin)">
             <NavLink href="/admin/panel" class="link x">
