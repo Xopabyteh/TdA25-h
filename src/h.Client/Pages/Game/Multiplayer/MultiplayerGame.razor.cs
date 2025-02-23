@@ -143,6 +143,8 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     private async Task HandlePlaceSymbol(int x, int y)
     {
+        Console.WriteLine(areWeOnTurn);
+        Console.WriteLine($"{x} {y}");
         if(!areWeOnTurn)
             return;
 
