@@ -26,7 +26,8 @@ public static class GuestLogin
         var guestId = Guid.NewGuid();
         
         // Create identity
-        var claims = identityService.GetClaimsForGuest(guestId);
+        var name = "Návštěvník";
+        var claims = identityService.GetClaimsForGuest(guestId, name);
 
         // Generate token
         var token = tokenService.GenerateToken(claims);
@@ -44,7 +45,8 @@ public static class GuestLogin
         // Map and return
         return Results.Ok(new GuestLoginResponse(
             token,
-            guestId
+            guestId,
+            name
         ));
     }
 }

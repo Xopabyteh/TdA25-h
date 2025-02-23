@@ -1,5 +1,6 @@
 using Blazored.SessionStorage;
 using h.Contracts.MultiplayerGames;
+using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Runtime.InteropServices;
@@ -32,6 +33,7 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     private bool isPlayerX = true;
 
+    //private GameSymbol[][] field = new[][];
 
     public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager)
     {

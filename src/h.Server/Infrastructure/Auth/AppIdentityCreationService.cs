@@ -36,10 +36,8 @@ public class AppIdentityCreationService
         ];
     } 
 
-    public IReadOnlyCollection<Claim> GetClaimsForGuest(Guid guestId)
+    public IReadOnlyCollection<Claim> GetClaimsForGuest(Guid guestId, string name)
     {
-        var name = "Návštěvník";
-
         return  [
             // Claims from user
             //new Claim(ClaimTypes.NameIdentifier, id.ToString()),

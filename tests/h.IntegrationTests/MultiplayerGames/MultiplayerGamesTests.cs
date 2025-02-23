@@ -28,7 +28,10 @@ public class MultiplayerGamesTests
 
         var scope = _sessionApiFactory.Services.CreateScope();
         var gameSessionService = scope.ServiceProvider.GetRequiredService<IMultiplayerGameSessionService>();
-        var gameSession = gameSessionService.CreateGameSession([client1Auth.User.Uuid, client2Auth.User.Uuid]);
+        var gameSession = gameSessionService.CreateGameSession([
+            MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid, client1Auth.User.Username),
+            MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid, client2Auth.User.Username)
+        ]);
 
         var client1GameStartedTcs = new TaskCompletionSource<MultiplayerGameStartedResponse>();
         var client2GameStartedTcs = new TaskCompletionSource<MultiplayerGameStartedResponse>();
@@ -63,14 +66,14 @@ public class MultiplayerGamesTests
         await Assert.That(client2GameStartedTcs.Task.Result.GameId == gameSession.Id).IsTrue();
 
         // Session identity
-        await Assert.That(client1GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
-        await Assert.That(client1GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
-        await Assert.That(client2GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
-        await Assert.That(client2GameStartedTcs.Task.Result.PlayerIdentities).Contains(p => p.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client1GameStartedTcs.Task.Result.Players).Contains(p => p.Identity.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client1GameStartedTcs.Task.Result.Players).Contains(p => p.Identity.SessionId == client1GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client2GameStartedTcs.Task.Result.Players).Contains(p => p.Identity.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
+        await Assert.That(client2GameStartedTcs.Task.Result.Players).Contains(p => p.Identity.SessionId == client2GameStartedTcs.Task.Result.MySessionId);
 
         // Session identity matches fabricable identity (Prone to change)
-        await Assert.That(client1GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid).UserId!.Value);
-        await Assert.That(client2GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid).UserId!.Value);
+        await Assert.That(client1GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid, client1Auth.User.Username).UserId!.Value);
+        await Assert.That(client2GameStartedTcs.Task.Result.MySessionId).IsEqualTo(MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid, client2Auth.User.Username).UserId!.Value);
 
         // Dispose
         scope.Dispose();
@@ -90,7 +93,7 @@ public class MultiplayerGamesTests
 
         var (client1, client1Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
             eloRating: initialElo1);
-         var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
+        var (client2, client2Auth) = await _sessionApiFactory.CreateUserAndLoginAsync(
             eloRating: initialElo2);
         await using var client1Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client1Auth.Token);
         await using var client2Connection = _sessionApiFactory.CreateSignalRConnection(IMultiplayerGameSessionHubClient.Route, client2Auth.Token);
@@ -98,16 +101,14 @@ public class MultiplayerGamesTests
         await client1Connection.StartAsync(cancellationToken);
         await client2Connection.StartAsync(cancellationToken);
 
+        // Fabricate identities, but they would be gathered from "GameStarted" event.
+        var client1MultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid, client1Auth.User.Username);
+        var client2MultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid, client2Auth.User.Username);
+
         var scope = _sessionApiFactory.Services.CreateScope();
         var gameSessionService = scope.ServiceProvider.GetRequiredService<IMultiplayerGameSessionService>();
-        var gameSession = gameSessionService.CreateGameSession(
-            [client1Auth.User.Uuid, client2Auth.User.Uuid],
-            forcedStartingPlayerId: client1Auth.User.Uuid);
+        var gameSession = gameSessionService.CreateGameSession([client1MultiplayerIdentity, client2MultiplayerIdentity], forcedStartingPlayerId: client1MultiplayerIdentity);
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        // Fabricate identities, but they would be gathered from "GameStarted" event.
-        var client1MultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(client1Auth.User.Uuid);
-        var client2MultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(client2Auth.User.Uuid);
 
         gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client1MultiplayerIdentity);
         gameSessionService.ConfirmPlayerLoaded(gameSession.Id, client2MultiplayerIdentity);
@@ -211,8 +212,8 @@ public class MultiplayerGamesTests
         await clientUserConnection.StartAsync(cancellationToken);
         await clientGuestConnection.StartAsync(cancellationToken);
 
-        var clientUserMultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(clientUserAuth.User.Uuid);
-        var clientGuestMultiplayerIdentity = MultiplayerGameUserIdentity.FromGuest(clientGuestAuth.GuestId);
+        var clientUserMultiplayerIdentity = MultiplayerGameUserIdentity.FromUserId(clientUserAuth.User.Uuid, clientUserAuth.User.Username);
+        var clientGuestMultiplayerIdentity = MultiplayerGameUserIdentity.FromGuest(clientGuestAuth.GuestId, clientGuestAuth.Username    );
 
         var scope = _sessionApiFactory.Services.CreateScope();
         var gameSessionService = scope.ServiceProvider.GetRequiredService<IMultiplayerGameSessionService>();

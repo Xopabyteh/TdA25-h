@@ -78,7 +78,12 @@ public class CustomWebApplicationFactory
     }
 
     private static int lastNicknameNumber = 0;
-    private static string NewIncrementalNickname() => $"user{++lastNicknameNumber}";
+    private static string NewIncrementalNickname()
+    {
+        Interlocked.Increment(ref lastNicknameNumber);
+        return $"user{lastNicknameNumber}";
+    }
+
     /// <summary>
     /// Creates a new user and logs into him.
     /// Make sure the test depends on <see cref="h.IntegrationTests.Auth.AuthTests.Login_ValidUser_ReturnsSuccess"/>.
