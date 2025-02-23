@@ -1,4 +1,5 @@
 ﻿using Carter;
+using h.Contracts;
 using h.Contracts.Leaderboard;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,16 @@ public static class GetLeaderboard
         }
 
         public static async Task<IResult> Handle(
-            [FromBody] GetLeaderboardRequest request,
+            [FromQuery] int skip,
+            [FromQuery] int count,
             [FromServices] AppDbContext db
             )
         {
             // Todo: caching?
             var entries = await db.UsersDbSet
                 .OrderByDescending(u => u.Elo.Rating)
-                .Skip(request.Pagination.Skip)
-                .Take(request.Pagination.Count)
+                .Skip(skip)
+                .Take(count)
                 .Select(u => new LeaderBoardEntryResponse(u.Username, u.Elo.Rating))
                 .ToArrayAsync();
 

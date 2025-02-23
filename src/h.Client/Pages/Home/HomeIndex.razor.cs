@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
 using System.Runtime.InteropServices;
 
-namespace h.Client.Pages;
+namespace h.Client.Pages.Home;
 
 public partial class HomeIndex
 {

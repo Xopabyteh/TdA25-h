@@ -5,7 +5,7 @@
 
 <h1>Vítejte ve Think different Academy</h1>
 
-@*TODO: menici se texty*@
+@*TODO: menici se texty*@   
 @*TODO: <button/> zmenit na <NavLink/> a pridat linky*@
 
 <div class="showcase">
@@ -20,72 +20,13 @@
         </div>
         <p>nebo se připoj ke kamarádovi</p>
         <div class="info-button">
-            <input type="text" class="text-input" placeholder="Kód pozvánky">
-            <button class="secondary-button">Připojit se</button>
+            <input @bind="roomInviteCode" type="text" class="text-input" placeholder="Kód pozvánky">
+            <a href="@PageRoutes.Multiplayer.FriendJoinCodeWithQuery(roomInviteCode)" class="secondary-button">Připojit se</a>
         </div>
     </div>
 </div>
 
-<div class="leaderboard-container">
-    <h1 class="blue">Leaderboard</h1>
-    <div class="pedestals">
-        <div class="pedestal silver">
-            <p class="name">Evžen Rozinka</p>
-            <p class="elo">ELO: 75</p>
-            <img src="/IMG/Homepage/Pedestal/pedestal_silver.svg">
-        </div>
-        <div class="pedestal gold">
-            <p class="name">Evžen Rozinka</p>
-            <p class="elo">ELO: 75</p>
-            <img src="/IMG/Homepage/Pedestal/pedestal_gold.svg">
-        </div>
-        <div class="pedestal bronze">
-            <p class="name">Evžen Rozinka</p>
-            <p class="elo">ELO: 75</p>
-            <img src="/IMG/Homepage/Pedestal/pedestal_bronze.svg">
-        </div>
-    </div>
-
-    <div class="leadertable">
-        <table>
-            <tr>
-                <td class="place">4</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-            <tr>
-                <td class="place">5</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-            <tr>
-                <td class="place">6</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-            <tr>
-                <td class="place">7</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-            <tr>
-                <td class="place">8</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-            <tr>
-                <td class="place">9</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-            <tr>
-                <td class="place">10</td>
-                <td class="name">Evžen Rozinka</td>
-                <td class="elo">ELO: 75</td>
-            </tr>
-        </table>
-    </div>
-</div>
+<HomeIndexLeaderboard />
 
 <div class="showcase">
     <img src="/IMG/Homepage/Ilustration/homepage_img2.svg" class="showcase-img">
@@ -120,7 +61,7 @@
         <div class="team-member">
             <div class="pfp" style="background-image: url('/IMG/Homepage/Team/martin.png')"></div>
             <b>Martin Fiala</b>
-            <p>Backend programátor</p>
+            <p>Backend brogramátor</p>
         </div>
         <div class="team-member">
             <div class="pfp" style="background-image: url('/IMG/Homepage/Team/klara.png')"></div>
@@ -134,3 +75,7 @@
         </div>
     </div>
 </div>
+
+@code {
+    private int? roomInviteCode;
+}

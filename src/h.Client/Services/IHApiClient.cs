@@ -1,4 +1,6 @@
-﻿using h.Contracts.Components.Services;
+﻿using h.Contracts;
+using h.Contracts.Components.Services;
+using h.Contracts.Leaderboard;
 using h.Contracts.Users;
 using Refit;
 
@@ -38,4 +40,8 @@ public interface IHApiClient : IWasmOnly
     Task<IApiResponse> AcceptMatch(Guid matchId);
     [Post("/api/v1/matchmaking/decline/{matchId}")]
     Task<IApiResponse> DeclineMatch(Guid matchId);
+
+    // Leaderboard
+    [Get("/api/v1/leaderboard")]
+    Task<LeaderBoardEntryResponse[]> GetLeaderboard(int skip, int count);
 }

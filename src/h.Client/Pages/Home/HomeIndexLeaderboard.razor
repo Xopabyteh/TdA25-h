@@ -1,0 +1,61 @@
+﻿@rendermode InteractiveWebAssembly
+
+<div class="leaderboard-container">
+    <h1 class="blue">Leaderboard</h1>
+    <div class="pedestals">
+        <div class="pedestal silver">
+            @if (leaderBoardEntries?.Length > 0)
+            {
+                <p class="name">@leaderBoardEntries[0].Username</p>
+                <p class="elo">ELO: @leaderBoardEntries[0].EloRating</p>
+            }
+            else
+            {
+                <p class="name">—</p>
+                <p class="elo">ELO: —</p>
+            }
+            <img src="/IMG/Homepage/Pedestal/pedestal_silver.svg">
+        </div>
+        <div class="pedestal gold">
+            @if (leaderBoardEntries?.Length > 1)
+            {
+                <p class="name">@leaderBoardEntries[1].Username</p>
+                <p class="elo">ELO: @leaderBoardEntries[1].EloRating</p>
+            }
+            else
+            {
+                <p class="name">—</p>
+                <p class="elo">ELO: —</p>
+            }
+            <img src="/IMG/Homepage/Pedestal/pedestal_gold.svg">
+        </div>
+        <div class="pedestal bronze">
+            @if (leaderBoardEntries?.Length > 2)
+            {
+                <p class="name">@leaderBoardEntries[2].Username</p>
+                <p class="elo">ELO: @leaderBoardEntries[2].EloRating</p>
+            }
+            else
+            {
+                <p class="name">—</p>
+                <p class="elo">ELO: —</p>
+            }
+            <img src="/IMG/Homepage/Pedestal/pedestal_bronze.svg">
+        </div>
+    </div>
+
+    <div class="leadertable">
+        <table>
+            @for(var i = 3; i < leaderBoardEntries?.Length; i++)
+            {
+                var iCopy = i;
+                var entry = leaderBoardEntries[iCopy];
+                <tr>
+                    <td class="place">@iCopy</td>
+                    <td class="name">@entry.Username</td>
+                    <td class="elo">ELO: @entry.EloRating</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
