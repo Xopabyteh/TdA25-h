@@ -9,25 +9,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Features.Users.TdaApiSpecNecessary;
 
-public static class UpdateUser
+public static class UpdateUserSelf
 {
     public class Endpoint : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/api/v1/users/{id}", Handle);
+            app.MapPut("/api/v1/users/self", Handle)
+                .RequireAuthorization();
         }
     }
 
     public static async Task<IResult> Handle(
+        [FromBody] UpdateUserSelfRequest request,
         [FromServices] AppDbContext db,
         [FromServices] PasswordHashService passwordHashService,
         [FromServices] UserService userService,
-        [FromRoute] Guid id,
-        UpdateUserRequest request,
+        HttpContext context,
         CancellationToken cancellationToken)
     {
-        var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Uuid == id, cancellationToken);
+        var currentUserId = context.User.GetUserId();
+
+        var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Uuid == currentUserId, cancellationToken);
         if (user is null)
             return ErrorResults.NotFound([SharedErrors.User.UserNotFound()]);
 
@@ -49,10 +52,6 @@ public static class UpdateUser
 
         user.Username = request.Username;
         user.Email = request.Email;
-        user.Elo = new()
-        {
-            Rating = request.Elo
-        };
 
         db.Update(user);    
         await db.SaveChangesAsync(cancellationToken);

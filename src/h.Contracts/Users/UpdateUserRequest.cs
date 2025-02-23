@@ -3,6 +3,6 @@
 public readonly record struct UpdateUserRequest(
     string Username,
     string Email,
-    string Password,
+    string? Password,
     int Elo
 );

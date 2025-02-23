@@ -1,25 +1,119 @@
+@using FluentValidation
+@using System.Runtime.InteropServices
+@using h.Contracts
+@using h.Contracts.Users
 @rendermode InteractiveWebAssembly
 @attribute [Route(PageRoutes.Settings.UserSettings)]
-
+@attribute [Authorize(Policy = nameof(AppPolicies.IsUser))]
 <PageTitle>Nastavení účtu</PageTitle>
 
 <h2>Nastavení účtu</h2>
 
-<form action="" class="settings">
+<EditForm Model="Model" class="settings" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator />
+    <ValidationSummary />
+
     <div class="nickname">
         <h3>Nickname</h3>
-        <input type="text" class="text-input nick" value="evezen" name="nick">
+        <input @bind="Model.Username" type="text" class="text-input nick" name="nick">
     </div>
     <div class="email">
         <h3>Email</h3>
-        <input type="email" class="text-input mail" value="vaclav.brdek@mensagymnazium.cz" name="mail">
+        <input @bind="Model.Email" type="email" class="text-input mail" name="mail">
     </div>
     <div class="pwd">
         <h3>Heslo</h3>
-        <button class="secondary-button">Změnit heslo</button>
+        @if(isChangingPassword) {
+            <input @bind="Model.Password" type="password" class="text-input mail" name="password">
+        } else {
+            <button @onclick="() => isChangingPassword = true" class="secondary-button">Změnit heslo</button>
+        }
     </div>
     <div class="line"></div>
     <div class="save">
-        <button class="primary-button">Uložit nastavení</button>
+        <button type="submit" class="primary-button">Uložit nastavení</button>
     </div>
-</form>
+</EditForm>
+
+@code {
+    private readonly IWasmCurrentUserStateService _currentUserStateService;
+    private readonly IHApiClient _api;
+    private readonly ToastService _toast;
+    public UserSettings(IWasmCurrentUserStateService currentUserStateService, IHApiClient api, ToastService toast)
+    {
+        _currentUserStateService = currentUserStateService;
+        _api = api;
+        _toast = toast;
+    }
+
+    private bool isLoaded;
+    private RequestModel Model { get; set; } = new();
+    private bool isChangingPassword;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+            return;
+
+        await _currentUserStateService.EnsureStateAsync();
+        var userState = _currentUserStateService.UserDetails;
+
+        Model = new RequestModel
+        {
+            Username = userState?.Username ?? "",
+            Email = userState?.Email ?? "",
+        };
+
+        isLoaded = true;
+    }
+
+    public async Task HandleSubmit() {
+        var request = new UpdateUserSelfRequest(
+            Model.Username,
+            Model.Email,
+            Model.Password
+        );
+
+        var response = await _api.UpdateUserSelf(request);
+
+        if(response.IsSuccessful)
+        {
+            await _toast.SuccessAsync("Uloženo");
+            return;
+        }
+
+        // -> Error
+        var error = response.Error.ToErrorResponse();
+        if (error.TryFindError(nameof(SharedErrors.User.UsernameAlreadyTaken), out var e))
+        {
+            Console.WriteLine(e.Value.Code);
+            Console.WriteLine(e.Value.Description);
+            await _toast.ErrorAsync("Uživatelské jméno je již zabrané");
+        }
+        else if (error.TryFindError(nameof(SharedErrors.User.EmailAlreadyTaken), out _))
+        {
+            await _toast.ErrorAsync("Email je již zabraný");
+        }
+        else
+        {
+            await _toast.ErrorAsync(error.Message);
+        }
+    }
+
+    public class RequestModel
+    {
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string? Password { get; set; }
+    }
+
+    public class RequestValidator : AbstractValidator<RequestModel>
+    {
+        public RequestValidator()
+        {
+            RuleFor(x => x.Username).SetValidator(new SharedUsernameValidator());
+            RuleFor(x => x.Email).NotNull();
+            RuleFor(x => x.Password).SetValidator(new SharedPasswordValidator());
+        }
+    }
+}

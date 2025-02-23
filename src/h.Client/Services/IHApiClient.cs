@@ -20,6 +20,10 @@ public interface IHApiClient : IWasmOnly
     [Get("/api/v1/users/current")]
     Task<UserResponse> GetCurrentUser();
 
+    // User
+    [Put("/api/v1/users/self")]
+    Task<IApiResponse> UpdateUserSelf([Body] UpdateUserSelfRequest request);
+
     // Invitation
     [Post("/api/v1/invitation/create")]
     Task<int> CreateInviteCode();

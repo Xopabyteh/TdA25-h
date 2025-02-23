@@ -23,6 +23,7 @@ using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
+using h.Contracts;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -43,6 +44,7 @@ public static class DependencyInjection
             // Primitives parsers
             o.SerializerOptions.Converters.Add(new GameDifficultyJsonConverter());
             o.SerializerOptions.Converters.Add(new GameStateJsonConverter());
+            o.SerializerOptions.Converters.Add(new ErrorConverter());
         });
 
         builder.Services.AddHttpContextAccessor();
