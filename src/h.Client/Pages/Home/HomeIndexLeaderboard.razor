@@ -4,10 +4,10 @@
     <h1 class="blue">Leaderboard</h1>
     <div class="pedestals">
         <div class="pedestal silver">
-            @if (leaderBoardEntries?.Length > 0)
+            @if (leaderBoardEntries?.Length > 1)
             {
-                <p class="name">@leaderBoardEntries[0].Username</p>
-                <p class="elo">ELO: @leaderBoardEntries[0].EloRating</p>
+                <p class="name">@leaderBoardEntries[1].Username</p>
+                <p class="elo">ELO: @leaderBoardEntries[1].EloRating</p>
             }
             else
             {
@@ -17,10 +17,10 @@
             <img src="/IMG/Homepage/Pedestal/pedestal_silver.svg">
         </div>
         <div class="pedestal gold">
-            @if (leaderBoardEntries?.Length > 1)
+            @if (leaderBoardEntries?.Length > 0)
             {
-                <p class="name">@leaderBoardEntries[1].Username</p>
-                <p class="elo">ELO: @leaderBoardEntries[1].EloRating</p>
+                <p class="name">@leaderBoardEntries[0].Username</p>
+                <p class="elo">ELO: @leaderBoardEntries[0].EloRating</p>
             }
             else
             {
