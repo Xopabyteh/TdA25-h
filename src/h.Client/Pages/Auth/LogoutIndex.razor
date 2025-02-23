@@ -1,7 +1,7 @@
 ﻿@using System.Runtime.InteropServices
 @using h.Client.Services
 @attribute [Route(PageRoutes.Auth.Logout)]
-@rendermode InteractiveWebAssembly
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false)); 
 
 @code {
     [SupplyParameterFromQuery(Name = "return")] string? ReturnUrl { get; set; }
@@ -15,13 +15,6 @@
             return;
 
         var returnTo = ReturnUrl ?? PageRoutes.HomeIndex;
-
-        var state = await _authProvider.GetAuthenticationStateAsync();
-        if (!state.User.Identity?.IsAuthenticated ?? true)
-        {
-            _navigation.NavigateTo(returnTo);
-            return;
-        }
 
         await _api.LogoutUser();
         if(_authProvider is WasmAuthenticationStateProvider _wasmAuth) {

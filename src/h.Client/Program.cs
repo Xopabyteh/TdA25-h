@@ -1,4 +1,3 @@
-
 using Blazored.SessionStorage;
 using h.Client.Services;
 using h.Client.Services.Game;
@@ -21,11 +20,23 @@ builder.Services.AddSingleton(new HttpClient()
 });
 builder.Services.AddSingleton<IWasmHttpClient, WasmHttpClient>();
 
+builder.Services.AddScoped<TokenRefreshingDelegatingHandler>();
 builder.Services
     .AddRefitClient<IHApiClient>(new RefitSettings()
     {
         ContentSerializer = new SystemTextJsonContentSerializer(AppJsonOptions.WithConverters),
-        //AuthorizationHeaderValueGetter = (msg, cancellationToken) => Task.FromResult("Bearer " + builder.Services.GetRequiredService<AuthenticationState>().User.GetToken())
+    })
+    .ConfigureHttpClient(c =>
+    {
+        // Add polly?
+        c.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+    })
+    .AddHttpMessageHandler<TokenRefreshingDelegatingHandler>();
+
+builder.Services
+    .AddRefitClient<IHTokenRefreshClient>(new RefitSettings()
+    {
+        ContentSerializer = new SystemTextJsonContentSerializer(AppJsonOptions.WithConverters),
     })
     .ConfigureHttpClient(c =>
     {
@@ -36,10 +47,15 @@ builder.Services
 
 builder.Services.AddSingleton<IWasmGameService, WasmGameService>();
 
-builder.Services.AddScoped<AuthenticationStateProvider, WasmAuthenticationStateProvider>();
+builder.Services.AddScoped<IWasmCurrentUserStateService,WasmCurrentUserStateService>();
+
+builder.Services.AddScoped<WasmAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, WasmAuthenticationStateProvider>(f =>
+    f.GetRequiredService<WasmAuthenticationStateProvider>());
+
 builder.Services.AddAuthorizationCore(o =>
 {
-    
+    o.AddAppClientPolicies();
 });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthenticationStateDeserialization();

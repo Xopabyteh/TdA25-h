@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -72,6 +73,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IWasmHttpClient, Server.Components.Services.WasmHttpClient>();
         builder.Services.AddSingleton<IWasmGameService, Server.Components.Services.WasmGameService>();
         builder.Services.AddNullService<IHApiClient>();
+        builder.Services.AddNullService<IWasmCurrentUserStateService>();
 
         return builder;
     }

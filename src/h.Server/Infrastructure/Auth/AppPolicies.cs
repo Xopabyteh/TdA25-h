@@ -1,6 +1,5 @@
 ﻿using h.Contracts.Auth;
 using h.Primitives.Users;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace h.Server.Infrastructure.Auth;
@@ -43,8 +42,8 @@ public static class AppPolicies
     public static void AddAppPolicies(this AuthorizationOptions o)
     {
         // Default authentication policya
-        o.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
-            .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+        o.AddPolicy("HybridAuth", new AuthorizationPolicyBuilder()
+            .AddAuthenticationSchemes("HybridAuth")
             .RequireAuthenticatedUser()
             .Build()
         );

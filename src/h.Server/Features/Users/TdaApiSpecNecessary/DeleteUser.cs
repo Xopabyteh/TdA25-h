@@ -28,7 +28,7 @@ public static class DeleteUser
             return ErrorResults.NotFound([SharedErrors.User.UserNotFound()]);
 
         if(user.Roles.Contains(UserRole.Admin))
-            return ErrorResults.Conflit("Cannot delete admin user"); // Todo: convert to shared error if needed
+            return ErrorResults.Conflict("Cannot delete admin user"); // Todo: convert to shared error if needed
 
         db.UsersDbSet.Remove(user);
         await db.SaveChangesAsync(cancellationToken);

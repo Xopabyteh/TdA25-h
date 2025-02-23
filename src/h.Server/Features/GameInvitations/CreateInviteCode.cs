@@ -28,9 +28,7 @@ public static class CreateInviteCode
         // Ensure player is in hub, otherwise tell them they must be there...
         var connectionId = hubUserIdMapping.GetConnectionId(multiplayerIdentity);
         if(connectionId is null)
-        {
-            return ErrorResults.Conflit($"You must be connected to {nameof(GameInvitationHub)}");
-        }
+            return ErrorResults.Conflict($"You must be connected to {nameof(GameInvitationHub)}");
 
         var inviteCode = invitationCodeService.CreateNewRoom(multiplayerIdentity);
 
