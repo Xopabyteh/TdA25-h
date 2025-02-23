@@ -25,7 +25,7 @@ public class InMemoryMatchmakingService
 
     public InMemoryMatchmakingService(TimeProvider timeProvider, IOptions<MatchmakingOptions> matchmakingOptions)
     {
-        n + _timeProvider = timeProvider;
+        _timeProvider = timeProvider;
         _matchmakingOptions = matchmakingOptions;
     }
 
@@ -94,7 +94,7 @@ public class InMemoryMatchmakingService
             while (
                 _playerMatchingsByCreationTime.Count > 0
                 && _playerMatchingsByCreationTime.Keys[0]
-                    .AddSeconds(_matchmakingOptions.Value.MatchingExpiresInSeconds) < _timeProvider.GetUtcNow())
+                    .AddSeconds(_matchmakingOptions.Value.MatchingExpiresAfterSeconds) < _timeProvider.GetUtcNow())
             {
                 var matching = _playerMatchingsByCreationTime.Values[0];
                 var acceptees = _playerMatchingToAcceptees[matching.Id];
