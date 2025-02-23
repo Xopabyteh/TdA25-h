@@ -56,6 +56,9 @@ public static class LoginUser
 
         // Generate token
         var token = tokenService.GenerateToken(claims);
+        
+        // Add token to response
+        httpContext.Response.Headers.Append("Authorization", $"Bearer {token}");
 
         // Sign in with Cookie
         var principal = identityService.GeneratePrincipalFromClaims(claims, CookieAuthenticationDefaults.AuthenticationScheme); 

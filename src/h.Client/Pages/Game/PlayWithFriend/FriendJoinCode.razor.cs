@@ -16,7 +16,6 @@ public partial class FriendJoinCode : IAsyncDisposable
     [Inject] protected ToastService _toastService { get; set; } = null!;
     [Inject] protected ISessionStorageService _sessionStorageService { get; set; } = null!;
 
-
     private bool isjoiningRoom;
     private HubConnection? hubConnection;
     private int? roomCode;

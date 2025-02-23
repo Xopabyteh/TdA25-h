@@ -16,20 +16,31 @@ public partial class MatchmakingQueue : IAsyncDisposable
     private readonly ISessionStorageService _sessionStorage;
     private readonly AuthenticationStateProvider _authStateProvider;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IWasmCurrentUserStateService _currentUserStateService;
 
     private HubConnection? hubConnection;
     private FoundMatchingDetailsResponse? currentMatching;
-    //private FoundMatchingPlayerDetailDto otherPlayer => currentMatching!.Value.Player1 == 
+    private FoundMatchingPlayerDetailDto otherPlayer => currentMatching!.Value.Player1.PlayerId 
+            == _currentUserStateService.UserDetails!.Value.Uuid
+        ? currentMatching!.Value.Player2
+        : currentMatching!.Value.Player1;
 
     private bool isJoinedQueue;
 
-    public MatchmakingQueue(IHApiClient api, NavigationManager navigationManager, ISessionStorageService sessionStorage, AuthenticationStateProvider authStateProvider, IAuthorizationService authorizationService)
+    public MatchmakingQueue(
+        IHApiClient api,
+        NavigationManager navigationManager,
+        ISessionStorageService sessionStorage,
+        AuthenticationStateProvider authStateProvider,
+        IAuthorizationService authorizationService,
+        IWasmCurrentUserStateService currentUserStateService)
     {
         _api = api;
         _navigationManager = navigationManager;
         _sessionStorage = sessionStorage;
         _authStateProvider = authStateProvider;
         _authorizationService = authorizationService;
+        _currentUserStateService = currentUserStateService;
     }
 
     protected override async Task OnInitializedAsync()
@@ -37,6 +48,8 @@ public partial class MatchmakingQueue : IAsyncDisposable
         if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return;
     
+        await _currentUserStateService.EnsureStateAsync();
+
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var canJoinMatch = await _authorizationService.AuthorizeAsync(authState.User, nameof(AppPolicies.AbleToJoinMatchmaking));
         if(!canJoinMatch.Succeeded)

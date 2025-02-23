@@ -21,7 +21,7 @@
                             <div class="pfp"></div>
                             <div class="user-data">
                                 <p class="username">@context.User.Identity!.Name</p>
-                                <p class="elo">ELO: TODO!</p>
+                                <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
                                 <p class="status gray">Čeká na přijetí</p>
                             </div>
                         </div>
@@ -30,9 +30,9 @@
                         <div class="user-cont-game">
                             <div class="pfp loader"></div>
                             <div class="user-data">
-                                <p class="username">@currentMatching.Value.</p>
-                                <p class="elo">ELO: ???</p>
-                                <p class="status gray">Hledám hráče...</p>
+                                <p class="username">@otherPlayer.PlayerName</p>
+                                <p class="elo">ELO: @otherPlayer.EloRating</p>
+                                <p class="status gray">Čeká na přijetí</p>
                             </div>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                             <div class="pfp"></div>
                             <div class="user-data">
                                 <p class="username">@context.User.Identity!.Name</p>
-                                <p class="elo">ELO: TODO!</p>
+                                <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
                                 @* <p class="status gray">Čeká na přijetí</p> *@
                             </div>
                         </div>
@@ -62,6 +62,7 @@
                         </div>
                     </div>
                 </div>
+                
             }
             <div class="gameinfo">
                 <p>Pozice ve frontě: 1</p>
