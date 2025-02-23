@@ -94,11 +94,12 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             .ToArrayAsync();
 
         var playersDto = game.Players
-            .Select(u => new MultiplayerGameStartedUserDetail(
+            .Select(u => new MultiplayerGameSessionUserDetailDTO(
                 MapToDto(u),
                 game.PlayerSymbols[u],
                 u.Name,
-                nonGuestUsersInGame.FirstOrDefault(user => user.Uuid == u.UserId!.Value)?.Elo.Rating
+                nonGuestUsersInGame.FirstOrDefault(user => user.Uuid == u.UserId!.Value)?.Elo.Rating,
+                game.TimerLength
             ))
             .ToList()
             .AsReadOnly();
@@ -141,13 +142,21 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
                 ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(identity))
             .ToArray();
 
+        var playerRemainingClockTimes = game.Players
+            .Select(p => new KeyValuePair<Guid, TimeSpan>(
+                p.SessionId,
+                game.GetRemainingTime(p)
+            ))
+            .ToArray();
+
         // Notify players about the move
         await Clients.Clients(connectionIds)
             .PlayerMadeMove(new(
                 MapToDto(identity),
                 atPos,
                 game.PlayerSymbols[identity],
-                MapToDto(nextPlayerOnTurn)
+                MapToDto(nextPlayerOnTurn),
+                playerRemainingClockTimes
             ));
 
         // No next player on turn, the game is over

@@ -2,7 +2,7 @@
 @using h.Client.Services
 
 @attribute [Route(PageRoutes.Multiplayer.MultiplayerGame)]
-@rendermode InteractiveWebAssembly
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @layout GameLayout
 
 <PageTitle>Ranked hra</PageTitle>
@@ -13,7 +13,9 @@
     <div class="center">
         <h1>Hodnocená hra</h1>
         <div class="game-window">
-            <div class="game-field" data-cell-hover-symbol="@(isPlayerX ? "X" : "O")">
+            <div class="game-field"
+                data-cell-hover-symbol="@(ourPlayer.Symbol.ToString())"
+                 data-hover-disabled="@(ourPlayer.Identity.SessionId != playerOnTurn.Identity.SessionId)">
                 @for (int y = 0; y < 15; y++)
                 {
                     <div class="game-field-row">
@@ -24,11 +26,17 @@
                             var yCopy = y;
 
                             string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
+                            var symbol = gameField[y,x];
 
-                            <div class="cell empty"
+                            <div class="cell @(symbol == Primitives.Games.GameSymbol.None ? "empty" : "")"
                                  style="width: 40px; background-color: @background;"
                                  data-x="@xCopy"
-                                 data-y="@yCopy">
+                                 data-y="@yCopy"
+                                 @onclick="async () => await HandlePlaceSymbol(xCopy, yCopy)">
+                                 @if(symbol != Primitives.Games.GameSymbol.None)
+                                 {
+                                     <img src="@ResourceHelper.GetSymbolSrc(symbol)"/>
+                                 }
                             </div>
                         }
                     </div>
@@ -40,32 +48,22 @@
                         <img src="/IMG/X/X_cervene.svg" alt="">
                         <b class="username">@gameDetails.Players[0].Name</b>
                         <span class="elo">(@(gameDetails.Players[0].EloRating?.ToString() ?? "-"))</span>
-                        <span class="timer turn">08:00</span>
+                        <span class="timer @(GetClockCss(gameDetails.Players[0].Identity.SessionId))">@(GetRemainingClockTimeFormatted(gameDetails.Players[0].Identity.SessionId))</span>
                     </div>
                     <div class="vs">VS</div>
                     <div class="player">
                         <img src="/IMG/O/O_modre.svg" alt="">
                         <b class="username">@gameDetails.Players[1].Name</b>
                         <span class="elo">(@(gameDetails.Players[1].EloRating?.ToString() ?? "-")</span>
-                        <span class="timer">08:00</span>
+                        <span class="timer @(GetClockCss(gameDetails.Players[1].Identity.SessionId))">@(GetRemainingClockTimeFormatted(gameDetails.Players[1].Identity.SessionId))</span>
                     </div>
                 </div>
                 <div class="turn-info">
                     <div class="round sheet">
-                        <p>@(turnI). kolo</p>
+                        <p>@(TurnI). kolo</p>
                     </div>
                     <div class="turn sheet">
-                        @if (xOnTurn)
-                        {
-                            turnDisplaySrc = "/IMG/X/X_cervene.svg";
-                            turnDisplayAlt = "X";
-                        }
-                        else
-                        {
-                            turnDisplaySrc = "/IMG/O/O_modre.svg";
-                            turnDisplayAlt = "O";
-                        }
-                        <img src=@turnDisplaySrc alt=@turnDisplayAlt>
+                        <img src="@ResourceHelper.GetSymbolSrc(playerOnTurn.Symbol)" alt="@playerOnTurn.Symbol.ToString()">
                     </div>
                 </div>
                 <button class="secondary-button">Vzdát se</button>

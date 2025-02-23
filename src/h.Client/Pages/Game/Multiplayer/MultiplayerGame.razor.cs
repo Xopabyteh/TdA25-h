@@ -1,5 +1,6 @@
 using Blazored.SessionStorage;
 using h.Contracts.MultiplayerGames;
+using h.Primitives;
 using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -7,9 +8,11 @@ using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Game.Multiplayer;
 
+// Todo: client prediction and server reconciliation? (for smoother experience)
 public partial class MultiplayerGame : IAsyncDisposable
 {
     public const string GameIdSessionStorageKey = "h.multiplayerSession.gameId";
+    private const int ClockUpdateIntervalMs = 333;
 
     private readonly ISessionStorageService _sessionStorageService;
     private readonly NavigationManager _navigationManager;
@@ -22,18 +25,35 @@ public partial class MultiplayerGame : IAsyncDisposable
     /// </summary>
     private bool isGameStarted;
     private MultiplayerGameStartedResponse gameDetails;
+    private bool isGameEnded;
 
-    private bool xOnTurn = true;
-    private string turnDisplaySrc = "";
-    private string turnDisplayAlt = "";
-    private int turnI = 1;
+    private int moveI = 1;
+    private int TurnI => moveI / 2;
 
-    private int elo1 = 100;
-    private int elo2 = 100;
+    private MultiplayerGameSessionUserDetailDTO ourPlayer;
+    /// <summary>
+    /// Access field by [y,x] (y is row, x is column)
+    /// </summary>
+    private GameSymbol[,] gameField = new GameSymbol[15,15]; // Todo: remove magic numbers? (throughout the entire app lol)
+    /// <summary>
+    /// Key: session id,
+    /// Value: user details
+    /// </summary>
+    private Dictionary<Guid, MultiplayerGameSessionUserDetailDTO> sessionIdToPlayer;
+    private MultiplayerGameSessionUserDetailDTO playerOnTurn;
+    private bool areWeOnTurn => playerOnTurn.Identity.SessionId == gameDetails.MySessionId;
 
-    private bool isPlayerX = true;
+    /// <summary>
+    /// Key: session id,
+    /// Value: players stopwatch
+    /// </summary>
+    private Dictionary<Guid, TimeSpan> playerClockRemainingTimes;
+    private Timer? clockTimer;
+    private string GetRemainingClockTimeFormatted(Guid sessionid)
+        => playerClockRemainingTimes[sessionid].ToString(@"mm\:ss");
 
-    //private GameSymbol[][] field = new[][];
+    private string GetClockCss(Guid sessionid)
+        => sessionid == playerOnTurn.Identity.SessionId ? "turn" : "";
 
     public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager)
     {
@@ -45,7 +65,6 @@ public partial class MultiplayerGame : IAsyncDisposable
     {
         if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return;
-
         gameId = await _sessionStorageService.GetItemAsync<Guid>(GameIdSessionStorageKey);
 
         // 1. Ensure game hub connection
@@ -60,20 +79,60 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         hubConnection.On<MultiplayerGameStartedResponse>(nameof(IMultiplayerGameSessionHubClient.GameStarted), async response =>
         {
-            Console.WriteLine($"Game started {response}");
             gameDetails = response;
+
+            // Players
+            sessionIdToPlayer = response.Players.ToDictionary(
+                p => p.Identity.SessionId,
+                p => p
+            );
+            ourPlayer = sessionIdToPlayer[gameDetails.MySessionId];
+            playerOnTurn = sessionIdToPlayer[gameDetails.StartingPlayerIdentity.SessionId];
+
+            // Clocks
+            playerClockRemainingTimes = response.Players.ToDictionary(
+                p => p.Identity.SessionId,
+                p => sessionIdToPlayer[p.Identity.SessionId].StartingTimeOnClock);
+
+            clockTimer = CreateClockEatingTimer();
+
             isGameStarted = true;
             await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), response =>
+        hubConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
         {
-            Console.WriteLine($"Player made move {response}");
+            // Update field
+            gameField[response.Position.Y, response.Position.X] = response.Symbol;
+
+            // If no more players on turn, game ended, wait for game ended invokation
+            if(response.NextPlayerOnTurn is null)
+                return;
+
+            // Update turn
+            var nextPlayerOnTurnIdentity = response.NextPlayerOnTurn.Value;
+            playerOnTurn = gameDetails.Players.First(p => p.Identity.SessionId == nextPlayerOnTurnIdentity.SessionId);
+            moveI++;
+
+            // Sync clocks
+            foreach (var remainingTimeKvp in response.PlayerRemainingClockTimes)
+            {
+                playerClockRemainingTimes[remainingTimeKvp.Key] = remainingTimeKvp.Value;
+            }
+
+            await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), response =>
+        hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
         {
-            Console.WriteLine($"Game ended {response}");
+            isGameEnded = true;
+            if(clockTimer is not null)
+            {
+                await clockTimer.DisposeAsync();
+                clockTimer = null;
+            }
+
+            await InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
@@ -82,11 +141,47 @@ public partial class MultiplayerGame : IAsyncDisposable
         await hubConnection.SendAsync("ConfirmLoaded", gameId);
     }
 
-    public ValueTask DisposeAsync()
+    private async Task HandlePlaceSymbol(int x, int y)
     {
+        if(!areWeOnTurn)
+            return;
+
+        var placePos = new Int2(x, y);
+        await hubConnection!.InvokeAsync("PlaceSymbol", gameDetails.GameId, placePos);
+    }
+
+    private Timer CreateClockEatingTimer()
+        => new Timer(
+                async _ =>
+                {
+                    if (!isGameStarted)
+                        return;
+
+                    if(isGameEnded)
+                        return;
+
+                    // Remove elapsed from player on turn
+                    // If seconds have changed, update UI
+                    var prevSeconds = playerClockRemainingTimes[playerOnTurn.Identity.SessionId].Seconds;
+                    var newTime = playerClockRemainingTimes[playerOnTurn.Identity.SessionId] - TimeSpan.FromMilliseconds(ClockUpdateIntervalMs);
+                    playerClockRemainingTimes[playerOnTurn.Identity.SessionId] = newTime;
+
+                    if (newTime.Seconds != prevSeconds)
+                    {
+                        await InvokeAsync(StateHasChanged);
+                    }
+                },
+                null,
+                dueTime: TimeSpan.FromSeconds(0),
+                period: TimeSpan.FromMilliseconds(ClockUpdateIntervalMs)
+            );
+
+    public async ValueTask DisposeAsync()
+    {
+        if(clockTimer is not null)
+            await clockTimer.DisposeAsync();
+
         if (hubConnection is not null)
-            return hubConnection.DisposeAsync();
-        
-        return ValueTask.CompletedTask;
+            await hubConnection.DisposeAsync();
     }
 }

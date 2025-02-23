@@ -60,7 +60,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             playerSymbols,
             playerOnTurnIndex,
             _timeProvider.GetUtcNow(),
-            TimeSpan.FromSeconds(8) // Todo: moved to shared config
+            TimeSpan.FromSeconds(IMultiplayerGameSessionService.STARTING_SECONDS_ON_CLOCK) // Todo: moved to shared config
         );
 
         _gameSessions[gameId] = gameSession;
@@ -100,6 +100,9 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         var symbolAtPlace = gameSession!.Board.GetSymbolAt(atPos);
         if (symbolAtPlace != GameSymbol.None)
             return Error.Conflict(description: "Space already occupied"); // Turn into shared error if needed
+
+        if(gameSession.GameEnded)
+            return Error.Conflict(description: "Game already ended"); // Turn into shared error if needed
 
         var playerSymbol = gameSession!.PlayerSymbols[byPlayerId];
         gameSession!.Board.SetSymbolAt(atPos, playerSymbol);

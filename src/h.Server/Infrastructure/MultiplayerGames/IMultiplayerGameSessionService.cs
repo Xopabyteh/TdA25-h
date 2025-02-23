@@ -12,6 +12,8 @@ namespace h.Server.Infrastructure.MultiplayerGames;
 /// </summary>
 public interface IMultiplayerGameSessionService
 {
+    public const int STARTING_SECONDS_ON_CLOCK = 60 * 8;
+
     /// <summary>
     /// Create a game session with the given players.
     /// They may be guests or registered users.
