@@ -1,5 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.EntityFrameworkCore
+@using System.Runtime.InteropServices
+@using h.Client.Services
+@using h.Primitives.Users
 @using h.Contracts.MultiplayerGames
+@using h.Server.Infrastructure.Database
 @inject NavigationManager _navigationManager
 
 <head>
@@ -21,14 +26,28 @@
             </NotAuthorized>
             <Authorized>
                 <img src="/IMG/pfps/pfp-blue.svg" />
-                <div class="user-info">
-                    <p id="nickname">@context.User.Identity!.Name</p>
-                    <div class="elo-logout">
-                        <p id="elo">ELO: 100</p>   @*TODO: user elo*@
-                        <p>•</p>
-                        <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
+
+                @if (isGuest || context.User.IsInRole(nameof(UserRole.Admin)))
+                {
+                    // Guest || admin -> don't show elo
+                    <div class="user-info">
+                        <p id="nickname">@context.User.Identity!.Name</p>
+                        <div class="elo-logout">
+                            <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
+                        </div>
                     </div>
-                </div>
+                } 
+                else {
+                    // User
+                    <div class="user-info">
+                        <p id="nickname">@context.User.Identity!.Name</p>
+                        <div class="elo-logout">
+                            <p id="elo">ELO: @(currentUser!.Elo.Rating)</p>
+                            <p>•</p>
+                            <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
+                        </div>
+                    </div>
+                }
             </Authorized>
         </AuthorizeView>
     </div>
@@ -41,7 +60,6 @@
         @Body
     </main>
 </div>
-
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
