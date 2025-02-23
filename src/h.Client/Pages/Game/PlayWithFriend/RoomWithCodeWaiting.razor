@@ -1,4 +1,4 @@
-@attribute [Route(PageRoutes.Multiplayer.FriendCode)]
+@attribute [Route(PageRoutes.Multiplayer.RoomWithCodeWaiting)]
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Pozvánka pro kamaráda</PageTitle>
@@ -7,12 +7,11 @@
     <h1>Hraj s kamarádem</h1>
     <div class="invite sheet">
         <div class="code-cont">
-            <h1 class="invite-code blue can-copy">123456</h1>
+            <h1 class="invite-code blue can-copy">@inviteCode</h1>
             <span>Kód pozvánky</span>
         </div>
-        <p class="code-info-text">
-            Tento kód pošli osobě, se kterou chceš hrát. <br> Kód zadejte na
-            <a href="/multiplayer-game/friend-invite" class="invite-link">.../multiplayer-game/friend-invite</a>
+        <p class="code-info-text can-copy">
+            Invite link - @GetInviteLink()
         </p>
         <div class="waiting">
             <div class="loader"></div>
@@ -20,3 +19,7 @@
         </div>
     </div>
 </div>
+
+ 
+
+

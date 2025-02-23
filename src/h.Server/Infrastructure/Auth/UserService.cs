@@ -36,8 +36,10 @@ public class UserService
         
         if (userWithNewUsername is not null && userWithNewEmail is not null)
             return new List<Error> { SharedErrors.User.UsernameAlreadyTaken(), SharedErrors.User.EmailAlreadyTaken() };
+
         if (userWithNewUsername is not null)
             return new List<Error> { SharedErrors.User.UsernameAlreadyTaken() };
+        
         if (userWithNewEmail is not null)
             return new List<Error> { SharedErrors.User.EmailAlreadyTaken() };
         

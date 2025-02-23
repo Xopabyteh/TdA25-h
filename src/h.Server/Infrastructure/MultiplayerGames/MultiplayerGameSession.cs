@@ -37,7 +37,7 @@ public class MultiplayerGameSession
     /// How much time each player has for the whole game.
     /// "Šachové hodiny"
     /// </summary>
-    private TimeSpan _timerLength;
+    public TimeSpan TimerLength { get; init;}
 
     public MultiplayerGameSession(
         Guid id,
@@ -58,7 +58,7 @@ public class MultiplayerGameSession
             keySelector: pId => pId,
             elementSelector: pId => new Stopwatch());
         CreatedAtUtc = createdAtUtc;
-        _timerLength = timerLength;
+        TimerLength = timerLength;
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class MultiplayerGameSession
     public TimeSpan GetRemainingTime(MultiplayerGameUserIdentity ofPlayer)
     {
         var timer = PlayerTimers[ofPlayer];
-        return _timerLength - timer.Elapsed;
+        return TimerLength - timer.Elapsed;
     }
 
     public class GameNotEndedYetException : Exception

@@ -13,21 +13,24 @@ namespace h.Server.Infrastructure.MultiplayerGames;
 public readonly record struct MultiplayerGameUserIdentity(
     Guid SessionId,
     bool IsGuest,
-    Guid? UserId
+    Guid? UserId,
+    string Name
 )
 {
-    public static MultiplayerGameUserIdentity FromGuest(Guid guestId)
+    public static MultiplayerGameUserIdentity FromGuest(Guid guestId, string name)
         => new(
             SessionId: guestId,
             IsGuest: true,
-            UserId: null
+            UserId: null,
+            name
         );
 
-    public static MultiplayerGameUserIdentity FromUserId(Guid userId)
+    public static MultiplayerGameUserIdentity FromUserId(Guid userId, string name)
         => new(
               SessionId: userId,
               IsGuest: false,
-              userId
+              userId,
+              name
         );
 
     public static MultiplayerGameUserIdentity FromNETIdentity(ClaimsPrincipal user)
@@ -35,10 +38,10 @@ public readonly record struct MultiplayerGameUserIdentity(
         // Is guest?
         var guestId = user.GetGuestId();
         if(guestId is not null)
-            return FromGuest(guestId.Value);
+            return FromGuest(guestId.Value, user.Identity!.Name!);
 
         // User
         var userId = user.GetUserId();
-        return FromUserId(userId);
+        return FromUserId(userId, user.Identity!.Name!);
     }
 }

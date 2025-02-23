@@ -3,6 +3,7 @@ using h.Contracts;
 using h.Primitives;
 using h.Primitives.Games;
 using h.Server.Entities.Games;
+using h.Server.Entities.Users;
 using System.Collections.Concurrent;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
@@ -20,7 +21,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
     }
 
     public MultiplayerGameSession CreateGameSession(
-        IReadOnlyList<MultiplayerGameUserIdentity> players,
+        IReadOnlyCollection<MultiplayerGameUserIdentity> players,
         MultiplayerGameUserIdentity? forcedStartingPlayerId = null)
     {
         var gameId = Guid.NewGuid();
@@ -59,7 +60,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             playerSymbols,
             playerOnTurnIndex,
             _timeProvider.GetUtcNow(),
-            TimeSpan.FromSeconds(8) // Todo: moved to shared config
+            TimeSpan.FromSeconds(IMultiplayerGameSessionService.STARTING_SECONDS_ON_CLOCK) // Todo: moved to shared config
         );
 
         _gameSessions[gameId] = gameSession;
@@ -99,6 +100,9 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         var symbolAtPlace = gameSession!.Board.GetSymbolAt(atPos);
         if (symbolAtPlace != GameSymbol.None)
             return Error.Conflict(description: "Space already occupied"); // Turn into shared error if needed
+
+        if(gameSession.GameEnded)
+            return Error.Conflict(description: "Game already ended"); // Turn into shared error if needed
 
         var playerSymbol = gameSession!.PlayerSymbols[byPlayerId];
         gameSession!.Board.SetSymbolAt(atPos, playerSymbol);
@@ -150,13 +154,16 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         return gameSession.EndResult;
     }
 
-    public MultiplayerGameSession CreateGameSession(IReadOnlyList<Guid> playerIds, Guid? forcedStartingPlayerId = null)
+    public MultiplayerGameSession CreateGameSession(IReadOnlyCollection<User> players, Guid? forcedStartingPlayerId = null)
     {
         return CreateGameSession(
-            playerIds.Select(MultiplayerGameUserIdentity.FromUserId).ToList(),
+            players.Select(p => MultiplayerGameUserIdentity.FromUserId(p.Uuid, p.Username)).ToList(),
             forcedStartingPlayerId: forcedStartingPlayerId is null
                 ? null
-                : MultiplayerGameUserIdentity.FromUserId(forcedStartingPlayerId.Value)
+                : MultiplayerGameUserIdentity.FromUserId(
+                    forcedStartingPlayerId.Value,
+                    players.First(p => p.Uuid == forcedStartingPlayerId.Value).Username
+                )
         );
     }
 }

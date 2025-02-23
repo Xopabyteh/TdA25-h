@@ -31,21 +31,24 @@ public class CustomWebApplicationFactory
             services.Remove(dbConnectionDescriptor);
 
             // Create open SqliteConnection so EF won't automatically close it.
-            services.AddSingleton<DbConnection>(container =>
+            services.AddSingleton((Func<IServiceProvider, DbConnection>)(container =>
             {
                 var connection = new SqliteConnection("DataSource=:memory:");
                 connection.Open();
 
                 return connection;
-            });
+            }));
 
-            services.AddDbContext<AppDbContext>((container, options) =>
+            Action<IServiceProvider, DbContextOptionsBuilder>? dbOptionsAction = (container, options) =>
             {
                 var connection = container.GetRequiredService<DbConnection>();
                 options.UseSqlite(connection);
-            });
-
+            };
             
+            services
+                .AddDbContextFactory<AppDbContext>(dbOptionsAction, lifetime: ServiceLifetime.Singleton)
+                .AddDbContext<AppDbContext>(dbOptionsAction, optionsLifetime: ServiceLifetime.Singleton);
+
             // Remove matchmaking background service and turn it into a singleton
             services.Remove(
                 services.Single(s => s.ImplementationType == typeof(MatchPlayersBackgroundService))
@@ -75,7 +78,12 @@ public class CustomWebApplicationFactory
     }
 
     private static int lastNicknameNumber = 0;
-    private static string NewIncrementalNickname() => $"user{++lastNicknameNumber}";
+    private static string NewIncrementalNickname()
+    {
+        Interlocked.Increment(ref lastNicknameNumber);
+        return $"user{lastNicknameNumber}";
+    }
+
     /// <summary>
     /// Creates a new user and logs into him.
     /// Make sure the test depends on <see cref="h.IntegrationTests.Auth.AuthTests.Login_ValidUser_ReturnsSuccess"/>.

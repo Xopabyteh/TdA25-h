@@ -1,0 +1,26 @@
+@using h.Client.Services
+@using h.Primitives.Games
+@attribute [Route(PageRoutes.Auth.RegisterIndex)]
+@rendermode InteractiveWebAssembly
+@layout LoginLayout
+
+<PageTitle>Vytvořit účet</PageTitle>
+
+<div class="form-cont">
+@if(!isLoaded) {
+    <span>Načítání...</span>
+} else {
+    <EditForm Model="Model" class="login-form" OnValidSubmit="HandleRegister">
+        <FluentValidationValidator/>
+        <ValidationSummary/>
+        
+        <h2>Vytvořit nový účet</h2>
+        <input autocomplete="username" @bind="Model.Username" type="text" placeholder="Jméno" class="text-input" name="nick">
+        <input autocomplete="email" @bind="Model.Email" type="email" placeholder="Email" class="text-input" name="mail">
+        <input autocomplete="new-password" @bind="Model.Password" type="password" placeholder="Heslo" class="text-input" name="pwd">
+        <input autocomplete="new-password" @bind="Model.PasswordMatch" type="password" placeholder="Heslo znovu" class="text-input" name="pwd2">
+        <button type="submit" disabled="@isBusy" class="primary-button register-btn">Vytvořit nový účet</button>
+        <a href="@(PageRoutes.Auth.LoginIndexWithQuery(ReturnUrl))" class="link new-user">Už mám účet</a>
+    </EditForm>
+}
+</div>

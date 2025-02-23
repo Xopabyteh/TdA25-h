@@ -16,8 +16,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using h.Server.Components.Services;
+using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -40,6 +44,7 @@ public static class DependencyInjection
             o.SerializerOptions.Converters.Add(new GameStateJsonConverter());
         });
 
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddCors();
 
         return builder;
@@ -50,13 +55,23 @@ public static class DependencyInjection
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents()
-            .AddInteractiveWebAssemblyComponents();
+            .AddInteractiveWebAssemblyComponents()
+            .AddAuthenticationStateSerialization(o =>
+            {
+                o.SerializeAllClaims = true;
+            }); 
+
+        builder.Services.AddCascadingAuthenticationState();
+
+        builder.Services.AddBlazoredSessionStorage();
+        //builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
         builder.Services.AddTransient<ToastService>();
 
         // Add dummy implementations for server-side services (used when prerendering)
         builder.Services.AddScoped<IWasmHttpClient, Server.Components.Services.WasmHttpClient>();
         builder.Services.AddSingleton<IWasmGameService, Server.Components.Services.WasmGameService>();
+        builder.Services.AddNullService<IHApiClient>();
 
         return builder;
     }
@@ -71,28 +86,37 @@ public static class DependencyInjection
         builder.Services.AddSingleton(typeof(IHubUserIdMappingService<>), typeof(InMemoryHubUserIdMappingService<>));
         builder.Services.AddSingleton(typeof(IHubUserIdMappingService<,>), typeof(InMemoryHubUserIdMappingService<,>));
 
-        // Add EF Core
+        // Add EF Core (db context & db context factory)
         builder.Services.AddScoped<AutoSetUpdatedAtDbSaveInterceptor>();
-        builder.Services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseSqlite(
-                builder.Configuration.GetConnectionString("Database")
-            );
+        Action<DbContextOptionsBuilder>? dbOptionsAction = options =>
+                {
+                    options.UseSqlite(
+                        builder.Configuration.GetConnectionString("Database")
+                    );
 
-            // Add interceptors
-            var serviceProvider = builder.Services.BuildServiceProvider();
-            var autoSetUpdatedAtInterceptor = serviceProvider.GetRequiredService<AutoSetUpdatedAtDbSaveInterceptor>();
-            options.AddInterceptors(autoSetUpdatedAtInterceptor);
-        });
+                    // Add interceptors
+                    var serviceProvider = builder.Services.BuildServiceProvider();
+                    var autoSetUpdatedAtInterceptor = serviceProvider.GetRequiredService<AutoSetUpdatedAtDbSaveInterceptor>();
+                    options.AddInterceptors(autoSetUpdatedAtInterceptor);
+                };
+        builder.Services
+            .AddDbContextFactory<AppDbContext>(dbOptionsAction, lifetime: ServiceLifetime.Singleton)
+            .AddDbContext<AppDbContext>(dbOptionsAction, optionsLifetime: ServiceLifetime.Singleton);
+
 
         // Auth
         builder.Services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(jwtOptions =>
+            .AddAuthentication(o =>
+            {
+                o.DefaultScheme = "HybridAuth"; // Custom scheme that tries both
+                o.DefaultAuthenticateScheme = "HybridAuth";
+                o.DefaultChallengeScheme = "HybridAuth";
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
 	            //jwtOptions.Authority = builder.Configuration["Auth:Jwt:Authority"];
-	            jwtOptions.Audience = builder.Configuration["Auth:Jwt:Audience"];
-                jwtOptions.TokenValidationParameters = new()
+	            options.Audience = builder.Configuration["Auth:Jwt:Audience"];
+                options.TokenValidationParameters = new()
                 {
                     ValidateIssuer = false,
 		            ValidateAudience = true,
@@ -101,13 +125,37 @@ public static class DependencyInjection
 		            //ValidIssuers = builder.Configuration.GetSection("Auth:Jwt:ValidIssuers").Get<string[]>(),
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Auth:Jwt:Key"]!))
                 };
+            })
+             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "h.Auth";
+                //options.LoginPath = "/login"; // Optional: Redirect to login if unauthenticated
+                //options.AccessDeniedPath = "/access-denied"; // Optional: Redirect to access denied page
+                //options.Events.OnRedirectToLogin = context =>
+                //{
+                //    context.Response.StatusCode = 401;
+                //    return Task.CompletedTask;
+                //};
+            })
+             .AddPolicyScheme("HybridAuth", JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    var authHeader = context.Request.Headers["Authorization"];
+                    if (!string.IsNullOrEmpty(authHeader))
+                    {
+                        return JwtBearerDefaults.AuthenticationScheme; // Use JWT if present
+                    }
+                    return CookieAuthenticationDefaults.AuthenticationScheme; // Otherwise, use cookies
+                };
             });
         
         builder.Services.AddAuthorization(o => o.AddAppPolicies());
 
         builder.Services.AddScoped<UserService>();
-        builder.Services.AddScoped<PasswordHashService>();
-        builder.Services.AddScoped<JwtTokenService>();
+        builder.Services.AddSingleton<PasswordHashService>();
+        builder.Services.AddSingleton<JwtTokenCreationService>();
+        builder.Services.AddSingleton<AppIdentityCreationService>();
 
         // Matchmaking
         builder.Services.AddSingleton<IMatchmakingQueueService, InMemoryMatchmakingQueueService>();

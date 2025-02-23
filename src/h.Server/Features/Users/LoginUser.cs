@@ -5,6 +5,7 @@ using h.Server.Infrastructure;
 using h.Server.Infrastructure.Auth;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,14 +23,14 @@ public static class LoginUser
         }
     }
     public static async Task<IResult> Handle(
+        [FromBody] LoginUserRequest request,
         [FromServices] IConfiguration config,
         [FromServices] AppDbContext db,
         [FromServices] PasswordHashService passwordHashService,
         [FromServices] IValidator<LoginUserRequest> validator,
-        [FromServices] JwtTokenService tokenService,
-        [FromServices] IAuthenticationService authenticationService,
+        [FromServices] JwtTokenCreationService tokenService,
+        [FromServices] AppIdentityCreationService identityService,
         HttpContext httpContext,
-        LoginUserRequest request,
         CancellationToken cancellationToken)
     {
         // Validate
@@ -50,11 +51,18 @@ public static class LoginUser
         if(result is PasswordVerificationResult.Failed)
             return Results.Unauthorized();
 
-        // Generate token
-        var token = tokenService.GenerateTokenFor(user);
+        // Create identity
+        var claims = identityService.GetClaimsForUser(user);
 
-        // Add token to response
-        httpContext.Response.Headers.Append("Authorization", $"Bearer {token}");
+        // Generate token
+        var token = tokenService.GenerateToken(claims);
+
+        // Sign in with Cookie
+        var principal = identityService.GeneratePrincipalFromClaims(claims, CookieAuthenticationDefaults.AuthenticationScheme); 
+        await httpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal,
+            new AuthenticationProperties { IsPersistent = true });
 
         // Map and return
         return Results.Ok(new AuthenticationResponse(

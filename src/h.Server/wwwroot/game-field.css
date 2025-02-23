@@ -39,7 +39,7 @@
     justify-content: center;
 }
 
-.game-field .cell {
+/*.game-field .cell {
     position: relative;
 
     border: none;
@@ -61,9 +61,9 @@
             content: "";
             width: 30px;
             height: 30px;
-            position: absolute;
+            position: absolute;*/
             /*background-size: 75% 75%;*/
-            background-repeat: no-repeat;
+            /*background-repeat: no-repeat;
             background-position: center;
             opacity: 0.5;
         }
@@ -74,4 +74,48 @@
 
             .game-field[data-cell-hover-symbol="O"] .cell.empty:hover::after {
                 background-image: url("/IMG/O/O_modre.svg");
+            }*/
+
+.game-field {
+    /*cell style*/
+    .cell {
+        position: relative;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        > img {
+            width: 30px;
+            height: 30px;
+        }
+
+    }
+
+    /*cell hover*/
+    &:not([data-hover-disabled]) {
+        .cell {
+            &.empty {
+                cursor: pointer;
+
+                &::after {
+                    content: "";
+                    width: 30px;
+                    height: 30px;
+                    position: absolute;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    opacity: 0.5;
+                }
             }
+        }
+    }
+    &:not([data-hover-disabled])[data-cell-hover-symbol="X"] .cell:hover::after {
+        background-image: url("/IMG/X/X_cervene.svg");
+    }
+
+    &:not([data-hover-disabled])[data-cell-hover-symbol="O"] .cell:hover::after {
+        background-image: url("/IMG/O/O_modre.svg");
+    }
+
+}

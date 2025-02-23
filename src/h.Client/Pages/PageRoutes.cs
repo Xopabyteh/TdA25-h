@@ -24,18 +24,24 @@ public static class PageRoutes
     /// </summary>
     public static class Multiplayer /*Multiplayer game*/
     {
-        public const string MultiplayerIndex = "/multiplayer-game";
+        public const string MultiplayerGame = "/multiplayer-game";
         public const string MultiplayerQueue = "/multiplayer-game/queue";
         
-        public const string FriendQuery = "/multiplayer-game/friend-query";
-        public const string FriendInvite = "/multiplayer-game/friend-invite";
-        public const string FriendCode = "/multiplayer-game/friend-code";
+        public const string FriendMatchChooseType = "/multiplayer-game/friend-query";
+        public const string FriendJoinCode = "/multiplayer-game/friend-invite";
+        public static string FriendJoinCodeWithQuery(int? code) => $"{FriendJoinCode}?c={code}";
+
+        public const string RoomWithCodeWaiting = "/multiplayer-game/friend-code";
     }
     
-    public static class Login
+    public static class Auth
     {
         public const string LoginIndex = "/login";
+        public static string LoginIndexWithQuery(string? @return) => $"{LoginIndex}?return={@return}";
         public const string RegisterIndex = "/register";
+        public static string RegisterIndexWithQuery(string? @return) => $"{RegisterIndex}?return={@return}";
+        public const string Logout = "/logout";
+        public static string LogoutWithQuery(string? @return) => $"{Logout}?return={@return}";
     }
     
     public static class Admin

@@ -1,4 +1,5 @@
-﻿using h.Primitives.Games;
+﻿using h.Contracts;
+using h.Primitives.Games;
 using System.Text.Json;
 
 namespace h.Client.Services;
@@ -13,9 +14,14 @@ public static class AppJsonOptions
 
     static AppJsonOptions()
     {
-        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+
         options.Converters.Add(new GameDifficultyJsonConverter());
         options.Converters.Add(new GameStateJsonConverter());
+        options.Converters.Add(new ErrorConverter());
 
         WithConverters = options;
     }

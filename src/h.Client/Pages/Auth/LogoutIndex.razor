@@ -1,0 +1,33 @@
+﻿@using System.Runtime.InteropServices
+@using h.Client.Services
+@attribute [Route(PageRoutes.Auth.Logout)]
+@rendermode InteractiveWebAssembly
+
+@code {
+    [SupplyParameterFromQuery(Name = "return")] string? ReturnUrl { get; set; }
+    [Inject] protected IHApiClient _api { get; set; } = null!;
+    [Inject] protected AuthenticationStateProvider _authProvider { get; set; } = null!;
+    [Inject] protected NavigationManager _navigation { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+            return;
+
+        var returnTo = ReturnUrl ?? PageRoutes.HomeIndex;
+
+        var state = await _authProvider.GetAuthenticationStateAsync();
+        if (!state.User.Identity?.IsAuthenticated ?? true)
+        {
+            _navigation.NavigateTo(returnTo);
+            return;
+        }
+
+        await _api.LogoutUser();
+        if(_authProvider is WasmAuthenticationStateProvider _wasmAuth) {
+            await _wasmAuth.MarkUserAsLoggedOut();
+        }
+        
+        _navigation.NavigateTo(returnTo, forceLoad: true);
+    }
+}

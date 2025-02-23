@@ -1,0 +1,18 @@
+@attribute [Route(PageRoutes.Multiplayer.FriendJoinCode)]
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Připoj se přes pozvánku</PageTitle>
+
+<div class="center">
+    <h1>Hraj s kamarádem</h1>
+    <div class="invite sheet">
+        <div class="invite-row">
+            <input type="text" placeholder="Kód pozvánky" class="text-input get-code" @bind="@roomCode">
+            <button disabled="@isjoiningRoom" class="primary-button to-friend-game" @onclick="HandleJoinRoom">Hrát</button>
+        </div>
+        <span class="or">nebo</span>
+        <h3 class="blue">
+            <a href="/multiplayer-game/friend-code" class="@(isjoiningRoom ? "disabled" : "")">Vytvořit vlastní hru</a>
+        </h3>
+    </div>
+</div>

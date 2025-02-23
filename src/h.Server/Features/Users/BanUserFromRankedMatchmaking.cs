@@ -1,5 +1,6 @@
 ﻿using Carter;
 using h.Contracts;
+using h.Contracts.Users;
 using h.Server.Infrastructure;
 using h.Server.Infrastructure.AuditLog;
 using h.Server.Infrastructure.Auth;

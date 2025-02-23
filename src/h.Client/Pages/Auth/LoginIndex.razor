@@ -1,0 +1,20 @@
+@attribute [Route(PageRoutes.Auth.LoginIndex)]
+@rendermode InteractiveWebAssembly
+@layout LoginLayout
+
+<PageTitle>Přihlásit se</PageTitle>
+
+<div class="form-cont">
+    @if(!isLoaded) {
+        <span>Načítání</span>
+    } else
+    {
+        <EditForm Model="Model" OnValidSubmit="HandleLogin" class="login-form" FormName="login">
+            <h2>Přihlásit do aplikace</h2>
+            <input @bind="Model.Nickname" type="text" placeholder="Nickname/Email" class="text-input" name="nick-mail">
+            <input @bind="Model.Password" type="password" placeholder="Heslo" class="text-input" name="pwd">
+            <button disabled="@isBusy" type="submit" class="primary-button login-btn">Přihlásit se</button>
+            <a href="@(PageRoutes.Auth.RegisterIndexWithQuery(ReturnUrl))" class="link new-user">Vytvořit nový účet</a>
+        </EditForm>
+    }
+</div>
