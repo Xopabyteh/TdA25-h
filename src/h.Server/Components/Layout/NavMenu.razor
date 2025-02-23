@@ -2,66 +2,60 @@
 @inject NavigationManager _navigationManager
 @rendermode InteractiveServer
 
-<div class="user">
-    <AuthorizeView>
-        <NotAuthorized>
-            <img src="IMG/pfps/pfp-grey.svg" alt="">
-            <div class="user-info">
-                <p id="nickname">Nepřihlášen</p>
-                <p id="login"><a href="@(PageRoutes.Auth.LoginIndexWithQuery(_navigationManager.Uri))" class="minor-link">Přihlásit se</a></p>
-            </div>
-        </NotAuthorized>
-        <Authorized>
-            <img src="/IMG/pfps/pfp-blue.svg" />
-            <div class="user-info">
-                <p id="nickname">@context.User.Identity!.Name</p>
-                <div class="elo-logout">
-                    <p id="elo">ELO: 100</p>
-                    <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
-                </div>
-            </div>
-        </Authorized>
-    </AuthorizeView>
-</div>
+<button class="hamburger" @onclick="HandleHamburger">
+    <img src="/IMG/icons/hamburger.svg" />
+</button>
 
-<nav>
-    <AuthorizeView Policy="@nameof(AppPolicies.IsNotAdmin)" Context="outter">
-        <NavLink href="/game/list" class="link x" Match="NavLinkMatch.All">
-            <div class="nav-icon"></div>
-            <span>Výběr úloh</span>
-        </NavLink>
-        <NavLink href="/game/editor" class="link o">
-            <div class="nav-icon"></div>
-            <span>Vytvořit novou úlohu</span>
-        </NavLink>
-        <AuthorizeView>
-            <NavLink href="/settings" class="link x">
+<div class="sheet nav-cont" style="@(!isNavOpen ? "display: none" : "display: flex")">
+    <div class="nav-title">
+        <p>Navigace</p>
+    </div>
+
+    <nav>
+        <AuthorizeView Policy="@nameof(AppPolicies.IsNotAdmin)" Context="outter">
+            <NavLink href="/game/list" class="link x" Match="NavLinkMatch.All">
                 <div class="nav-icon"></div>
-                <span>Nastavení účtu</span>
+                <span>Výběr úloh</span>
             </NavLink>
-        </AuthorizeView>
-        <AuthorizeView>
-            <NavLink href="/multiplayer-game/queue" class="link o">
+            <NavLink href="/game/editor" class="link o">
                 <div class="nav-icon"></div>
-                <span>Ranked hra</span>
+                <span>Vytvořit novou úlohu</span>
             </NavLink>
-        </AuthorizeView>
-        <NavLink href="/multiplayer-game/friend-query" class="link x">
-            <div class="nav-icon"></div>
-            <span>Hraj s kamarádem</span>
-        </NavLink>
-        <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
-            <NavLink href="/settings" class="link o">
+            <AuthorizeView>
+                <NavLink href="/settings" class="link x">
+                    <div class="nav-icon"></div>
+                    <span>Nastavení účtu</span>
+                </NavLink>
+            </AuthorizeView>
+            <AuthorizeView>
+                <NavLink href="/multiplayer-game/queue" class="link o">
+                    <div class="nav-icon"></div>
+                    <span>Ranked hra</span>
+                </NavLink>
+            </AuthorizeView>
+            <NavLink href="/multiplayer-game/friend-query" class="link x">
                 <div class="nav-icon"></div>
-                <span>Nastavení účtu</span>
+                <span>Hraj s kamarádem</span>
             </NavLink>
+            <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
+                <NavLink href="/settings" class="link o">
+                    <div class="nav-icon"></div>
+                    <span>Nastavení účtu</span>
+                </NavLink>
+            </AuthorizeView>
         </AuthorizeView>
-    </AuthorizeView>
-    <AuthorizeView Policy="@nameof(AppPolicies.IsAdmin)">
-        <p id="nav-foot">
-            <span>v.69</span>
-            <a href="/admin/panel">Admin</a>
-            <a href="/admin/audit">Audit</a>
-        </p>
-    </AuthorizeView>
-</nav>
+        <AuthorizeView Policy="@nameof(AppPolicies.IsAdmin)">
+            <NavLink href="/admin/panel" class="link x">
+                <div class="nav-icon"></div>
+                <span>Admin panel</span>
+            </NavLink>
+            <NavLink href="/admin/audit" class="link o">
+                <div class="nav-icon"></div>
+                <span>Audit log</span>
+            </NavLink>
+            <p id="nav-foot">
+                <span>v.2</span>
+            </p>
+        </AuthorizeView>
+    </nav>
+</div>

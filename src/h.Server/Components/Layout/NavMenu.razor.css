@@ -1,25 +1,9 @@
-.user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.nav-title {
     border-bottom: 1px solid #d5d5d5;
     padding-bottom: 20px;
     margin-bottom: 20px;
-}
-
-.user img {
-    width: 50px;
-}
-
-.user #nickname {
-    font-weight: bold;
-    font-size: 15pt;
-}
-
-.elo-logout {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5em;
+    text-align: center;
+    font-size: 20px;
 }
 
 nav {
@@ -66,7 +50,7 @@ nav ::deep a.active {
     font-weight: bold;
 }
 
-nav .link:hover {
+nav ::deep .link:hover {
     background-color: #74bbed;
     border-radius: 7px;
 }
@@ -82,4 +66,23 @@ nav #nav-foot {
 nav #nav-foot a {
     color: #c1c1c1;
     text-decoration: underline;
+}
+
+.nav-cont {
+    display: flex;
+    flex-direction: column;
+    min-width: 230px;
+    height: calc(100vh - 200px);
+    position: sticky;
+    top: calc(20px + 3rem);
+}
+
+
+.hamburger {
+    background: none;
+    cursor: pointer;
+    position: sticky;
+    top: 20px;
+    height: 30px;
+    width: 30px;
 }
