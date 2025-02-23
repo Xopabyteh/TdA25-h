@@ -1,12 +1,48 @@
 ﻿@inherits LayoutComponentBase
 
+<head>
+    <link rel="icon" type="image/svg+xml" href="/IMG/Logo/TdA_LOGO_erb.svg">
+</head>
+
 <header>
+    <button class="hamburger" @onclick="HandleHamburger">
+        <img src="/IMG/icons/hamburger.svg" />
+    </button>
     <NavLink href="/">
         <img src="/IMG/Logo/Think-different-Academy_LOGO_oficialni_1 1.svg" id="TdA-logo">
     </NavLink>
+    <div class="user">
+        @if (!isLogged)
+        {
+            <img src="IMG/pfps/pfp-grey.svg" alt="">
+            <div class="user-info">
+                <p id="nickname">Nepřihlášen</p>
+                <p id="logout"><a href="/login" class="minor-link">Přihlásit se</a></p>
+            </div>
+        }
+        else if (isLogged && !isAdmin)
+        {
+            <img src="/IMG/pfps/pfp-blue.svg" />
+            <div class="user-info">
+                <p id="nickname">@usn</p>
+                <div class="elo-logout">
+                    <p id="elo">ELO: @elo</p>
+                    <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <img src="/IMG/pfps/pfp-blue.svg" />
+            <div class="user-info">
+                <p id="nickname">Admin</p>
+                <p id="logout"><a href="" class="red-link">Odhlásit se</a></p>
+            </div>
+        }
+    </div>
 </header>
 <div class="display">
-    <aside class="sheet">
+    <aside class="sheet" style="@(!isNavOpen ? "display: none" : "display: flex")">
         <NavMenu/>
     </aside>
     <main>
@@ -20,3 +56,18 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+
+@code {
+    private bool isLogged = false;
+    private bool isAdmin = false;
+
+    private string usn = "evzen.tvojemama";
+    private int elo = 69;
+
+    private bool isNavOpen = false;
+
+    private void HandleHamburger() {
+        isNavOpen = !isNavOpen;
+    }
+}
