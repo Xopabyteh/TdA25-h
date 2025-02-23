@@ -12,12 +12,14 @@ ARG BUILD_CONFIGURATION=Release
 
 WORKDIR /src
 COPY ["Directory.Build.props", "src/"]
+RUN ls -la /src  # List contents of /src to verify Directory.Build.props is copied
 
 COPY ["src/h.Server/h.Server.csproj", "src/h.Server/"]
 COPY ["src/h.Client/h.Client.csproj", "src/h.Client/"]
 RUN dotnet restore "./src/h.Server/h.Server.csproj"
 COPY . .
 WORKDIR "/src/src/h.Server"
+RUN ls -la ./  # List contents of /src to verify Directory.Build.props is copied
 RUN dotnet build "./h.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
