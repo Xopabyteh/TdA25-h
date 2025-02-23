@@ -117,6 +117,7 @@ public class MatchPlayersBackgroundService : BackgroundService
             .Clients(connectionIds)
             .MatchFound(new(
                 matching.Id,
+                matching.UnableAcceptAt,
                 new(
                     user1.Uuid,
                     user1.Username,

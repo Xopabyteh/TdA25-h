@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using h.Contracts;
 using System.Runtime.InteropServices;
 
 namespace h.Server.Infrastructure.Matchmaking;
@@ -22,8 +21,12 @@ public class InMemoryMatchmakingQueueService : IMatchmakingQueueService
     public ErrorOr<int> AddUserToQueue(Guid userId)
     {
         lock (_queue) {
-            if (_queue.Contains(userId))
-                return SharedErrors.Matchmaking.UserAlreadyInQueue();
+            //if (_queue.Contains(userId))
+            //    return SharedErrors.Matchmaking.UserAlreadyInQueue();
+            if(_queue.Contains(userId))
+            {
+                _queue.Remove(userId);
+            }
 
             _queue.Add(userId);
         }
@@ -52,8 +55,12 @@ public class InMemoryMatchmakingQueueService : IMatchmakingQueueService
     public ErrorOr<int> AddUserToStartOfQueue(Guid userId)
     {
         lock (_queue) {
+            //if (_queue.Contains(userId))
+            //return SharedErrors.Matchmaking.UserAlreadyInQueue();
             if (_queue.Contains(userId))
-                return SharedErrors.Matchmaking.UserAlreadyInQueue();
+            {
+                _queue.Remove(userId);
+            }
 
             _queue.Insert(0, userId);
         }
@@ -97,6 +104,22 @@ public class InMemoryMatchmakingQueueService : IMatchmakingQueueService
             var range = Math.Min(tryTakeRange, _queue.Count);
             var span = CollectionsMarshal.AsSpan(_queue);
             return span.Slice(0, range);
+        }
+    }
+
+    public int GetQueueSize()
+    {
+        lock (_queue)
+        {
+            return _queue.Count;
+        }
+    }
+
+    public int GetPositionInQueue(Guid userId)
+    {
+        lock (_queue)
+        {
+            return _queue.IndexOf(userId);
         }
     }
 }

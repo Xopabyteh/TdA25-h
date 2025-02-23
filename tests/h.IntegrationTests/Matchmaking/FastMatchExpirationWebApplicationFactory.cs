@@ -14,7 +14,7 @@ public class FastMatchExpirationWebApplicationFactory : CustomWebApplicationFact
         {
             services.Configure<MatchmakingOptions>(c =>
             {
-                c.MatchingExpiresAfterSeconds = FastMatchExpirationSeconds;
+                c.MatchingExpiresInSeconds = FastMatchExpirationSeconds;
                 c.PlayerHasToAcceptInSeconds = FastMatchExpirationSeconds;
             });
         });

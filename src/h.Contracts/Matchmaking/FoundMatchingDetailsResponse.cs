@@ -1,6 +1,7 @@
 ﻿namespace h.Contracts.Matchmaking;
 public readonly record struct FoundMatchingDetailsResponse(
     Guid MatchId,
+    DateTimeOffset ExpiresAt,
     FoundMatchingPlayerDetailDto Player1,
     FoundMatchingPlayerDetailDto Player2
 );

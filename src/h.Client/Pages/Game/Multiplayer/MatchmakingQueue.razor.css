@@ -45,6 +45,11 @@
     color: #8f8f8f;
 }
 
+.user-cont-game .status.ready {
+    color: var(--clr-secondary-600);
+}
+
+
 .gametools {
     max-width: 60%;
 }

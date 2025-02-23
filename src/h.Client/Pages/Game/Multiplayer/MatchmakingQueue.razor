@@ -1,16 +1,19 @@
 @attribute [Route(PageRoutes.Multiplayer.MatchmakingQueue)]
 @rendermode @(new InteractiveWebAssemblyRenderMode())
 
-@* Authorize whole page on matchmaking policy *@
+@* Todo Authorize whole page on matchmaking policy? *@
 
 <PageTitle>Hledání dostupného uživatele</PageTitle>
 
 <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
     <Authorized>
+        @* showcase elements, todo: remove... *@
         <button @onclick="HandleAcceptMatching">Accept</button>
         <button @onclick="HandleDeclineMatching">Decline</button>
         <button @onclick="HandleJoinQueue">Join queue</button>
         <button @onclick="HandleLeaveQueue">Leave queue</button>
+        <p>Match expires at @currentMatching?.ExpiresAt.LocalDateTime</p>
+
         <div class="center queue">
             @if(currentMatching is not null) {
                 // Found matching
@@ -22,7 +25,7 @@
                             <div class="user-data">
                                 <p class="username">@context.User.Identity!.Name</p>
                                 <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
-                                <p class="status gray">Čeká na přijetí</p>
+                                @GetAcceptStatusParagraph(_currentUserStateService.UserDetails!.Value.Uuid)
                             </div>
                         </div>
                     </div>
@@ -32,7 +35,7 @@
                             <div class="user-data">
                                 <p class="username">@otherPlayer.PlayerName</p>
                                 <p class="elo">ELO: @otherPlayer.EloRating</p>
-                                <p class="status gray">Čeká na přijetí</p>
+                                @GetAcceptStatusParagraph(otherPlayer.PlayerId)
                             </div>
                         </div>
                     </div>
@@ -45,9 +48,8 @@
                         <div class="user-cont-game">
                             <div class="pfp"></div>
                             <div class="user-data">
-                                <p class="username">@context.User.Identity!.Name</p>
+                                <p class="username">@context.User.Identity?.Name</p>
                                 <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
-                                @* <p class="status gray">Čeká na přijetí</p> *@
                             </div>
                         </div>
                     </div>
@@ -62,11 +64,11 @@
                         </div>
                     </div>
                 </div>
-                
+
             }
             <div class="gameinfo">
-                <p>Pozice ve frontě: 1</p>
-                <p>Počet hráčů ve frontě: 1</p>
+                <p>Pozice ve frontě: @(positionInQueue?.ToString())</p>
+                <p>Počet hráčů ve frontě: @(totalPlayersInQueue?.ToString() ?? "...")</p>
             </div>
             <div class="gametools">
                 <div class="split-sides">
@@ -91,3 +93,10 @@
         </div>
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+    protected RenderFragment GetAcceptStatusParagraph(Guid userId) {
+        var isAcceptee = currentMatchingAcceptees.Contains(userId);
+        return @<p class="status @(isAcceptee ? "ready" : "gray")">@(isAcceptee ? "Přijal" : "Čeká na přijetí")</p>;
+    }
+}

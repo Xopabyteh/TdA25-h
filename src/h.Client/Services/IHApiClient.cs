@@ -26,8 +26,11 @@ public interface IHApiClient : IWasmOnly
     Task<IApiResponse> JoinInviteRoom(int roomCode);
 
     // Matchmaking
+    [Get("/api/v1/matchmaking/queue-size")]
+    Task<int> GetQueueSize();
+
     [Post("/api/v1/matchmaking/join")]
-    Task<IApiResponse> JoinMatchmaking();
+    Task<int> JoinMatchmaking();
 
     [Post("/api/v1/matchmaking/leave")]
     Task<IApiResponse> LeaveMatchmaking();

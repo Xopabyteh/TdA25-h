@@ -25,7 +25,7 @@ public class InMemoryMatchmakingService
 
     public InMemoryMatchmakingService(TimeProvider timeProvider, IOptions<MatchmakingOptions> matchmakingOptions)
     {
-        _timeProvider = timeProvider;
+        n + _timeProvider = timeProvider;
         _matchmakingOptions = matchmakingOptions;
     }
 
@@ -39,6 +39,7 @@ public class InMemoryMatchmakingService
         {
             var matching = new PendingPlayerMatching(
                 _timeProvider.GetUtcNow(),
+                _timeProvider.GetUtcNow().AddSeconds(_matchmakingOptions.Value.PlayerHasToAcceptInSeconds),
                 Guid.NewGuid(),
                 player1,
                 player2
@@ -88,13 +89,12 @@ public class InMemoryMatchmakingService
         var expiredMatches = new List<ExpiredMatching>();
         lock (_playerMatchings)
         {
-            var timeOfExpiration = _timeProvider
-                .GetUtcNow()
-                .AddSeconds(-_matchmakingOptions.Value.MatchingExpiresAfterSeconds);
+            var now = _timeProvider.GetUtcNow();
 
             while (
                 _playerMatchingsByCreationTime.Count > 0
-                && _playerMatchingsByCreationTime.Keys[0] < timeOfExpiration)
+                && _playerMatchingsByCreationTime.Keys[0]
+                    .AddSeconds(_matchmakingOptions.Value.MatchingExpiresInSeconds) < _timeProvider.GetUtcNow())
             {
                 var matching = _playerMatchingsByCreationTime.Values[0];
                 var acceptees = _playerMatchingToAcceptees[matching.Id];

@@ -33,18 +33,6 @@ builder.Services
     })
     .AddHttpMessageHandler<TokenRefreshingDelegatingHandler>();
 
-builder.Services
-    .AddRefitClient<IHTokenRefreshClient>(new RefitSettings()
-    {
-        ContentSerializer = new SystemTextJsonContentSerializer(AppJsonOptions.WithConverters),
-    })
-    .ConfigureHttpClient(c =>
-    {
-        // Add polly?
-        c.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-    });
-
-
 builder.Services.AddSingleton<IWasmGameService, WasmGameService>();
 
 builder.Services.AddScoped<IWasmCurrentUserStateService,WasmCurrentUserStateService>();

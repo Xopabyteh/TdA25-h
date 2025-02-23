@@ -4,6 +4,7 @@ using h.Contracts.Matchmaking;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Runtime.InteropServices;
 
@@ -18,14 +19,22 @@ public partial class MatchmakingQueue : IAsyncDisposable
     private readonly IAuthorizationService _authorizationService;
     private readonly IWasmCurrentUserStateService _currentUserStateService;
 
+    private IDisposable? locationChangedEventDisposable;
     private HubConnection? hubConnection;
     private FoundMatchingDetailsResponse? currentMatching;
+    private List<Guid> currentMatchingAcceptees = new(2);
+
     private FoundMatchingPlayerDetailDto otherPlayer => currentMatching!.Value.Player1.PlayerId 
             == _currentUserStateService.UserDetails!.Value.Uuid
         ? currentMatching!.Value.Player2
         : currentMatching!.Value.Player1;
 
     private bool isJoinedQueue;
+    private int? positionInQueue;
+    private int? totalPlayersInQueue;
+
+    private const int QueueRefreshIntervalMS = 5000;
+    private Timer? refreshQueueStatisticsTimer;
 
     public MatchmakingQueue(
         IHApiClient api,
@@ -55,18 +64,57 @@ public partial class MatchmakingQueue : IAsyncDisposable
         if(!canJoinMatch.Succeeded)
             return;
         
-        // 1. Join to hub
-        // 2. Join queue
+        // Join hub
         hubConnection = CreateHubWithCallbacks();
         await hubConnection.StartAsync();
 
+        // Leave on location change
+        locationChangedEventDisposable = _navigationManager.RegisterLocationChangingHandler(HandleLocationChanged);
+
+        // Start queue statistics refresh
+        refreshQueueStatisticsTimer = new Timer(
+            async _ => await RefreshQueueStatistics(),
+            null,
+            TimeSpan.Zero,
+            TimeSpan.FromMilliseconds(QueueRefreshIntervalMS)
+        );
+
+        // Join queue on load
         await HandleJoinQueue();
+    }
+
+    private async Task RefreshQueueStatistics()
+    {
+        if(isJoinedQueue && hubConnection is not null)
+        {
+            positionInQueue = await hubConnection.InvokeAsync<int>("GetPositionInQueue");
+        }
+
+        totalPlayersInQueue = await _api.GetQueueSize();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Try leave queue, so doesn't block...
+    /// </summary>
+    private async ValueTask HandleLocationChanged(LocationChangingContext ctx)
+    {
+        if(currentMatching is not null)
+        {
+            await HandleDeclineMatching();
+        }
+
+        if (isJoinedQueue)
+        {
+            await HandleLeaveQueue();
+        }
     }
 
     private HubConnection CreateHubWithCallbacks()
     {
         var hubConnection = new HubConnectionBuilder()
-            .WithUrl($"{_navigationManager}{IMatchmakingHubClient.Route}")
+            .WithUrl($"{_navigationManager.BaseUri}{IMatchmakingHubClient.Route}")
             .Build();
 
         hubConnection.On<FoundMatchingDetailsResponse>(nameof(IMatchmakingHubClient.MatchFound), async response =>
@@ -74,25 +122,31 @@ public partial class MatchmakingQueue : IAsyncDisposable
             // Set matching
             currentMatching = response;
 
+            // We are no longer in queue
+            isJoinedQueue = false;
+
             // Todo: start countdown for automatic cancellation
 
             await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), async matchId =>
+        hubConnection.On<MatchCancelledResponse>(nameof(IMatchmakingHubClient.MatchCancelled), async response =>
         {
             if (currentMatching is null)
                 return;
 
-            if (matchId != currentMatching!.Value.MatchId)
+            if (response.MatchId != currentMatching!.Value.MatchId)
                 throw new Exception("Match cancelled does not match current match");
 
-            currentMatching = null;
+            CancelMatching(response.NewPositionInQueue);
+
             await InvokeAsync(StateHasChanged);
         });
 
         hubConnection.On<Guid>(nameof(IMatchmakingHubClient.PlayerAccepted), async playerId =>
         {
+            currentMatchingAcceptees.Add(playerId);
+            await InvokeAsync(StateHasChanged);
         });
 
         hubConnection.On<Guid>(nameof(IMatchmakingHubClient.NewGameSessionCreated), async gameId =>
@@ -103,6 +157,19 @@ public partial class MatchmakingQueue : IAsyncDisposable
         });
 
         return hubConnection;
+    }
+
+    private void CancelMatching(int? newPositionInQueue)
+    {
+        currentMatching = null;
+        currentMatchingAcceptees.Clear();
+
+        if(newPositionInQueue is null)
+        {
+            // No longer in queue
+            isJoinedQueue = false;
+        }
+        positionInQueue = newPositionInQueue;
     }
 
     public async Task HandleAcceptMatching()
@@ -123,9 +190,13 @@ public partial class MatchmakingQueue : IAsyncDisposable
 
     public async Task HandleJoinQueue()
     {
-        await _api.JoinMatchmaking();
-        
+        var response = await _api.JoinMatchmaking();
+
         isJoinedQueue = true;
+        positionInQueue = response;
+        
+        // Make timer click
+        refreshQueueStatisticsTimer?.Change(TimeSpan.Zero, TimeSpan.FromMilliseconds(QueueRefreshIntervalMS));
     }
 
     public async Task HandleLeaveQueue()
@@ -135,11 +206,14 @@ public partial class MatchmakingQueue : IAsyncDisposable
         isJoinedQueue = false;
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        if(hubConnection is not null)
-            return hubConnection.DisposeAsync();
+        locationChangedEventDisposable?.Dispose();
 
-        return ValueTask.CompletedTask;
+        if(refreshQueueStatisticsTimer is not null)
+            await refreshQueueStatisticsTimer.DisposeAsync();
+
+        if (hubConnection is not null)
+            await hubConnection.DisposeAsync();
     }
 }

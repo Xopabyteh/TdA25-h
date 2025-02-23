@@ -126,7 +126,7 @@ public class MatchmakingTests
         var lockObj = new object();
         var client1MatchCancelNotified = false;
         var client2MatchCancelNotified = false;
-        hubConnection1.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
+        hubConnection1.On<MatchCancelledResponse>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
         {
             lock (lockObj)
             {
@@ -137,7 +137,7 @@ public class MatchmakingTests
                 }
             }
         });
-        hubConnection2.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
+        hubConnection2.On<MatchCancelledResponse>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
         {
             lock (lockObj)
             {
@@ -260,12 +260,12 @@ public class MatchmakingTests
         var accepteeNotifiedAboutCancellationTcs = new TaskCompletionSource<bool>();
         var idlePlayerNotifiedAboutCancellationTcs = new TaskCompletionSource<bool>();
 
-        hubConnection1.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
+        hubConnection1.On<MatchCancelledResponse>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
         {
             accepteeNotifiedAboutCancellationTcs.TrySetResult(true);
         });
 
-        hubConnection2.On<Guid>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
+        hubConnection2.On<MatchCancelledResponse>(nameof(IMatchmakingHubClient.MatchCancelled), _ =>
         {
             idlePlayerNotifiedAboutCancellationTcs.TrySetResult(true);
         });

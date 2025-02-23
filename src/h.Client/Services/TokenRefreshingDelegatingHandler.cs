@@ -39,7 +39,6 @@ public class TokenRefreshingDelegatingHandler : DelegatingHandler
             return await base.SendAsync(request, cancellationToken);
 
         var newToken = await response.Content.ReadFromJsonAsync<string>();
-        Console.WriteLine($"NEW TOKEN: {newToken}");
         if(string.IsNullOrEmpty(newToken))
             return await base.SendAsync(request, cancellationToken);
 

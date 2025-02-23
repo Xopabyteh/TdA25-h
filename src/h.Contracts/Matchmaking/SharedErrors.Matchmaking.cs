@@ -5,8 +5,8 @@ public static partial class SharedErrors
 {
     public static class Matchmaking
     {
-        public static Error UserAlreadyInQueue()
-            => Error.Conflict(nameof(UserAlreadyInQueue), "User is already in the queue");
+        //public static Error UserAlreadyInQueue()
+        //    => Error.Conflict(nameof(UserAlreadyInQueue), "User is already in the queue");
 
         public class UserAlreadyInQueueException : Exception
         {

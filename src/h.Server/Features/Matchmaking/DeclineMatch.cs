@@ -37,10 +37,10 @@ public static class DeclineMatch
         return await result.MatchFirst(
             async acceptees =>
             {
-                // Notify players about the cancellation
-                var connectionIds = matching.Value.GetPlayersInMatch()
-                    .Select(userId => hubUserIdMappingService.GetConnectionId(userId)
-                        ?? throw IHubUserIdMappingService<MatchmakingHub>.UserNotPresentException(userId));
+                //// Notify players about the cancellation
+                //var connectionIds = matching.Value.GetPlayersInMatch()
+                //    .Select(userId => hubUserIdMappingService.GetConnectionId(userId)
+                //        ?? throw IHubUserIdMappingService<MatchmakingHub>.UserNotPresentException(userId));
 
                 // Add other player back to the queue
                 var otherPlayer = matching.Value.GetPlayersInMatch().First(playerId => playerId != userId);
@@ -48,7 +48,14 @@ public static class DeclineMatch
                 if(requeueResult.IsError)
                     throw new SharedErrors.Matchmaking.UserAlreadyInQueueException();
 
-                await hubContext.Clients.Clients(connectionIds).MatchCancelled(matchingId);
+                // Notify players
+                var declineeConnectionId = hubUserIdMappingService.GetConnectionId(userId)
+                    ?? throw IHubUserIdMappingService<MatchmakingHub>.UserNotPresentException(userId);
+                var otherPlayerConnectionId = hubUserIdMappingService.GetConnectionId(otherPlayer)
+                    ?? throw IHubUserIdMappingService<MatchmakingHub>.UserNotPresentException(otherPlayer);
+
+                await hubContext.Clients.Client(declineeConnectionId).MatchCancelled(new(matchingId, NewPositionInQueue: null));
+                await hubContext.Clients.Client(otherPlayerConnectionId).MatchCancelled(new(matchingId, NewPositionInQueue: requeueResult.Value));
 
                 return Results.Ok();
             },

@@ -8,7 +8,7 @@ namespace h.Server.Features.Matchmaking;
 
 public class RemoveExpiredMatchingsBackgroundService : BackgroundService
 {
-    private const int RemoveExpiredEveryMs = 10_000;
+    private const int RemoveExpiredEveryMs = 5_000;
     
     private readonly InMemoryMatchmakingService _matchmakingService;
     private readonly IMatchmakingQueueService _matchmakingQueueService;
@@ -57,15 +57,22 @@ public class RemoveExpiredMatchingsBackgroundService : BackgroundService
                 var requeueResult = _matchmakingQueueService.AddUserToStartOfQueue(hangingAcceptee);
                 if(requeueResult.IsError)
                     throw new SharedErrors.Matchmaking.UserAlreadyInQueueException();
+
+                // Notify the player
+                var connectionId = _hubMapping.GetConnectionId(hangingAcceptee)
+                    ?? throw IHubUserIdMappingService<MatchmakingHub>.UserNotPresentException(hangingAcceptee);
+
+                await _hubContext.Clients.Client(connectionId).MatchCancelled(new(expiredMatch.Matching.Id, NewPositionInQueue: requeueResult.Value));
             }
 
-            // Notify clients about the expired match
-            var connectionIds = expiredMatch.Matching.GetPlayersInMatch()
-                .Select(_hubMapping.GetConnectionId)
-                .Where(connectionId => connectionId is not null)! // This might be a cause of error one day? hopefully not :)
-                .ToArray<string>();
-
-            await _hubContext.Clients.Clients(connectionIds).MatchCancelled(expiredMatch.Matching.Id);
+            var hangingNonAcceptees = expiredMatch.Matching.GetPlayersInMatch().Except(expiredMatch.HangingAcceptees);
+            foreach (var hangingNonAceptee in hangingNonAcceptees)
+            {
+                var connectionId = _hubMapping.GetConnectionId(hangingNonAceptee)
+                    ?? throw IHubUserIdMappingService<MatchmakingHub>.UserNotPresentException(hangingNonAceptee);
+                
+                await _hubContext.Clients.Client(connectionId).MatchCancelled(new(expiredMatch.Matching.Id, NewPositionInQueue: null));
+            }
         }
     }
 }

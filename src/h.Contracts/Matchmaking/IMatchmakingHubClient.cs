@@ -18,7 +18,7 @@ public interface IMatchmakingHubClient
     /// Invoked from server when a match is cancelled:
     /// expired or one of the players rejected the match
     /// </summary>
-    public Task MatchCancelled(Guid matchId);
+    public Task MatchCancelled(MatchCancelledResponse response);
 
     /// <summary>
     /// After everyone accepts, a new game session is created

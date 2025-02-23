@@ -33,4 +33,11 @@ public interface IMatchmakingQueueService
     /// If not enough, result will take until end of queue
     /// </param>
     internal ReadOnlySpan<Guid> PeekQueue(int tryTakeRange);
+
+    /// <summary>
+    /// How many players are in queue right now
+    /// </summary>
+    public int GetQueueSize();
+
+    public int GetPositionInQueue(Guid userId);
 }

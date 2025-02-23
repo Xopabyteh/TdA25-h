@@ -7,10 +7,11 @@ namespace h.Server.Infrastructure.Matchmaking;
 public class MatchmakingHub : Hub<IMatchmakingHubClient>
 {
     private readonly IHubUserIdMappingService<MatchmakingHub> _userIdMappingService;
-
-    public MatchmakingHub(IHubUserIdMappingService<MatchmakingHub> userIdMappingService)
+    private readonly IMatchmakingQueueService _queueService;
+    public MatchmakingHub(IHubUserIdMappingService<MatchmakingHub> userIdMappingService, IMatchmakingQueueService queueService)
     {
         _userIdMappingService = userIdMappingService;
+        _queueService = queueService;
     }
 
     public override async Task OnConnectedAsync()
@@ -38,5 +39,15 @@ public class MatchmakingHub : Hub<IMatchmakingHubClient>
         }
 
         return base.OnDisconnectedAsync(exception);
+    }
+
+    public int GetPositionInQueue()
+    {
+        if(Context.User is not { Identity: { IsAuthenticated: true } })
+            return -1;
+
+        var userId = Context.User.GetUserId();
+        var position = _queueService.GetPositionInQueue(userId);
+        return position;
     }
 }
