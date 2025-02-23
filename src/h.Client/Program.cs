@@ -39,7 +39,7 @@ builder.Services.AddSingleton<IWasmGameService, WasmGameService>();
 builder.Services.AddScoped<AuthenticationStateProvider, WasmAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore(o =>
 {
-    
+    o.AddAppClientPolicies();
 });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthenticationStateDeserialization();

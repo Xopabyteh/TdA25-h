@@ -1,0 +1,92 @@
+@attribute [Route(PageRoutes.Multiplayer.MatchmakingQueue)]
+@rendermode @(new InteractiveWebAssemblyRenderMode())
+
+@* Authorize whole page on matchmaking policy *@
+
+<PageTitle>Hledání dostupného uživatele</PageTitle>
+
+<AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
+    <Authorized>
+        <button @onclick="HandleAcceptMatching">Accept</button>
+        <button @onclick="HandleDeclineMatching">Decline</button>
+        <button @onclick="HandleJoinQueue">Join queue</button>
+        <button @onclick="HandleLeaveQueue">Leave queue</button>
+        <div class="center queue">
+            @if(currentMatching is not null) {
+                // Found matching
+                <h1>Zápas nalezen</h1>
+                <div class="sheet split-sides queue-show">
+                    <div class="side">
+                        <div class="user-cont-game">
+                            <div class="pfp"></div>
+                            <div class="user-data">
+                                <p class="username">@context.User.Identity!.Name</p>
+                                <p class="elo">ELO: TODO!</p>
+                                <p class="status gray">Čeká na přijetí</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side">
+                        <div class="user-cont-game">
+                            <div class="pfp loader"></div>
+                            <div class="user-data">
+                                <p class="username">@currentMatching.Value.</p>
+                                <p class="elo">ELO: ???</p>
+                                <p class="status gray">Hledám hráče...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } else {
+                // Searching for matching
+                <h1>Hledám dostupné protihráče...</h1>
+                <div class="sheet split-sides queue-show">
+                    <div class="side">
+                        <div class="user-cont-game">
+                            <div class="pfp"></div>
+                            <div class="user-data">
+                                <p class="username">@context.User.Identity!.Name</p>
+                                <p class="elo">ELO: TODO!</p>
+                                @* <p class="status gray">Čeká na přijetí</p> *@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side">
+                        <div class="user-cont-game">
+                            <div class="pfp loader"></div>
+                            <div class="user-data">
+                                <p class="username">??? ???</p>
+                                <p class="elo">ELO: ???</p>
+                                <p class="status gray">Hledám hráče...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="gameinfo">
+                <p>Pozice ve frontě: 1</p>
+                <p>Počet hráčů ve frontě: 1</p>
+            </div>
+            <div class="gametools">
+                <div class="split-sides">
+                    <div class="side">
+                        <button class="secondary-button">Opustit frontu</button>
+                    </div>
+                    <div class="side">
+                        <p>Použití automatizovaných herních klientů je zakázáno a bude trestáno zablokováním účtu.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="not-logged-popup">
+            <div class="dialog">
+                <h2>Na to budeš potřebovat účet...</h2>
+                <span>Ranked hry ovlivňují tvé ELO a zařazují tě na žebříčky. Budeš na ně potřebovat účet.</span>
+                <button class="primary-button">Přihlásit se nebo vytvořit účet</button>
+                <button class="secondary-button">Zpět</button>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

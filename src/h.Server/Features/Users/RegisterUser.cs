@@ -41,7 +41,7 @@ public static class RegisterUser
         // Check if user exists
         var nicknameTakenErrors = await userService.NicknameAlreadyRegistered(request.Username, request.Email, cancellationToken);
         if (nicknameTakenErrors is not null)
-            return ErrorResults.Conflit("The user already exists", nicknameTakenErrors);
+            return ErrorResults.Conflict("The user already exists", nicknameTakenErrors);
 
         // Hash password
         var passwordHash = passwordHashService.GetPasswordHash(request.Password);

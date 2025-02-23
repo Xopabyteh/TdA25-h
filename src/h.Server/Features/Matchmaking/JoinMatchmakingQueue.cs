@@ -21,11 +21,13 @@ public static class JoinMatchmakingQueue
     }
 
     /// <summary>
-    /// Adds the user to the matchmaking queue
+    /// Adds the user to the matchmaking queue.
+    /// Ensure user is in hub
     /// </summary>
     /// <returns>Position of user in queue (Indexing from 0)</returns>
     public static async Task<IResult> HandleJoin(
         [FromServices] IMatchmakingQueueService matchmakingQueue,
+        [FromServices] IHubUserIdMappingService<MatchmakingHub> hubMapping,
         [FromServices] AppDbContext db,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -42,6 +44,10 @@ public static class JoinMatchmakingQueue
         
         if(isBanned)
             return Results.Forbid();
+
+        var connectionId = hubMapping.GetConnectionId(userId);
+        if (connectionId is null)
+            return ErrorResults.Conflict($"You must be connected to {nameof(MatchmakingHub)}");
 
         var queueResult = matchmakingQueue.AddUserToQueue(userId);
 

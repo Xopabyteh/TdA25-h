@@ -52,7 +52,7 @@ public static class ErrorResults
         );
     }
 
-    public static IResult Conflit(string reason, IReadOnlyCollection<Error>? Errors = null)
+    public static IResult Conflict(string reason, IReadOnlyCollection<Error>? Errors = null)
         => Results.Conflict(new ErrorResponse(409, $"Conflict: {reason}", Errors));
 
     public static IResult Conflit(IReadOnlyCollection<Error>? Errors = null)

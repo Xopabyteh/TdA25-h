@@ -39,7 +39,7 @@ public static class UpdateUser
             excludedId: user.Uuid);
 
         if (nicknameTakenErrors is not null)
-            return ErrorResults.Conflit("The user already exists", nicknameTakenErrors);
+            return ErrorResults.Conflict("The user already exists", nicknameTakenErrors);
         
         var newPasswordHash = passwordHashService.GetPasswordHash(request.Password);
 

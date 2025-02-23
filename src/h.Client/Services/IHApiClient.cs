@@ -6,6 +6,7 @@ namespace h.Client.Services;
 
 public interface IHApiClient : IWasmOnly
 {
+    // Auth
     [Post("/api/v1/users/login")]
     Task<ApiResponse<AuthenticationResponse>> LoginUser([Body] LoginUserRequest request);
 
@@ -14,9 +15,24 @@ public interface IHApiClient : IWasmOnly
     [Post("/api/v1/users/logout")]
     Task LogoutUser();
 
+    [Get("/api/v1/users/current")]
+    Task<UserResponse> GetCurrentUser();
+
+    // Invitation
     [Post("/api/v1/invitation/create")]
     Task<int> CreateInviteCode();
 
     [Post("/api/v1/invitation/join/{roomCode}")]
     Task<IApiResponse> JoinInviteRoom(int roomCode);
+
+    // Matchmaking
+    [Post("/api/v1/matchmaking/join")]
+    Task<IApiResponse> JoinMatchmaking();
+
+    [Post("/api/v1/matchmaking/leave")]
+    Task<IApiResponse> LeaveMatchmaking();
+    [Post("/api/v1/matchmaking/accept/{matchId}")]
+    Task<IApiResponse> AcceptMatch(Guid matchId);
+    [Post("/api/v1/matchmaking/decline/{matchId}")]
+    Task<IApiResponse> DeclineMatch(Guid matchId);
 }
