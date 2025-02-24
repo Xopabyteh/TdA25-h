@@ -22,7 +22,7 @@
                 <span>Vytvořit novou úlohu</span>
             </NavLink>
             <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
-                <NavLink href="/settings" class="link o">
+                <NavLink href="/user/settings" class="link o">
                     <div class="nav-icon"></div>
                     <span>Nastavení účtu</span>
                 </NavLink>
@@ -30,7 +30,7 @@
             <AuthorizeView>
                 <NavLink href="/multiplayer-game/queue" class="link o">
                     <div class="nav-icon"></div>
-                    <span>Ranked hra</span>
+                    <span>Hodnocená hra</span>
                 </NavLink>
             </AuthorizeView>
             <NavLink href="/multiplayer-game/friend-query" class="link x">

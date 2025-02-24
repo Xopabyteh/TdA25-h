@@ -39,14 +39,14 @@
                 } 
                 else {
                     // User
-                    <div class="user-info">
+                    <a href="/user/board" class="user-info" style="cursor: pointer">
                         <p id="nickname">@context.User.Identity!.Name</p>
                         <div class="elo-logout">
                             <p id="elo">ELO: @(currentUser!.Elo.Rating)</p>
                             <p>•</p>
                             <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
                         </div>
-                    </div>
+                    </a>
                 }
             </Authorized>
         </AuthorizeView>

@@ -50,8 +50,9 @@ public static class PageRoutes
         public const string Audit = "/admin/audit";
     }
     
-    public static class Settings
+    public static class User
     {
-        public const string UserSettings = "/settings";
+        public const string UserSettings = "/user/settings";
+        public const string UserBoard = "/user/board";
     }
 }

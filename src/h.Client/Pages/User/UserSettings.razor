@@ -3,7 +3,7 @@
 @using h.Contracts
 @using h.Contracts.Users
 @rendermode InteractiveWebAssembly
-@attribute [Route(PageRoutes.Settings.UserSettings)]
+@attribute [Route(PageRoutes.User.UserSettings)]
 @attribute [Authorize(Policy = nameof(AppPolicies.IsUser))]
 <PageTitle>Nastavení účtu</PageTitle>
 

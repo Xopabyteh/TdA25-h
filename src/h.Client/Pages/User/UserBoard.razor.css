@@ -1,0 +1,171 @@
+﻿.userbanner {
+    display: flex;
+    align-items: center;
+    background: url("/IMG/banner.png");
+    background-size: cover;
+    background-position: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100px;
+    z-index: -1;
+}
+
+.userbox {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    margin-left: calc((100% - 270px) / 2 + 145px); /*haha magic numbers (works, no idea why)*/
+}
+
+    .userbox p {
+        font-weight: bold;
+        font-size: 26px;
+    }
+
+    .userbox img {
+        width: 90px;
+    }
+
+.userfields {
+    margin-top: 200px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.usercol {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.userfield .stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.user-statistic {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0;
+}
+
+
+    .user-statistic .label {
+        background: #0070BB;
+        padding: 3px 6px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-radius: 5px 5px 0 0;
+    }
+
+        .user-statistic .label img {
+            height: 14px;
+        }
+
+    .user-statistic .value {
+        border: #8f8f8f solid 1px;
+        border-top: none;
+        padding: 3px 9px;
+        font-weight: bold;
+        color: #0070BB;
+        border-radius: 0 0 5px 5px;
+    }
+
+.joined .label {
+    font-weight: bold;
+}
+
+.joined .date {
+    font-weight: bold;
+    font-size: 19px;
+    color: #0070BB;
+}
+
+.userfield h1 {
+    color: #0070BB;
+    font-size: 25px;
+    margin-bottom: 20px;
+}
+
+.userfield .gamehistory {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.userfield .gamerecord {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+    .userfield .gamerecord .data {
+        display: flex;
+        flex-direction: column;
+        .date
+
+{
+    font-weight: bold;
+}
+
+.opponent {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    img
+
+{
+    width: 15px;
+}
+
+}
+}
+
+.userfield .gamerecord .icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    *
+
+{
+    width: 20px;
+}
+
+button {
+    background: #0070BB;
+    border: 0;
+    border-radius: 6px;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    img
+
+{
+    width: 15px;
+}
+
+}
+
+button:hover {
+    background: #004f83;
+}
+
+}
+
+.show-history {
+    color: #0070BB;
+    text-align: center;
+    display: block;
+    padding: 24px;
+    padding-bottom: 14px;
+}

@@ -1,0 +1,60 @@
+﻿@attribute [Route(PageRoutes.User.UserBoard)]
+@rendermode InteractiveWebAssembly
+
+<div class="userbanner">
+    <div class="userbox sheet">
+        <img src="/IMG/pfps/pfp-blue.svg" alt="">
+        <p>evzen.rozinka</p>
+    </div>
+</div>
+
+<div class="userfields">
+    <div class="usercol">
+        <div class="userfield sheet">
+            <h1>Statistiky</h1>
+            <div class="stats">
+                <div class="user-statistic">
+                    <div class="label">ELO</div>
+                    <div class="value">168</div>
+                </div>
+                <div class="user-statistic">
+                    <div class="label">
+                        <img src="/IMG/icons/leaderboard.svg" alt="">
+                    </div>
+                    <div class="value">#6</div>
+                </div>
+            </div>
+            <div class="joined">
+                <p class="label">Připojil/a se</p>
+                <p class="date">4. 5. 2025</p>
+            </div>
+        </div>
+    </div>
+    <div class="usercol">
+        <div class="userfield sheet">
+            <h1>Historie her</h1>
+            <div class="gamehistory">
+                @for (int i = 0; i < 4; i++)
+                {
+                    <div class="gamerecord">
+                        <div class="data">
+                            <p class="date">6. 1. 2025</p>
+                            <p class="opponent">
+                                <img src="/IMG/pfps/pfp-blue.svg" alt="">
+                                <span>vaclav.brdek</span>
+                            </p>
+                        </div>
+                        <div class="icons">
+                            <img src="/IMG/X/X_cervene.svg" alt="">
+                            <img src="@(i % 2 == 0 ? "/IMG/icons/lose.svg" : "/IMG/icons/win.svg")" alt="">
+                            <button class="view">
+                                <img src="/IMG/icons/view.svg" alt="">
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+            <a href="" class="show-history">Kompletní historie</a>
+        </div>
+    </div>
+</div>
