@@ -4,13 +4,13 @@
     align-items: center;
 }
 
-.queue-show .side {
+.queue-top-row .side {
     /*flex: 1;*/
     min-width: 0;
 }
 
-.queue-show .side:first-child { align-items: flex-end; } /*Zarovnat napravo*/
-.queue-show .side:last-child { align-items: flex-start; } /*Zarovnat nalevo*/
+.queue-top-row .side:first-child { align-items: flex-end; } /*Zarovnat napravo*/
+.queue-top-row .side:last-child { align-items: flex-start; } /*Zarovnat nalevo*/
 
 .user-cont-game {
     display: flex;

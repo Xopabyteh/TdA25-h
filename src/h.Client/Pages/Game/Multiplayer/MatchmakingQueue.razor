@@ -6,9 +6,6 @@
 <PageTitle>Hledání dostupného uživatele</PageTitle>
 <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
     <Authorized>
-        @* showcase elements, todo: remove... *@
-        <p>Match expires at @currentMatching?.ExpiresAt.LocalDateTime</p>
-
         <div class="leavequeue-popup" style="@(!isLeavePopupVisible ? "display: none" : "")">
             <div class="leave-card">
                 <h3>Opustit frontu?</h3>
@@ -51,6 +48,7 @@
                         </div>
                         <div class="divider"></div>
                         <div class="accept-loader"></div> @*TODO: loader*@
+                        <p>Čas na přijetí hry končí v @currentMatching?.ExpiresAt.LocalDateTime</p>
                         <div class="queue-btn-row">
                             <button class="primary-button" @onclick="HandleAcceptMatching">Přijmout</button>
                             <button class="secondary-button" @onclick="HandleDeclineMatching">Odmítnout</button>
