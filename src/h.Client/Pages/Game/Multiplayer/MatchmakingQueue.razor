@@ -4,62 +4,81 @@
 @* Todo Authorize whole page on matchmaking policy? *@
 
 <PageTitle>Hledání dostupného uživatele</PageTitle>
-
 <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
     <Authorized>
         @* showcase elements, todo: remove... *@
-        <button @onclick="HandleAcceptMatching">Accept</button>
-        <button @onclick="HandleDeclineMatching">Decline</button>
-        <button @onclick="HandleJoinQueue">Join queue</button>
-        <button @onclick="HandleLeaveQueue">Leave queue</button>
         <p>Match expires at @currentMatching?.ExpiresAt.LocalDateTime</p>
 
+        <div class="leavequeue-popup" style="@(!isLeavePopupVisible ? "display: none" : "")">
+            <div class="leave-card">
+                <h3>Opustit frontu?</h3>
+                <p>Jsi si jistý/á, že chceš opustit frontu?</p>
+                <button class="primary-button" @onclick="HandleLeaveQueue">Ano, opustit frontu</button>
+                <button class="secondary-button" @onclick="HandleCloseLeavePopup">Ne, zůstat ve frontě</button>
+            </div>
+        </div>
+
         <div class="center queue">
+            @*TODO: spravne zobrazovat*@
+            @* <h1>Připojit se do hodnocené hry</h1>
+            <div class="sheet">
+                <button class="primary-button" @onclick="HandleJoinQueue">Vstoupit do fronty</button>
+            </div> *@
             @if(currentMatching is not null) {
                 // Found matching
                 <h1>Zápas nalezen</h1>
-                <div class="sheet split-sides queue-show">
-                    <div class="side">
-                        <div class="user-cont-game">
-                            <div class="pfp"></div>
-                            <div class="user-data">
-                                <p class="username">@context.User.Identity!.Name</p>
-                                <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
-                                @GetAcceptStatusParagraph(_currentUserStateService.UserDetails!.Value.Uuid)
+                <div class="sheet queue-show">
+                    <div class="queue-top-row split-sides">
+                        <div class="side">
+                            <div class="user-cont-game">
+                                <div class="pfp"></div>
+                                <div class="user-data">
+                                    <p class="username">@context.User.Identity!.Name</p>
+                                    <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
+                                    @GetAcceptStatusParagraph(_currentUserStateService.UserDetails!.Value.Uuid)
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="side">
-                        <div class="user-cont-game">
-                            <div class="pfp loader"></div>
-                            <div class="user-data">
-                                <p class="username">@otherPlayer.PlayerName</p>
-                                <p class="elo">ELO: @otherPlayer.EloRating</p>
-                                @GetAcceptStatusParagraph(otherPlayer.PlayerId)
+                        <div class="side">
+                            <div class="user-cont-game">
+                                <div class="pfp loader"></div>
+                                <div class="user-data">
+                                    <p class="username">@otherPlayer.PlayerName</p>
+                                    <p class="elo">ELO: @otherPlayer.EloRating</p>
+                                    @GetAcceptStatusParagraph(otherPlayer.PlayerId)
+                                </div>
                             </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="accept-loader"></div> @*TODO: loader*@
+                        <div class="queue-btn-row">
+                            <button class="primary-button" @onclick="HandleAcceptMatching">Přijmout</button>
+                            <button class="secondary-button" @onclick="HandleDeclineMatching">Odmítnout</button>
                         </div>
                     </div>
                 </div>
             } else {
                 // Searching for matching
                 <h1>Hledám dostupné protihráče...</h1>
-                <div class="sheet split-sides queue-show">
-                    <div class="side">
-                        <div class="user-cont-game">
-                            <div class="pfp"></div>
-                            <div class="user-data">
-                                <p class="username">@context.User.Identity?.Name</p>
-                                <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
+                <div class="sheet queue-show">
+                    <div class="queue-top-row split-sides">
+                        <div class="side">
+                            <div class="user-cont-game">
+                                <div class="pfp"></div>
+                                <div class="user-data">
+                                    <p class="username">@context.User.Identity?.Name</p>
+                                    <p class="elo">ELO: @_currentUserStateService.UserDetails?.Elo</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="side">
-                        <div class="user-cont-game">
-                            <div class="pfp loader"></div>
-                            <div class="user-data">
-                                <p class="username">??? ???</p>
-                                <p class="elo">ELO: ???</p>
-                                <p class="status gray">Hledám hráče...</p>
+                        <div class="side">
+                            <div class="user-cont-game">
+                                <div class="pfp loader"></div>
+                                <div class="user-data">
+                                    <p class="username">??? ???</p>
+                                    <p class="elo">ELO: ???</p>
+                                    <p class="status gray">Hledám hráče...</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -70,10 +89,10 @@
                 <p>Pozice ve frontě: @(positionInQueue?.ToString())</p>
                 <p>Počet hráčů ve frontě: @(totalPlayersInQueue?.ToString() ?? "...")</p>
             </div>
-            <div class="gametools">
+            <div class="gametools"> @*TODO: zobrazit jenom kdyz uz je ve fronte*@
                 <div class="split-sides">
                     <div class="side">
-                        <button class="secondary-button">Opustit frontu</button>
+                        <button class="secondary-button" @onclick="HandleOpenLeavePopup">Opustit frontu</button>
                     </div>
                     <div class="side">
                         <p>Použití automatizovaných herních klientů je zakázáno a bude trestáno zablokováním účtu.</p>
@@ -87,8 +106,8 @@
             <div class="dialog">
                 <h2>Na to budeš potřebovat účet...</h2>
                 <span>Ranked hry ovlivňují tvé ELO a zařazují tě na žebříčky. Budeš na ně potřebovat účet.</span>
-                <button class="primary-button">Přihlásit se nebo vytvořit účet</button>
-                <button class="secondary-button">Zpět</button>
+                <button class="primary-button" @onclick="HandleLoginRedirect">Přihlásit se nebo vytvořit účet</button>
+                <button class="secondary-button">Zpět</button> @* TODO: backbutton *@
             </div>
         </div>
     </NotAuthorized>

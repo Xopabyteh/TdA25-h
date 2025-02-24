@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Xml.Serialization;
 
 namespace h.Client.Pages.Game.Multiplayer;
 
@@ -35,6 +37,8 @@ public partial class MatchmakingQueue : IAsyncDisposable
 
     private const int QueueRefreshIntervalMS = 5000;
     private Timer? refreshQueueStatisticsTimer;
+
+    private bool isLeavePopupVisible = false;
 
     public MatchmakingQueue(
         IHApiClient api,
@@ -215,5 +219,17 @@ public partial class MatchmakingQueue : IAsyncDisposable
 
         if (hubConnection is not null)
             await hubConnection.DisposeAsync();
+    }
+
+    public async Task HandleLoginRedirect() => _navigationManager.NavigateTo(PageRoutes.Auth.LoginIndex);
+
+    public void HandleCloseLeavePopup()
+    {
+        isLeavePopupVisible = false;
+    }
+
+    public void HandleOpenLeavePopup()
+    {
+        isLeavePopupVisible = true;
     }
 }
