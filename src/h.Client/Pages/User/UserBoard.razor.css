@@ -136,4 +136,6 @@ button:hover {
     display: block;
     padding: 24px;
     padding-bottom: 14px;
+    font-weight: bold;
+    text-decoration: underline;
 }

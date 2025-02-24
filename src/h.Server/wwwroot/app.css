@@ -90,7 +90,7 @@ aside { /*new layout css, do not delete!!!*/
     top: 20px;
 }
 
-.user img {
+.user a img {
     width: 50px;
 }
 
@@ -107,6 +107,9 @@ aside { /*new layout css, do not delete!!!*/
     background: var(--clr-white);
     padding: 10px;
     border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
 }
 
 .user-info {
