@@ -1,36 +1,4 @@
-﻿.userbanner {
-    display: flex;
-    align-items: center;
-    background: url("/IMG/banner.png");
-    background-size: cover;
-    background-position: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 100px;
-    z-index: -1;
-}
-
-.userbox {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    position: relative;
-    margin-left: calc((100% - 270px) / 2 + 145px); /*haha magic numbers (works, no idea why)*/
-}
-
-    .userbox p {
-        font-weight: bold;
-        font-size: 26px;
-    }
-
-    .userbox img {
-        width: 90px;
-    }
-
-.userfields {
+﻿.userfields {
     margin-top: 200px;
     display: flex;
     justify-content: center;

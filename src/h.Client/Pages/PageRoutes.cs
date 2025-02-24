@@ -54,5 +54,6 @@ public static class PageRoutes
     {
         public const string UserSettings = "/user/settings";
         public const string UserBoard = "/user/board";
+        public const string UserGameHistory = "/user/game-history";
     }
 }

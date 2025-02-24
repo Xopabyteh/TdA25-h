@@ -1,0 +1,52 @@
+﻿.blue {
+    color: var(--clr-primary-600);
+}
+
+.game-history {
+    display: flex;
+    flex-direction: column;
+    margin-top: 200px;
+    margin-left: 10rem;
+    justify-content: center;
+    gap: 1rem;
+    width: 70%;
+}
+
+.view {
+    background: #0070BB;
+    border: 0;
+    border-radius: 6px;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    img {
+        width: 15px;
+    }
+
+}
+
+.view:hover {
+    background: #004f83;
+}
+
+.player-icon {
+    height: 20px;
+    width: 20px;
+}
+
+th {
+    text-align: left;
+}
+
+td, th {
+    padding: 6px;
+}
+
+.game-history-list {
+    border-collapse: collapse;
+    width: 100%;
+}

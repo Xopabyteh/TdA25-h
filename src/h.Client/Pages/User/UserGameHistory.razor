@@ -1,0 +1,76 @@
+﻿@attribute [Route(PageRoutes.User.UserGameHistory)]
+@rendermode InteractiveWebAssembly
+
+<div class="userbanner">
+    <div class="userbox sheet">
+        <img src="/IMG/pfps/pfp-blue.svg" alt="">
+        <p>evzen.rozinka</p>
+    </div>
+</div>
+
+<div class="sheet game-history">
+    <h2 class="blue">Historie her</h2>
+    <table class="game-history-list">
+        <thead class="game-history-head">
+            <tr>
+                <th>ID hry</th>
+                <th>Datum</th>
+                <th>Protivník</th>
+                <th>Symbol</th>
+                <th>Vyhrál</th>
+                <th>Zobrazit hru</th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize Items="@items" Context="item">
+                <tr>
+                    <td>@item.GID</td>
+                    <td>@item.GameDate</td>
+                    <td>@item.Enemy</td>
+                    @if (item.IsX)
+                    {
+                        <td>
+                            <img src="/IMG/X/X_cervene.svg" class="player-icon" />
+                        </td>
+                    }
+                    else
+                    {
+                        <td><img src="/IMG/O/O_modre.svg" class="player-icon" /></td>
+                    }
+                    @if (item.Winner)
+                    {
+                        <td>Tento hráč</td>
+                    } else
+                    {
+                        <td>Protivník</td>
+                    }
+                    <td>
+                        <button class="view">
+                            <img src="/IMG/icons/view.svg" alt="">
+                        </button>
+                    </td>
+                </tr>
+            </Virtualize>
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private List<Game> items = Enumerable.Range(1, 100).Select(i => new Game
+    {
+        GID = i,
+        GameDate = new DateOnly(2001, 09, 11),
+        Enemy = "vaclav.brdek",
+        IsX = (i % 2 == 0),
+        Winner = (i % 3 == 0)
+    }).ToList();
+
+    public class Game
+    {
+        public int GID { get; set; }
+        public DateOnly GameDate { get; set; }
+        public string Enemy { get; set; }
+        public bool IsX { get; set; }
+        public bool Winner { get; set; }
+    }
+}
