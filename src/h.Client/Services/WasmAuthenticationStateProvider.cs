@@ -1,60 +1,54 @@
-﻿using Blazored.SessionStorage;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace h.Client.Services;
 
 public class WasmAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly ISessionStorageService _sessionStorage;
+    private readonly IHApiClient _api;
 
-    private const string TOKEN_KEY = "h.jwt-token";
-
-    public WasmAuthenticationStateProvider(ISessionStorageService sessionStorage)
+    public WasmAuthenticationStateProvider(IHApiClient api)
     {
-        _sessionStorage = sessionStorage;
+        _api = api;
     }
+
+    private ClaimsPrincipal currentClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = await _sessionStorage.GetItemAsync<string>(TOKEN_KEY);
+        if(currentClaimsPrincipal is not {Identity: {IsAuthenticated: true } }) {
+            // Try get current user from http request 
+            var claimDTOs = await _api.GetCurrentUserClaims();
+            if (claimDTOs is {Length: > 0})
+            {
+                var claims = claimDTOs.Select(c => new Claim(c.Type, c.Value)).ToArray();
+                currentClaimsPrincipal = NewCookiePrincipalFromClaims(claims);
+            }
+        }
 
-        if (string.IsNullOrEmpty(token))
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-        
-        var jwt = ParseToken(token);
-        var identity = new ClaimsIdentity(jwt.Claims, "jwt");
-        return new AuthenticationState(new ClaimsPrincipal(identity));
+        return new AuthenticationState(currentClaimsPrincipal);
     }
 
     public async Task MarkUserAsAuthenticated(string jwtToken)
     {
-        await _sessionStorage.SetItemAsync(TOKEN_KEY, jwtToken);
+        //await _sessionStorage.SetItemAsync(TOKEN_KEY, jwtToken);
         
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        //NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     public async Task MarkUserAsLoggedOut()
     {
-        await _sessionStorage.RemoveItemAsync(TOKEN_KEY);
+        currentClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
-    public async Task<JwtSecurityToken?> GetTokenAsync()
+    public void MarkUserAsAuthenticated(Claim[] claims)
     {
-        if(!await _sessionStorage.ContainKeyAsync(TOKEN_KEY))
-            return null;
-
-        var token = await _sessionStorage.GetItemAsync<string>(TOKEN_KEY);
-        return ParseToken(token);
+        currentClaimsPrincipal = NewCookiePrincipalFromClaims(claims);
     }
 
-    private static JwtSecurityToken ParseToken(string token)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
-        return jwt;
-    }
+    private static ClaimsPrincipal NewCookiePrincipalFromClaims(Claim[] claims)
+        => new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
 }
