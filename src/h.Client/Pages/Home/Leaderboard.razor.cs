@@ -1,6 +1,6 @@
 ﻿using h.Client.Services;
-using h.Contracts;
 using h.Contracts.Leaderboard;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Home;
@@ -9,19 +9,18 @@ public partial class Leaderboard
 {
     private readonly IHApiClient _api;
 
-
-    private const int GET_TOP_COUNT = 10;
-    private LeaderBoardEntryResponse[]? leaderBoardEntries;
     public Leaderboard(IHApiClient api)
     {
         _api = api;
     }
 
-    protected override async Task OnInitializedAsync()
+    private async ValueTask<ItemsProviderResult<LeaderBoardEntryResponse>> GetRows(ItemsProviderRequest request)
     {
-        if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
-            return;
+        if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+            return new();
 
-        leaderBoardEntries = await _api.GetLeaderboard(0, GET_TOP_COUNT);
+        var response = await _api.GetLeaderboard(request.StartIndex, request.Count);
+
+        return new ItemsProviderResult<LeaderBoardEntryResponse>(response.PaginatedEntries, response.TotalCount);
     }
 }

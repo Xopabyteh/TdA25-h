@@ -51,7 +51,7 @@ public interface IHApiClient : IWasmOnly
 
     // Leaderboard
     [Get("/api/v1/leaderboard")]
-    Task<LeaderBoardEntryResponse[]> GetLeaderboard(int skip, int count);
+    Task<LeaderBoardResponse> GetLeaderboard(int skip, int count);
 
     // Admin
     [Get("/api/v1/auditlog")]

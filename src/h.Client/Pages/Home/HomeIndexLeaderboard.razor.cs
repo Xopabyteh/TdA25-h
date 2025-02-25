@@ -1,5 +1,4 @@
 ﻿using h.Client.Services;
-using h.Contracts;
 using h.Contracts.Leaderboard;
 using System.Runtime.InteropServices;
 
@@ -22,6 +21,7 @@ public partial class HomeIndexLeaderboard
         if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return;
 
-        topNLeaderboardEntries = await _api.GetLeaderboard(0, GET_TOP_COUNT);
+        var response = await _api.GetLeaderboard(0, GET_TOP_COUNT);
+        topNLeaderboardEntries = response.PaginatedEntries;
     }
 }

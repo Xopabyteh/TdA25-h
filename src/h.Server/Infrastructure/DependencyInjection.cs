@@ -94,9 +94,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<AutoSetUpdatedAtDbSaveInterceptor>();
         Action<DbContextOptionsBuilder>? dbOptionsAction = options =>
                 {
-                    options.UseSqlite(
-                        builder.Configuration.GetConnectionString("Database")
-                    );
+                    options.UseSqlite(builder.Configuration.GetConnectionString("Database"));
 
                     // Add interceptors
                     var serviceProvider = builder.Services.BuildServiceProvider();
