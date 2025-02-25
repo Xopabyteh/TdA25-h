@@ -54,7 +54,7 @@
                     <div class="player">
                         <img src="/IMG/O/O_modre.svg" alt="">
                         <b class="username">@gameDetails.Players[1].Name</b>
-                        <span class="elo">(@(gameDetails.Players[1].EloRating?.ToString() ?? "-")</span>
+                        <span class="elo">(@(gameDetails.Players[1].EloRating?.ToString() ?? "-"))</span>
                         <span class="timer @(GetClockCss(gameDetails.Players[1].Identity.SessionId))">@(GetRemainingClockTimeFormatted(gameDetails.Players[1].Identity.SessionId))</span>
                     </div>
                 </div>
