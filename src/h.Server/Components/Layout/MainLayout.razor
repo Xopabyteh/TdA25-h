@@ -25,17 +25,16 @@
                 </div>
             </NotAuthorized>
             <Authorized>
-                <a href="/user/board">
-                    <img src="/IMG/pfps/pfp-blue.svg" />
-                </a>
+
 
                 @if (isGuest || context.User.IsInRole(nameof(UserRole.Admin)))
                 {
                     // Guest || admin -> don't show elo
+                    <a href="#">
+                        <img src="/IMG/pfps/pfp-blue.svg" />
+                    </a>
                     <div class="user-info">
-                        <p id="nickname">
-                            <a href="/user/board">@context.User.Identity!.Name</a>
-                        </p>
+                        <p id="nickname"></p>
                         <div class="elo-logout">
                             <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
                         </div>
@@ -43,8 +42,13 @@
                 } 
                 else {
                     // User
+                    <a href="@(PageRoutes.User.UserBoardWithParam(currentUser!.Uuid))">
+                        <img src="/IMG/pfps/pfp-blue.svg" />
+                    </a>
                     <div class="user-info" style="cursor: pointer">
-                        <p id="nickname">@context.User.Identity!.Name</p>
+                        <p id="nickname">
+                            <a href="@(PageRoutes.User.UserBoardWithParam(currentUser!.Uuid))">@context.User.Identity!.Name</a>
+                        </p>
                         <div class="elo-logout">
                             <p id="elo">ELO: @(currentUser!.Elo.Rating)</p>
                             <p>•</p>

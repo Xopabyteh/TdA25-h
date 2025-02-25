@@ -10,6 +10,7 @@
 	<PackageReference Include="Blazored.SessionStorage" />
 	<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
 	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	<PackageReference Include="Microsoft.AspNetCore.Components" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />

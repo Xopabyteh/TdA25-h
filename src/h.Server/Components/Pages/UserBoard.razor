@@ -1,12 +1,13 @@
-﻿@attribute [Route(PageRoutes.User.UserBoard)]
-@rendermode InteractiveWebAssembly
+﻿@using h.Client.Services
+@attribute [Route(PageRoutes.User.UserBoard)]
+@rendermode InteractiveServer
 
-<PageTitle>evzen.rozinka</PageTitle>
+<PageTitle>Profil hráče @currentUser?.Username</PageTitle>
 
 <div class="userbanner">
     <div class="userbox sheet">
         <img src="/IMG/pfps/pfp-blue.svg" alt="">
-        <p>evzen.rozinka</p>
+        <p>@currentUser?.Username</p>
     </div>
 </div>
 
@@ -17,18 +18,18 @@
             <div class="stats">
                 <div class="user-statistic">
                     <div class="label">ELO</div>
-                    <div class="value">168</div>
+                    <div class="value">@currentUser?.Elo.Rating</div>
                 </div>
                 <div class="user-statistic">
                     <div class="label">
                         <img src="/IMG/icons/leaderboard.svg" alt="">
                     </div>
-                    <div class="value">#6</div>
+                    <div class="value">#@placeInLeaderboard</div>
                 </div>
             </div>
             <div class="joined">
                 <p class="label">Připojil/a se</p>
-                <p class="date">4. 5. 2025</p>
+                <p class="date">@currentUser?.CreatedAt.ToShortDateString()</p>
             </div>
         </div>
     </div>
@@ -36,19 +37,24 @@
         <div class="userfield sheet">
             <h1>Historie her</h1>
             <div class="gamehistory">
-                @for (int i = 0; i < 4; i++)
+                @foreach (var gameRecord in currentUser!.UserToFinishedRankedGames)
                 {
+                    var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
+                    var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
+                    var playeSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser!.Uuid));
+                    
+
                     <div class="gamerecord">
                         <div class="data">
-                            <p class="date">6. 1. 2025</p>
+                            <p class="date">@(gameRecord.FinishedRankedGame!.PlayedAt.ToShortDateString())</p>
                             <p class="opponent">
                                 <img src="/IMG/pfps/pfp-blue.svg" alt="">
-                                <span>vaclav.brdek</span>
+                                <span>@opponentName</span>
                             </p>
                         </div>
                         <div class="icons">
-                            <img src="/IMG/X/X_cervene.svg" alt="">
-                            <img src="/IMG/icons/lose.svg" alt="">
+                            <img src="@playeSymbolIcon" alt="">
+                            <img src="@winIcon" alt="">
                             <button class="view">
                                 <img src="/IMG/icons/view.svg" alt="">
                             </button>
@@ -60,3 +66,5 @@
         </div>
     </div>
 </div>
+
+                            

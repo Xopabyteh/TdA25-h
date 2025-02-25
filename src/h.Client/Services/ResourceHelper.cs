@@ -22,4 +22,7 @@ public static class ResourceHelper
             GameSymbol.O => "/IMG/O/O_modre.svg",
             _ => throw new ArgumentOutOfRangeException(nameof(symbol), symbol, null)
         };
+
+    public static string GetTrophyIcon(bool win)
+        => win ? "/IMG/icons/win.svg" : "/IMG/icons/lose.svg";
 }

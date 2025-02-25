@@ -53,7 +53,8 @@ public static class PageRoutes
     public static class User
     {
         public const string UserSettings = "/user/settings";
-        public const string UserBoard = "/user/board";
+        public const string UserBoard = "/user/board/{userId:guid}";
+        public static string UserBoardWithParam(Guid userId) => $"/user/board/{userId}";
         public const string UserGameHistory = "/user/game-history";
     }
 }

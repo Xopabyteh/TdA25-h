@@ -26,4 +26,17 @@ public class FinishedRankedGame
 
     public ICollection<UserToFinishedRankedGame> UserToFinishedRankedGames { get; }
         = new List<UserToFinishedRankedGame>(); // Many-to-many mapping
+
+    internal Guid GetOpponentUserId(Guid userId)
+        => Player1Id == userId 
+            ? Player2Id 
+            : Player1Id;
+
+    internal GameSymbol GetPlayerSymbol(Guid userId)
+        => Player1Id == userId
+            ? Player1Symbol
+            : Player2Symbol;
+
+    internal bool DidWin(Guid userId)
+        => WinnerId == userId;
 }
