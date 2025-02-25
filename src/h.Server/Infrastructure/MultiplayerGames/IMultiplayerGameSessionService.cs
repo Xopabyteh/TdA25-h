@@ -28,6 +28,8 @@ public interface IMultiplayerGameSessionService
     /// </summary>
     public MultiplayerGameSession CreateGameSession(IReadOnlyCollection<User> players, Guid? forcedStartingPlayerId = null);
 
+    public MultiplayerGameSession CreateRevangeSession(MultiplayerGameSession previousGame);
+
     /// <summary>
     /// Confirm that the player has loaded the game.
     /// </summary>

@@ -1,5 +1,6 @@
 ﻿using h.Contracts;
 using h.Server.Entities.MultiplayerGames;
+using h.Server.Entities.Users;
 using h.Server.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,8 @@ public class MultiplayerGameStatisticsService
     /// <exception cref="MultiplayerGameSession.GameNotEndedYetException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="SharedErrors.User.UserNotFoundException"></exception>
-    public async Task UpdateAndSavePlayerStatisticsAsync(
+    /// <returns>New elo rating of players. Key: userId, Value: newElo</returns>
+    public async Task<StatisticsUpdateResult> UpdateAndSavePlayerStatisticsAsync(
         MultiplayerGameSession fromGame)
     {
         if(!fromGame.GameEnded)
@@ -32,7 +34,7 @@ public class MultiplayerGameStatisticsService
 
         // If there is a guest player ingame, ignore statistics
         if(fromGame.Players.Any(u => u.IsGuest))
-            return;
+            return new (false, null, null);
 
         // -> Non guest - ranked game
 
@@ -43,6 +45,11 @@ public class MultiplayerGameStatisticsService
             ?? throw new SharedErrors.User.UserNotFoundException();
         var player2 = await _db.UsersDbSet.AsTracking().FirstOrDefaultAsync(u => u.Uuid == player2Id.UserId!.Value)
             ?? throw new SharedErrors.User.UserNotFoundException();
+
+        KeyValuePair<Guid, ThinkDifferentElo>[] oldElos = [
+            new(player1Id.UserId!.Value, player1.Elo),
+            new(player2Id.UserId!.Value, player2.Elo)
+        ];
 
         // Save statistics
         if (fromGame.EndResult.IsDraw)
@@ -102,5 +109,25 @@ public class MultiplayerGameStatisticsService
 
         // Todo: what the fuck do we do if this fails?
         await _db.SaveChangesAsync(); // Save finished game to user mappings
+
+        return new (
+            true,
+            oldElos,
+            NewElos: [
+                new (player1Id.UserId!.Value, player1.Elo),
+                new (player2Id.UserId!.Value, player2.Elo),
+            ]
+        );
     }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="DidUpdateElo">May be false, if game was a guest game and the stats shouldn't be saved</param>
+    /// <param name="OldElos"></param>
+    /// <param name="newElos"></param>
+    public readonly record struct StatisticsUpdateResult(
+        bool DidUpdateElo,
+        KeyValuePair<Guid, ThinkDifferentElo>[]? OldElos,
+        KeyValuePair<Guid, ThinkDifferentElo>[]? NewElos
+    );
 }

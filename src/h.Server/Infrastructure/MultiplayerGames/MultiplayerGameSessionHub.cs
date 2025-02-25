@@ -165,15 +165,64 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             if(endResult is null)
                 throw new NullReferenceException("No next player on turn but end results are null"); // Should never happen
 
-            await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
+            var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
 
             // Notify players about the game over
-            await Clients.Clients(connectionIds)
-                .GameEnded(new(
-                    endResult.IsDraw,
-                    MapToDto(endResult.WinnerId)
-                ));
+            foreach(var player in game.Players)
+            {
+                var connId = _userIdMappingService.GetConnectionId(player)
+                    ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(player);
+
+                await Clients.Client(connId)
+                    .GameEnded(new(
+                        endResult.IsDraw,
+                        MapToDto(endResult.WinnerId),
+                        updateResult.DidUpdateElo,
+                        updateResult.OldElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
+                        updateResult.NewElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default
+                    ));
+            }
         }
+    }
+
+    public async Task RequestRevange(Guid gameId)
+    {
+        if (Context.User is not { Identity: { IsAuthenticated: true } })
+        {
+            Context.Abort();
+            return;
+        }
+
+        var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
+        var game = _gameSessionService.GetGame(gameId);
+        if (game is null)
+            throw new NullReferenceException("Game not found when requiring revange match"); // Should never happen
+
+        if(!game.GameEnded)
+            return;
+
+        // Get conn ids
+        var connectionIds = game.Players
+            .Select(userId => _userIdMappingService.GetConnectionId(userId)
+                ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(identity))
+            .ToArray();
+
+        // Request revange
+        var allAccepted = game.RequestRevange(identity);
+        
+        // Notify about revange
+        await Clients.Clients(connectionIds)
+            .PlayerRequestedRevange(MapToDto(identity));
+
+        if (!allAccepted)
+            return;
+
+        // Every1 accepted -> Start new revange match
+        var newGame = _gameSessionService.CreateRevangeSession(game);
+
+        // Notify players about the new game
+        await Clients.Clients(connectionIds)
+            .NewRevangeGameSessionCreated(newGame.Id);
     }
 
     // Todo: leave game

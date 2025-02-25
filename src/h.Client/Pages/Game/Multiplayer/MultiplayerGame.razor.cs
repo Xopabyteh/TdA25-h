@@ -1,5 +1,4 @@
 using Blazored.SessionStorage;
-using h.Client.Services;
 using h.Contracts.MultiplayerGames;
 using h.Primitives;
 using h.Primitives.Games;
@@ -26,12 +25,15 @@ public partial class MultiplayerGame : IAsyncDisposable
     /// </summary>
     private bool isGameStarted;
     private MultiplayerGameStartedResponse gameDetails;
+
     private bool isGameEnded;
+    private MultiplayerGameEndedResponse? gameEndedDetails;
 
     private int moveI = 1;
     private int TurnI => moveI / 2;
 
     private MultiplayerGameSessionUserDetailDTO ourPlayer;
+    private MultiplayerGameSessionUserDetailDTO otherPlayer;
     /// <summary>
     /// Access field by [y,x] (y is row, x is column)
     /// </summary>
@@ -50,6 +52,9 @@ public partial class MultiplayerGame : IAsyncDisposable
     /// </summary>
     private Dictionary<Guid, TimeSpan> playerClockRemainingTimes;
     private Timer? clockTimer;
+
+    private bool requestedRevange;
+    private bool otherPlayerRequestedRevange;
     private string GetRemainingClockTimeFormatted(Guid sessionid)
         => playerClockRemainingTimes[sessionid].ToString(@"mm\:ss");
 
@@ -104,11 +109,14 @@ public partial class MultiplayerGame : IAsyncDisposable
         hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
         {
             isGameEnded = true;
-            if(clockTimer is not null)
+            gameEndedDetails = response;
+
+            if (clockTimer is not null)
             {
                 await clockTimer.DisposeAsync();
                 clockTimer = null;
             }
+
 
             await InvokeAsync(StateHasChanged);
         });
@@ -136,6 +144,23 @@ public partial class MultiplayerGame : IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
+        hubConnection.On<MultiplayerGameUserIdentityDTO>(nameof(IMultiplayerGameSessionHubClient.PlayerRequestedRevange), async player =>
+        {
+            if(player.SessionId == ourPlayer.Identity.SessionId)
+                return;
+
+            otherPlayerRequestedRevange = true;
+
+            await InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<Guid>(nameof(IMultiplayerGameSessionHubClient.NewRevangeGameSessionCreated), async newGameId =>
+        {
+            await _sessionStorageService.SetItemAsync(GameIdSessionStorageKey, newGameId);
+            //_navigationManager.NavigateTo(PageRoutes.Multiplayer.MultiplayerGame, forceLoad: true);
+            _navigationManager.Refresh(forceReload: true);
+        });
+
         await hubConnection.StartAsync();
 
         // Ping we are ready
@@ -149,6 +174,15 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         var placePos = new Int2(x, y);
         await hubConnection!.InvokeAsync("PlaceSymbol", gameDetails.GameId, placePos);
+    }
+
+    public async Task HandleRequestRevange()
+    {
+        if(requestedRevange)
+            return;
+
+        requestedRevange = true;
+        await hubConnection!.InvokeAsync("RequestRevange", gameDetails.GameId);
     }
 
     private Timer CreateClockEatingTimer()

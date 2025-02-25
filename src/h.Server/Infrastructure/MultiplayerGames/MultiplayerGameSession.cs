@@ -16,7 +16,8 @@ public class MultiplayerGameSession
     public Dictionary<MultiplayerGameUserIdentity, GameSymbol> PlayerSymbols { get; init; }
     public Dictionary<MultiplayerGameUserIdentity, Stopwatch> PlayerTimers { get; init; }
     public List<MultiplayerGameUserIdentity> ReadyPlayers { get; init; } = new(2);
-
+    public List<MultiplayerGameUserIdentity> PlayersRequestingRevange { get; init; } = new(2);
+    public MultiplayerGameUserIdentity StartingPlayer { get; init; }
     /// <summary>
     /// Whether the game has started at any time.
     /// May be true even if the game has ended - because it has started at some point.
@@ -52,13 +53,15 @@ public class MultiplayerGameSession
         Players = players;
         Board = board;
         PlayerSymbols = playerSymbols;
-        _playerOnTurnIndex = playerOnTurnIndex;
 
         PlayerTimers = Players.ToDictionary(
             keySelector: pId => pId,
             elementSelector: pId => new Stopwatch());
         CreatedAtUtc = createdAtUtc;
         TimerLength = timerLength;
+        
+        _playerOnTurnIndex = playerOnTurnIndex;
+        StartingPlayer = PlayerOnTurn;
     }
 
     /// <summary>
@@ -101,6 +104,23 @@ public class MultiplayerGameSession
         return TimerLength - timer.Elapsed;
     }
 
+    /// <summary>
+    /// Request a revange match.
+    /// Returns true when all players have requested a revange.
+    /// </summary>
+    /// <exception cref="GameNotEndedYetException"></exception>
+    public bool RequestRevange(MultiplayerGameUserIdentity byPlayer)
+    {
+        if (!GameEnded)
+            throw new GameNotEndedYetException();
+
+        if(!Players.Contains(byPlayer))
+            throw new ArgumentException("Player is not in the game.", nameof(byPlayer));
+
+        PlayersRequestingRevange.Add(byPlayer);
+
+        return PlayersRequestingRevange.Count == Players.Count;
+    }
     public class GameNotEndedYetException : Exception
     {
         public GameNotEndedYetException() : base("Game has not ended yet.")

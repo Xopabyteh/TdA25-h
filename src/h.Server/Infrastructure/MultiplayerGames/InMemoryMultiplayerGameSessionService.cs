@@ -166,4 +166,36 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
                 )
         );
     }
+
+    public MultiplayerGameSession CreateRevangeSession(MultiplayerGameSession previousGame)
+    {
+        var gameId = Guid.NewGuid();
+        var board = GameBoard.CreateNew();
+        var players = previousGame.Players.ToList();
+        
+        // Pick opposite symbols
+        var playerSymbols = previousGame.PlayerSymbols.ToDictionary(
+            kvp => kvp.Key,
+            kvp => kvp.Value == GameSymbol.X
+                ? GameSymbol.O
+                : GameSymbol.X
+        );
+
+        // Who starts? -> the other player than before
+        int startingPlayerIndex = (players.IndexOf(previousGame.StartingPlayer) + 1) % players.Count;
+
+        var gameSession = new MultiplayerGameSession(
+            gameId,
+            players,
+            board,
+            playerSymbols,
+            startingPlayerIndex,
+            _timeProvider.GetUtcNow(),
+            TimeSpan.FromSeconds(IMultiplayerGameSessionService.STARTING_SECONDS_ON_CLOCK) // Todo: moved to shared config
+        );
+
+        _gameSessions[gameId] = gameSession;
+        
+        return gameSession;
+    }
 }

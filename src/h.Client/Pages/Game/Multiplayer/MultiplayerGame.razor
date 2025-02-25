@@ -45,14 +45,14 @@
             <div class="game-info">
                 <div class="players sheet">
                     <div class="player">
-                        <img src="/IMG/X/X_cervene.svg" alt="">
+                        <img src="@ResourceHelper.GetSymbolSrc(gameDetails.Players[0].Symbol)" alt="">
                         <b class="username">@gameDetails.Players[0].Name</b>
                         <span class="elo">(@(gameDetails.Players[0].EloRating?.ToString() ?? "-"))</span>
                         <span class="timer @(GetClockCss(gameDetails.Players[0].Identity.SessionId))">@(GetRemainingClockTimeFormatted(gameDetails.Players[0].Identity.SessionId))</span>
                     </div>
                     <div class="vs">VS</div>
                     <div class="player">
-                        <img src="/IMG/O/O_modre.svg" alt="">
+                        <img src="@ResourceHelper.GetSymbolSrc(gameDetails.Players[1].Symbol)" alt="">
                         <b class="username">@gameDetails.Players[1].Name</b>
                         <span class="elo">(@(gameDetails.Players[1].EloRating?.ToString() ?? "-"))</span>
                         <span class="timer @(GetClockCss(gameDetails.Players[1].Identity.SessionId))">@(GetRemainingClockTimeFormatted(gameDetails.Players[1].Identity.SessionId))</span>
@@ -76,4 +76,58 @@
             </div>
         </div>
     </div>
+
+    @if(isGameEnded) {
+        <div class="win-popup">
+            <div class="win-card">
+                <div class="win-r1">
+                    <h3>Gratulujeme!</h3>
+                </div>
+                <div class="win-r2">
+                    <h3>VYHRÁVÁ HRÁČ</h3>
+                    <div class="winner">
+                        @if (gameEndedDetails!.Value.IsDraw)
+                        {
+                            // Draw
+                            <span>draw</span>
+                        }
+                        else {
+                            // Winner
+                            @* <span>@sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Name</span> *@
+                            var winnerSymbol = ResourceHelper.GetSymbolSrc(sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Symbol);
+                            <img src="@winnerSymbol" alt="@sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Symbol.ToString()">
+                            @* <img src="/IMG/X/X_cervene.svg" alt="X" style="height: 15px; width: 15px"> *@
+                             @* <img src="/IMG/O/O_modre.svg" alt="O" style="height: 15px; width: 15px"> *@
+                        }
+                    </div>
+                </div>
+                @if(gameEndedDetails!.Value.DidEloChange) {
+                    <div class="elo-diff">
+                        <div>
+                            Old elo:
+                            <span>@gameEndedDetails!.Value.OldElo</span>
+                        </div>
+                        <div>
+                            New elo:
+                            <span>@gameEndedDetails!.Value.NewElo</span>
+                        </div>
+                    </div>
+                }
+                <div class="win-r3">
+                    <a class="back-to-list secondary-button" href="@PageRoutes.Multiplayer.MatchmakingQueue">Zpět do fronty</a>
+                    <a class="back-to-list secondary-button" href="@PageRoutes.HomeIndex">Odejít</a>
+                </div>
+                <div class="revange">
+                    <button disabled="@requestedRevange" @onclick="HandleRequestRevange">
+                        @if (otherPlayerRequestedRevange)
+                        {
+                            <text>Přijmout odvetu</text>
+                        } else {
+                            <text>Nabídnout odvetu</text>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 }
