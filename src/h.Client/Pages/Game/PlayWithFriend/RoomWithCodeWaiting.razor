@@ -11,8 +11,14 @@
             <span>Kód pozvánky</span>
         </div>
         <p class="code-info-text can-copy">
-            Invite link - @GetInviteLink()
+            Invite link
         </p>
+        <div style="display: flex; flex-direction: column">
+            <InputText readonly class="text-input invite-link" name="link-with-code" @bind-Value="inviteLink" />
+            <button class="copy-link" @onclick="HandleCopyLink">
+                <img src="/IMG/icons/copy.svg" />
+            </button>
+        </div>
         <div class="waiting">
             <div class="loader"></div>
             <span class="blue">Čekám na připojení</span>
@@ -20,6 +26,7 @@
     </div>
 </div>
 
- 
-
-
+@code {
+    //private string inviteLink => GetInviteLink();
+    
+}

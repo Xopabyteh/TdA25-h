@@ -4,6 +4,8 @@ using h.Client.Services;
 using h.Contracts.GameInvitations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Game.PlayWithFriend;
@@ -13,11 +15,20 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
     [Inject] protected IHApiClient _api { get; set; } = null!;
     [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
     [Inject] protected ISessionStorageService _sessionStorage { get; set; } = null!;
+    [Inject] protected IJSRuntime _js { get; set; } = null!;
 
 
     private HubConnection? hubConnection;
     private bool isLoaded;
     private int inviteCode;
+
+    private string inviteLink = "i want to kill myself";
+
+    private async Task HandleCopyLink()
+    {
+        await _js.InvokeVoidAsync("copyToClipboard", inviteLink);
+    }
+
     override protected async Task OnInitializedAsync()
     {
         // Wait for wasm,

@@ -18,6 +18,22 @@
     justify-content: center;
 }
 
+@media only screen and (max-width: 600px) {
+    .showcase {
+        flex-direction: column;
+        margin: 20px 0;
+        gap: 1rem;
+    }
+    
+    .showcase.reverse {
+        flex-direction: column-reverse;
+    }
+
+    .team {
+        flex-direction: column;
+    }
+}
+
 .info-button {
     display: flex;
     flex-direction: column;

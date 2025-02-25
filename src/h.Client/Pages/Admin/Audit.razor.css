@@ -16,3 +16,9 @@ th {
 td, th {
     padding: 6px;
 }
+
+@media only screen and (max-width: 600px) {
+    table {
+        overflow-x: scroll;
+    }
+}
