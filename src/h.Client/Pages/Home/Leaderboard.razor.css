@@ -22,6 +22,7 @@
     .leaderboard table tr {
         display: flex;
         align-items: center;
+        justify-content: space-evenly;
         margin: 0;
         gap: 20px;
         border-top: var(--clr-primary-600) solid 2px;
