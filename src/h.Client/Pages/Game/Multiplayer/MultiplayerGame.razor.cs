@@ -103,7 +103,6 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
         {
-            Console.WriteLine($"Game ended {response}");
             isGameEnded = true;
             if(clockTimer is not null)
             {
@@ -116,7 +115,6 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         hubConnection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
         {
-            Console.WriteLine(response);
             // Update field
             gameField[response.Position.Y, response.Position.X] = response.Symbol;
 
@@ -146,8 +144,6 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     private async Task HandlePlaceSymbol(int x, int y)
     {
-        Console.WriteLine(areWeOnTurn);
-        Console.WriteLine($"{x} {y}");
         if(!areWeOnTurn)
             return;
 

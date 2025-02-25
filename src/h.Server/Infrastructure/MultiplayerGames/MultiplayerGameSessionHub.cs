@@ -119,17 +119,14 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
     public async Task PlaceSymbol(Guid gameId, Int2 atPos)
     {
-        Console.WriteLine($"{gameId} {atPos}");
         if (Context.User is not { Identity: { IsAuthenticated: true } })
         {
             Context.Abort();
-            Console.WriteLine("abort");
             return;
         }
 
         var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
         var result = _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, identity, atPos);
-        Console.WriteLine($"{result}\n{result.IsError}\n{result.FirstError}");
         if(result.IsError)
             return;
 
@@ -159,7 +156,6 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
                 MapToDto(nextPlayerOnTurn),
                 playerRemainingClockTimes
             ));
-        Console.WriteLine("Notified about move!!");
 
         // No next player on turn, the game is over
         if(nextPlayerOnTurn is null)
@@ -177,7 +173,6 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
                     endResult.IsDraw,
                     MapToDto(endResult.WinnerId)
                 ));
-            Console.WriteLine("Noone else on turn");
         }
     }
 

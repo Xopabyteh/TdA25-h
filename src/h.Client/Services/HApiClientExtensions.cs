@@ -14,7 +14,6 @@ public static class HApiClientExtensions
         if (error.Content is null)
             return new ErrorResponse(((int)error.StatusCode), error.Message, null);
 
-        Console.WriteLine(error.Content);
         return JsonSerializer.Deserialize<ErrorResponse>(error.Content, AppJsonOptions.WithConverters);
     }
 }
