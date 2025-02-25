@@ -13,9 +13,9 @@
         <p class="code-info-text can-copy">
             Invite link
         </p>
-        <div style="display: flex; flex-direction: column">
-            <InputText readonly class="text-input invite-link" name="link-with-code" @bind-Value="inviteLink" />
-            <button class="copy-link" @onclick="HandleCopyLink">
+        <div class="copy">
+            <InputText readonly class="invite-link text-input" name="link-with-code" @bind-Value="inviteLink" />
+            <button class="copy-link-btn" @onclick="HandleCopyLink">
                 <img src="/IMG/icons/copy.svg" />
             </button>
         </div>
@@ -25,8 +25,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    //private string inviteLink => GetInviteLink();
-    
-}

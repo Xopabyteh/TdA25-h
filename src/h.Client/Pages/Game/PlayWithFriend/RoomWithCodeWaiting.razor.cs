@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Game.PlayWithFriend;
@@ -16,18 +17,15 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
     [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
     [Inject] protected ISessionStorageService _sessionStorage { get; set; } = null!;
     [Inject] protected IJSRuntime _js { get; set; } = null!;
+    [Inject] protected ToastService _toast { get; set; } = null!;
 
+    private IJSObjectReference? jsModule;
 
     private HubConnection? hubConnection;
     private bool isLoaded;
     private int inviteCode;
 
-    private string inviteLink = "i want to kill myself";
-
-    private async Task HandleCopyLink()
-    {
-        await _js.InvokeVoidAsync("copyToClipboard", inviteLink);
-    }
+    private string inviteLink { get; set; } = "";
 
     override protected async Task OnInitializedAsync()
     {
@@ -54,6 +52,28 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
         inviteCode = await _api.CreateInviteCode();
 
         isLoaded = true;
+
+        inviteLink = GetInviteLink();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+            return; // Prerendering should not load js
+
+        jsModule = await _js.InvokeAsync<IJSObjectReference>(
+            "import",
+            "./Pages/Game/PlayWithFriend/RoomWithCodeWaiting.razor.js");
+    }
+
+
+    private async Task HandleCopyLink()
+    {
+        await _js.InvokeVoidAsync("copyToClipboard", inviteLink);
+        await _toast.SuccessAsync("Pozvánka zkopírována");
     }
 
     public ValueTask DisposeAsync()
