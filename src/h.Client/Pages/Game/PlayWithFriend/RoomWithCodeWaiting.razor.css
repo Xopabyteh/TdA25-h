@@ -47,7 +47,19 @@
     text-align: center;
 }
 
-.invite-link {
-    min-width: 20rem;
+::deep .invite-link {
+    min-width: 24rem;
     box-sizing: content-box;
+    font-size: 15px;
+}
+
+.copy-link-btn {
+    background: none;
+    cursor: pointer;
+}
+
+.copy {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 }
