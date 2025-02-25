@@ -87,6 +87,7 @@ public static class DependencyInjection
 
         // SignalR
         builder.Services.AddSignalR();
+
         builder.Services.AddSingleton(typeof(IHubUserIdMappingService<>), typeof(InMemoryHubUserIdMappingService<>));
         builder.Services.AddSingleton(typeof(IHubUserIdMappingService<,>), typeof(InMemoryHubUserIdMappingService<,>));
 

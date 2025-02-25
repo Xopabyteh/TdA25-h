@@ -1,4 +1,6 @@
-﻿namespace h.Primitives;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace h.Primitives;
 
 public readonly record struct Int2(int X, int Y)
 {
@@ -9,6 +11,7 @@ public readonly record struct Int2(int X, int Y)
     /// <summary>
     /// Contains all orthogonal and diagonal directions (total 8...)
     /// </summary>
+    [DynamicDependency(nameof(OrthoAndDiagonalDirections))]
     public static Int2[] OrthoAndDiagonalDirections = new[]
     {
         new Int2(1, 0),

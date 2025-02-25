@@ -1,4 +1,5 @@
 using Blazored.SessionStorage;
+using h.Client.Services;
 using h.Contracts.MultiplayerGames;
 using h.Primitives;
 using h.Primitives.Games;
@@ -100,8 +101,22 @@ public partial class MultiplayerGame : IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
         {
+            Console.WriteLine($"Game ended {response}");
+            isGameEnded = true;
+            if(clockTimer is not null)
+            {
+                await clockTimer.DisposeAsync();
+                clockTimer = null;
+            }
+
+            await InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
+        {
+            Console.WriteLine(response);
             // Update field
             gameField[response.Position.Y, response.Position.X] = response.Symbol;
 
@@ -118,18 +133,6 @@ public partial class MultiplayerGame : IAsyncDisposable
             foreach (var remainingTimeKvp in response.PlayerRemainingClockTimes)
             {
                 playerClockRemainingTimes[remainingTimeKvp.Key] = remainingTimeKvp.Value;
-            }
-
-            await InvokeAsync(StateHasChanged);
-        });
-
-        hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
-        {
-            isGameEnded = true;
-            if(clockTimer is not null)
-            {
-                await clockTimer.DisposeAsync();
-                clockTimer = null;
             }
 
             await InvokeAsync(StateHasChanged);

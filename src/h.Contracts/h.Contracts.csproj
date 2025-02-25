@@ -10,4 +10,8 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\h.Primitives\h.Primitives.csproj" />
 	</ItemGroup>
+
+	<PropertyGroup>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
 </Project>

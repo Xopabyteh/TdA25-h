@@ -1,0 +1,7 @@
+﻿<linker>
+	<assembly fullname="h.Primitives" preserve="all"/>
+	<assembly fullname="h.Contracts" preserve="all"/>
+
+	<assembly fullname="Microsoft.AspNetCore.SignalR.Client" preserve="all"/>
+	<assembly fullname="Microsoft.AspNetCore.Http.Connections.Client" preserve="all"/>
+</linker>
