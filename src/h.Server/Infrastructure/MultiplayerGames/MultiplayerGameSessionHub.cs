@@ -126,9 +126,7 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         }
 
         var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
-
         var result = _gameSessionService.PlaceSymbolAsyncAndMoveTurn(gameId, identity, atPos);
-
         if(result.IsError)
             return;
 
@@ -151,7 +149,7 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
 
         // Notify players about the move
         await Clients.Clients(connectionIds)
-            .PlayerMadeMove(new(
+            .PlayerMadeAMove(new PlayerMadeAMoveResponse(
                 MapToDto(identity),
                 atPos,
                 game.PlayerSymbols[identity],

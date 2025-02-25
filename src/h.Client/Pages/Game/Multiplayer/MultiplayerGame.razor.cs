@@ -1,4 +1,5 @@
 using Blazored.SessionStorage;
+using h.Client.Services;
 using h.Contracts.MultiplayerGames;
 using h.Primitives;
 using h.Primitives.Games;
@@ -100,7 +101,19 @@ public partial class MultiplayerGame : IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
+        {
+            isGameEnded = true;
+            if(clockTimer is not null)
+            {
+                await clockTimer.DisposeAsync();
+                clockTimer = null;
+            }
+
+            await InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
         {
             // Update field
             gameField[response.Position.Y, response.Position.X] = response.Symbol;
@@ -123,18 +136,6 @@ public partial class MultiplayerGame : IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<MultiplayerGameEndedResponse>(nameof(IMultiplayerGameSessionHubClient.GameEnded), async response =>
-        {
-            isGameEnded = true;
-            if(clockTimer is not null)
-            {
-                await clockTimer.DisposeAsync();
-                clockTimer = null;
-            }
-
-            await InvokeAsync(StateHasChanged);
-        });
-
         await hubConnection.StartAsync();
 
         // Ping we are ready
@@ -143,8 +144,6 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     private async Task HandlePlaceSymbol(int x, int y)
     {
-        Console.WriteLine(areWeOnTurn);
-        Console.WriteLine($"{x} {y}");
         if(!areWeOnTurn)
             return;
 

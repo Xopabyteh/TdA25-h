@@ -121,7 +121,7 @@ public class MultiplayerGamesTests
         var client1X = 0;
         var client2X = 0;
 
-        client1Connection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        client1Connection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
         {
             if(response.NextPlayerOnTurn is null)
                 return;
@@ -135,7 +135,7 @@ public class MultiplayerGamesTests
             await client1Connection.InvokeAsync("PlaceSymbol", gameSession.Id, new Int2(client1X, 0));
         });
 
-        client2Connection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        client2Connection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
         {
             if(response.NextPlayerOnTurn is null)
                 return;
@@ -233,7 +233,7 @@ public class MultiplayerGamesTests
         var clientUserX = 0;
         var clientGuestX = 0;
 
-        clientUserConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        clientUserConnection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
         {
             if (response.NextPlayerOnTurn is null)
                 return;
@@ -246,7 +246,7 @@ public class MultiplayerGamesTests
             clientUserX++;
             await clientUserConnection.InvokeAsync("PlaceSymbol", gameSession.Id, new Int2(clientUserX, 0));
         });
-        clientGuestConnection.On<PlayerMadeMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeMove), async response =>
+        clientGuestConnection.On<PlayerMadeAMoveResponse>(nameof(IMultiplayerGameSessionHubClient.PlayerMadeAMove), async response =>
         {
             if (response.NextPlayerOnTurn is null)
                 return;
