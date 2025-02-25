@@ -46,3 +46,8 @@
     font-size: 18px;
     text-align: center;
 }
+
+.invite-link {
+    min-width: 20rem;
+    box-sizing: content-box;
+}
