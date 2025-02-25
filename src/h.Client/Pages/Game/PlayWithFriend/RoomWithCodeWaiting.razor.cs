@@ -17,6 +17,7 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
     [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
     [Inject] protected ISessionStorageService _sessionStorage { get; set; } = null!;
     [Inject] protected IJSRuntime _js { get; set; } = null!;
+    [Inject] protected ToastService _toast { get; set; } = null!;
 
     private IJSObjectReference? jsModule;
 
@@ -72,6 +73,7 @@ public partial class RoomWithCodeWaiting : IAsyncDisposable
     private async Task HandleCopyLink()
     {
         await _js.InvokeVoidAsync("copyToClipboard", inviteLink);
+        await _toast.SuccessAsync("Pozvánka zkopírována");
     }
 
     public ValueTask DisposeAsync()
