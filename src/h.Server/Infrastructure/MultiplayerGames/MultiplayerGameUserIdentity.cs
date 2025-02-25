@@ -42,6 +42,9 @@ public readonly record struct MultiplayerGameUserIdentity(
 
         // User
         var userId = user.GetUserId();
-        return FromUserId(userId, user.Identity!.Name!);
+        if(userId is null)
+            throw new InvalidOperationException("User is not authenticated nor as guest nor as user");
+
+        return FromUserId(userId.Value, user.Identity!.Name!);
     }
 }

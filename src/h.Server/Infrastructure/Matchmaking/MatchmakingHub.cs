@@ -23,7 +23,7 @@ public class MatchmakingHub : Hub<IMatchmakingHubClient>
         }
 
         // Add the connection ID to the mapping service
-        var userId = Context.User.GetUserId();
+        var userId = Context.User.GetUserId()!.Value;
         _userIdMappingService.Add(Context.ConnectionId, userId);
 
         await base.OnConnectedAsync();
@@ -34,7 +34,7 @@ public class MatchmakingHub : Hub<IMatchmakingHubClient>
         // Remove from mapping
         if(Context.User is {Identity: { IsAuthenticated: true } })
         {
-            var userId = Context.User.GetUserId();
+            var userId = Context.User.GetUserId()!.Value;
             _userIdMappingService.Remove(userId);
         }
 
@@ -46,7 +46,7 @@ public class MatchmakingHub : Hub<IMatchmakingHubClient>
         if(Context.User is not { Identity: { IsAuthenticated: true } })
             return -1;
 
-        var userId = Context.User.GetUserId();
+        var userId = Context.User.GetUserId()!.Value;
         var position = _queueService.GetPositionInQueue(userId);
         return position;
     }

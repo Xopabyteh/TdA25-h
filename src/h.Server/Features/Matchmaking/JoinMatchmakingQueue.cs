@@ -32,7 +32,7 @@ public static class JoinMatchmakingQueue
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        var userId = httpContext.User.GetUserId();
+        var userId = httpContext.User.GetUserId()!.Value;
 
         // Make sure user isnt banned
         // (even though we require authorization policy, if user was banned while logged in,

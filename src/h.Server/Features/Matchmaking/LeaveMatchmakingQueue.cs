@@ -22,7 +22,7 @@ public static class LeaveMatchmakingQueue
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        var userId = httpContext.User.GetUserId();
+        var userId = httpContext.User.GetUserId()!.Value;
         var removed = matchmakingQueue.RemoveUserFromQueue(userId);
 
         return removed

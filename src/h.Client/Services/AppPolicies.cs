@@ -18,6 +18,9 @@ public static class AppPolicies
         // Not admin
         .RequireAssertion(context => !context.User.IsInRole(nameof(UserRole.Admin)))
 
+        // Not guest
+        .RequireAssertion(context => !context.User.IsInRole(nameof(UserRole.Guest)))
+
         // Not banned from ranked matchmaking
         .RequireAssertion(context => !context.User.HasClaim(c => c.Type == AppCustomClaimTypes.BannedFromRankedMatchmakingAtUTC))
         .Build();

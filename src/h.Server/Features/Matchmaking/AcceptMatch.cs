@@ -23,7 +23,6 @@ public static class AcceptMatch
         }
     }
 
-    // Todo: switch whole mapping to use multiplayer identity?
     public static async Task<IResult> Handle(
         [FromServices] InMemoryMatchmakingService matchmakingService,
         [FromServices] IHubUserIdMappingService<MatchmakingHub> hubUserIdMappingService,
@@ -34,7 +33,7 @@ public static class AcceptMatch
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        var userId = httpContext.User.GetUserId();
+        var userId = httpContext.User.GetUserId()!.Value;
         var result = matchmakingService.AcceptMatching(matchingId, userId);
 
         return await result.MatchFirst(

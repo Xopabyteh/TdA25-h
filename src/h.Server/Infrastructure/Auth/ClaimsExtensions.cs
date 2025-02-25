@@ -4,10 +4,12 @@ namespace h.Server.Infrastructure.Auth;
 
 public static class ClaimsExtensions
 {
-    public static Guid GetUserId(this ClaimsPrincipal claimsPrincipal)
+    public static Guid? GetUserId(this ClaimsPrincipal claimsPrincipal)
     {
-        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.Parse(userId!);
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ;
+        return userId is null
+            ? null
+            : Guid.Parse(userId);
     }
 
     /// <summary>

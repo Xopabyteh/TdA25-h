@@ -29,7 +29,7 @@ public static class DeclineMatch
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        var userId = httpContext.User.GetUserId();
+        var userId = httpContext.User.GetUserId()!.Value;
 
         var matching = matchmakingService.GetMatching(matchingId)!;
         var result = matchmakingService.DeclineAndRemoveMatching(matchingId, userId);
