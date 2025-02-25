@@ -20,7 +20,6 @@ builder.Services.AddSingleton(new HttpClient()
 });
 builder.Services.AddSingleton<IWasmHttpClient, WasmHttpClient>();
 
-builder.Services.AddScoped<TokenRefreshingDelegatingHandler>();
 builder.Services
     .AddRefitClient<IHApiClient>(new RefitSettings()
     {
@@ -30,8 +29,7 @@ builder.Services
     {
         // Add polly?
         c.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-    })
-    .AddHttpMessageHandler<TokenRefreshingDelegatingHandler>();
+    });
 
 builder.Services.AddSingleton<IWasmGameService, WasmGameService>();
 

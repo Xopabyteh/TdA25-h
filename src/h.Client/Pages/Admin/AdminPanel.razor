@@ -1,4 +1,5 @@
 @attribute [Route(PageRoutes.Admin.AdminPanel)]
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Admin Panel</PageTitle>

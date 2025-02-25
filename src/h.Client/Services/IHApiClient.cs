@@ -1,5 +1,6 @@
 ﻿using h.Contracts;
 using h.Contracts.AuditLog;
+using h.Contracts.Auth;
 using h.Contracts.Components.Services;
 using h.Contracts.Leaderboard;
 using h.Contracts.Users;
@@ -20,6 +21,8 @@ public interface IHApiClient : IWasmOnly
 
     [Get("/api/v1/users/current")]
     Task<UserResponse> GetCurrentUser();
+    [Get("/api/v1/users/current/claims")]
+    Task<ClaimResponse[]> GetCurrentUserClaims();
 
     // User
     [Put("/api/v1/users/self")]
