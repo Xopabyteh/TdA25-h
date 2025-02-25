@@ -36,6 +36,10 @@ public partial class LoginIndex
         isBusy = false;
         if(response.IsSuccessStatusCode)
         {
+            if(_authProvider is WasmAuthenticationStateProvider _wasmAuth)
+            {
+                _wasmAuth.MarkShouldReloadAuthState();
+            }
             _navigation.NavigateTo(ReturnUrl ?? PageRoutes.HomeIndex);
             return;
         }

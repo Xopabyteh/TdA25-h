@@ -7,6 +7,7 @@ namespace h.Client.Services;
 public class WasmAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly IHApiClient _api;
+    private bool shouldReloadAuthState = true;
 
     public WasmAuthenticationStateProvider(IHApiClient api)
     {
@@ -21,7 +22,7 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
     /// <returns></returns>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        if(currentClaimsPrincipal is not {Identity: {IsAuthenticated: true } }) {
+        if(shouldReloadAuthState || currentClaimsPrincipal is not {Identity: {IsAuthenticated: true } }) {
             // Try get current user from http request 
             var claimDTOs = await _api.GetCurrentUserClaims();
             if (claimDTOs is {Length: > 0})
@@ -29,6 +30,8 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
                 var claims = claimDTOs.Select(c => new Claim(c.Type, c.Value)).ToArray();
                 currentClaimsPrincipal = NewCookiePrincipalFromClaims(claims);
             }
+
+            shouldReloadAuthState = false;
         }
 
         return new AuthenticationState(currentClaimsPrincipal);
@@ -46,6 +49,11 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
     public void MarkUserAsAuthenticated(Claim[] claims)
     {
         currentClaimsPrincipal = NewCookiePrincipalFromClaims(claims);
+    }
+
+    public void MarkShouldReloadAuthState()
+    {
+        shouldReloadAuthState = true;
     }
 
     private static ClaimsPrincipal NewCookiePrincipalFromClaims(Claim[] claims)

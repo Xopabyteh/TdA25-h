@@ -20,6 +20,10 @@
         if(_authProvider is WasmAuthenticationStateProvider _wasmAuth) {
             await _wasmAuth.MarkUserAsLoggedOut();
         }
+
+        // Todo: this is temporary
+        // Guest login
+        await _api.GuestLogin();
         
         _navigation.NavigateTo(returnTo, forceLoad: true);
     }

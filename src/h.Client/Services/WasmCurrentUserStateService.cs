@@ -9,7 +9,7 @@ namespace h.Client.Services;
 /// Provides state of the current user for the wasm client.
 /// Is this the best way? LET'S FIND OUT!
 /// </summary>
-public class WasmCurrentUserStateService : IWasmCurrentUserStateService 
+public class WasmCurrentUserStateService : IWasmCurrentUserStateService, IDisposable
 {
     public string Name { get; private set; } = null!;
     public bool IsGuest { get; set; }
@@ -23,6 +23,12 @@ public class WasmCurrentUserStateService : IWasmCurrentUserStateService
     {
         _api = api;
         _authenticationStateProvider = authenticationStateProvider;
+        _authenticationStateProvider.AuthenticationStateChanged += HandleOnAuthenticationStateChanged;
+    }
+
+    private void HandleOnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        MarkShouldRefresh();
     }
 
     public async Task EnsureStateAsync()
@@ -56,6 +62,11 @@ public class WasmCurrentUserStateService : IWasmCurrentUserStateService
     public void MarkShouldRefresh()
     {
         shouldRefresh = true;
+    }
+
+    public void Dispose()
+    {
+        _authenticationStateProvider.AuthenticationStateChanged -= HandleOnAuthenticationStateChanged;
     }
 
     public class UserNotAuthenticatedException : Exception

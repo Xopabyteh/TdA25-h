@@ -1,4 +1,5 @@
 using Blazored.SessionStorage;
+using h.Client.Services;
 using h.Contracts.MultiplayerGames;
 using h.Primitives;
 using h.Primitives.Games;
@@ -16,6 +17,7 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     private readonly ISessionStorageService _sessionStorageService;
     private readonly NavigationManager _navigationManager;
+    private readonly IWasmCurrentUserStateService _userStateService;
 
     private Guid gameId;
     private HubConnection? hubConnection;
@@ -61,10 +63,11 @@ public partial class MultiplayerGame : IAsyncDisposable
     private string GetClockCss(Guid sessionid)
         => sessionid == playerOnTurn.Identity.SessionId ? "turn" : "";
 
-    public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager)
+    public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager, IWasmCurrentUserStateService userStateService)
     {
         _sessionStorageService = sessionStorageService;
         _navigationManager = navigationManager;
+        _userStateService = userStateService;
     }
 
     protected override async Task OnInitializedAsync()
@@ -110,6 +113,7 @@ public partial class MultiplayerGame : IAsyncDisposable
         {
             isGameEnded = true;
             gameEndedDetails = response;
+            _userStateService.MarkShouldRefresh();
 
             if (clockTimer is not null)
             {

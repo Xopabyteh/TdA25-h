@@ -35,9 +35,14 @@ public partial class RegisterIndex
         var request = new RegisterUserRequest(Model.Username, Model.Email, Model.Password);
 
         var response = await _api.RegisterUser(request);
+       
 
         if (response.IsSuccessStatusCode)
         {
+            if(_authProvider is WasmAuthenticationStateProvider _wasmAuth)
+            {
+                _wasmAuth.MarkShouldReloadAuthState();
+            }
             _navigation.NavigateTo(ReturnUrl ?? "/");
             return;
         }

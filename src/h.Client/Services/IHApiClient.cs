@@ -13,6 +13,8 @@ public interface IHApiClient : IWasmOnly
     // Auth
     [Post("/api/v1/users/login")]
     Task<ApiResponse<AuthenticationResponse>> LoginUser([Body] LoginUserRequest request);
+    [Post("/api/v1/users/guest-login")]
+    Task<ApiResponse<GuestLoginResponse>> GuestLogin();
 
     [Post("/api/v1/users/register")]
     Task<ApiResponse<AuthenticationResponse>> RegisterUser([Body] RegisterUserRequest request);
