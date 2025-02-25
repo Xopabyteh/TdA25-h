@@ -57,6 +57,7 @@ header {   /*nemazat*/
     height: 60px;
     padding: 20px;
     box-sizing: content-box;
+    align-items: center;
 }
 
 .logo {    /*nemazat*/
@@ -90,7 +91,17 @@ aside { /*new layout css, do not delete!!!*/
     top: 20px;
 }
 
-.user a img {
+@media only screen and (max-width: 600px) {
+    aside {
+        flex-direction: row;
+    }
+
+    .display {
+        flex-direction: column;
+    }
+}
+
+.user a img, .user img {
     width: 50px;
 }
 
@@ -118,6 +129,20 @@ aside { /*new layout css, do not delete!!!*/
     justify-content: center;
 }
 
+@media only screen and (max-width: 600px) {
+    .user img, .user a img {
+        width: 25px;
+    }
+
+    .user #nickname {
+        font-size: 13pt;
+    }
+
+    #login, #logout {
+        font-size: 10pt;
+    }
+}
+
 .elo-logout {
     display: flex;
     flex-direction: row;
@@ -142,6 +167,11 @@ input[type="range"] {
 
 #TdA-logo {
     height: 60px;
+}
+@media only screen and (max-width: 600px) {
+    #TdA-logo {
+        height: 40px;
+    }
 }
 
 .primary-button {
@@ -233,6 +263,26 @@ input[type="range"] {
     border-left: 1px solid #d1d1d1;
     border-right: 1px solid #d1d1d1;
     padding: 31px;
+}
+
+@media only screen and (max-width: 600px) {
+    .split-sides {
+        flex-direction: column;
+    }
+
+    .split-sides .side {
+        border: none;
+        border-bottom: 1px solid #d1d1d1;
+        border-top: 1px solid #d1d1d1;
+    }
+
+    .split-sides .side:first-child {
+        border-top: none;
+    }
+
+    .split-sides .side:last-child {
+        border-bottom: none;
+    }
 }
 
 .split-sides .side:first-child {

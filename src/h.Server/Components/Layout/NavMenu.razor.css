@@ -77,6 +77,16 @@ nav #nav-foot a {
     top: calc(20px + 3rem);
 }
 
+@media only screen and (max-width: 600px) {
+    .nav-cont {
+        height: auto;
+    }
+
+    nav #nav-foot {
+        position: relative;
+        bottom: auto;
+    }
+}
 
 .hamburger {
     background: none;
