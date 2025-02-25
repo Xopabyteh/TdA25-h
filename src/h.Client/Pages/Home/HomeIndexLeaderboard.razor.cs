@@ -11,7 +11,7 @@ public partial class HomeIndexLeaderboard
 
 
     private const int GET_TOP_COUNT = 10;
-    private LeaderBoardEntryResponse[]? leaderBoardEntries;
+    private LeaderBoardEntryResponse[]? topNLeaderboardEntries;
     public HomeIndexLeaderboard(IHApiClient api)
     {
         _api = api;
@@ -22,6 +22,6 @@ public partial class HomeIndexLeaderboard
         if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return;
 
-        leaderBoardEntries = await _api.GetLeaderboard(0, GET_TOP_COUNT);
+        topNLeaderboardEntries = await _api.GetLeaderboard(0, GET_TOP_COUNT);
     }
 }

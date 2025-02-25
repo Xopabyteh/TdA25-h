@@ -38,11 +38,6 @@ public partial class RegisterIndex
 
         if (response.IsSuccessStatusCode)
         {
-            if(_authProvider is WasmAuthenticationStateProvider _wasmAuth)
-            {
-                await _wasmAuth.MarkUserAsAuthenticated(response.Content.Token);
-            }
-
             _navigation.NavigateTo(ReturnUrl ?? "/");
             return;
         }

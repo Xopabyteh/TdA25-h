@@ -15,6 +15,10 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
 
     private ClaimsPrincipal currentClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
+    /// <summary>
+    /// Gets current claim principal. Attempts to get it from http request if not in memory.
+    /// </summary>
+    /// <returns></returns>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         if(currentClaimsPrincipal is not {Identity: {IsAuthenticated: true } }) {
@@ -30,16 +34,11 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
         return new AuthenticationState(currentClaimsPrincipal);
     }
 
-    public async Task MarkUserAsAuthenticated(string jwtToken)
-    {
-        //await _sessionStorage.SetItemAsync(TOKEN_KEY, jwtToken);
-        
-        //NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-    }
-
     public async Task MarkUserAsLoggedOut()
     {
+        // Trigger a auth reload
         currentClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+        var currentAuth = await GetAuthenticationStateAsync();
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }

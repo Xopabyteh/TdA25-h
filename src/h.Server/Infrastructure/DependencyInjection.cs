@@ -18,12 +18,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using h.Server.Components.Services;
-using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Identity;
 using h.Contracts;
+using h.Client.Pages;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -36,6 +34,7 @@ public static class DependencyInjection
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
         builder.Services.AddScoped<BadRequestResponseMiddleware>();
+        builder.Services.AddScoped<GuestLoginEnsureMiddleware>();
 
         // Add custom json converters
         // Mainly for custom model bindings
@@ -134,13 +133,9 @@ public static class DependencyInjection
              .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
                 options.Cookie.Name = "h.Auth";
-                //options.LoginPath = "/login"; // Optional: Redirect to login if unauthenticated
-                //options.AccessDeniedPath = "/access-denied"; // Optional: Redirect to access denied page
-                //options.Events.OnRedirectToLogin = context =>
-                //{
-                //    context.Response.StatusCode = 401;
-                //    return Task.CompletedTask;
-                //};
+                options.LoginPath = PageRoutes.Auth.LoginIndex;
+                options.LogoutPath = PageRoutes.Auth.Logout;
+                options.ReturnUrlParameter = "r";
             })
              .AddPolicyScheme("HybridAuth", JwtBearerDefaults.AuthenticationScheme, options =>
             {
@@ -161,6 +156,7 @@ public static class DependencyInjection
         builder.Services.AddSingleton<PasswordHashService>();
         builder.Services.AddSingleton<JwtTokenCreationService>();
         builder.Services.AddSingleton<AppIdentityCreationService>();
+        builder.Services.AddSingleton<GuestLoginService>();
 
         // Matchmaking
         builder.Services.AddSingleton<IMatchmakingQueueService, InMemoryMatchmakingQueueService>();

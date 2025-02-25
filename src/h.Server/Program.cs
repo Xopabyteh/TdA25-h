@@ -50,6 +50,7 @@ app.UseCors(c =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GuestLoginEnsureMiddleware>();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

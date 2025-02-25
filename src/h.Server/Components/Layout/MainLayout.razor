@@ -19,6 +19,7 @@
     <div class="user">
         <AuthorizeView>
             <NotAuthorized>
+                @* this should not happen as long as auto guest login middleware exists... *@
                 <img src="IMG/pfps/pfp-grey.svg" alt="">
                 <div class="user-info">
                     <p id="nickname">Nepřihlášen</p>
@@ -26,16 +27,24 @@
                 </div>
             </NotAuthorized>
             <Authorized>
-
-
-                @if (isGuest || context.User.IsInRole(nameof(UserRole.Admin)))
-                {
-                    // Guest || admin -> don't show elo
+                @if(isGuest) {
+                    // Guest -> prompt to login
                     <a href="#">
                         <img src="/IMG/pfps/pfp-blue.svg" />
                     </a>
                     <div class="user-info">
-                        <p id="nickname"></p>
+                        <p id="nickname">@context.User?.Identity?.Name</p>
+                        <p id="login"><a href="@(PageRoutes.Auth.LoginIndexWithQuery(_navigationManager.Uri))" class="minor-link">Přihlásit se</a></p>
+                    </div>
+                }
+                else if (context.User.IsInRole(nameof(UserRole.Admin)))
+                {
+                    // admin -> don't show elo
+                    <a href="#">
+                        <img src="/IMG/pfps/pfp-blue.svg" />
+                    </a>
+                    <div class="user-info">
+                        <p id="nickname">@context.User?.Identity?.Name</p>
                         <div class="elo-logout">
                             <p id="logout"><a href="@(PageRoutes.Auth.LogoutWithQuery(_navigationManager.Uri))" class="red-link">Odhlásit se</a></p>
                         </div>
