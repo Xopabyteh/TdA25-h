@@ -1,0 +1,48 @@
+﻿@attribute [Route(PageRoutes.Leaderboard)]
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Leaderboard</PageTitle>
+
+<div class="sheet leaderboard">
+    <h2 class="blue">Leaderboard</h2>
+    <table class="leaderboard-list">
+        @for (var i = 0; i < leaderBoardEntries?.Length; i++)
+        {
+            var iCopy = i;
+            var entry = leaderBoardEntries[iCopy];
+            <tr>
+                <td class="place">@iCopy</td>
+                <td class="name">@entry.Username</td>
+                <td class="elo">ELO: <b>@entry.EloRating</b></td>
+                <td class="wins">
+                    <img src="/IMG/icons/win.svg" />
+                    69
+                </td> @*TODO doplnit do backendu*@
+                <td class="losses">
+                    <img src="/IMG/icons/lose.svg" />
+                    42
+                </td> @*TODO doplnit do backendu*@
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+    private List<User> items = Enumerable.Range(1, 100).Select(i => new User
+    {
+        GID = i,
+        GameDate = new DateOnly(2001, 09, 11),
+        Enemy = "vaclav.brdek",
+        IsX = (i % 2 == 0),
+        Winner = (i % 3 == 0)
+    }).ToList();
+
+    public class User
+    {
+        public int GID { get; set; }
+        public DateOnly GameDate { get; set; }
+        public string Enemy { get; set; }
+        public bool IsX { get; set; }
+        public bool Winner { get; set; }
+    }
+}

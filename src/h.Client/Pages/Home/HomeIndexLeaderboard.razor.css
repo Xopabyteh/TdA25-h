@@ -70,3 +70,10 @@
 .leadertable .name {
     font-weight: bold;
 }
+
+.blue-link {
+    text-decoration: underline;
+    color: var(--clr-primary-600);
+    font-weight: bold;
+    font-size: 15pt;
+}

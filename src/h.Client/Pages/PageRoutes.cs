@@ -2,6 +2,7 @@
 public static class PageRoutes
 {
     public const string HomeIndex = "/";
+    public const string Leaderboard = "/leaderboard";
 
     /// <summary>
     /// Singleplayer game

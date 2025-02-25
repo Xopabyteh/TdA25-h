@@ -1,0 +1,61 @@
+﻿.blue {
+    color: var(--clr-primary-600);
+}
+
+.leaderboard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.leaderboard-list {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.leaderboard table {
+    padding: 0;
+}
+
+    .leaderboard table tr {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        gap: 20px;
+        border-top: var(--clr-primary-600) solid 2px;
+        border-bottom: var(--clr-primary-600) solid 2px;
+        padding: 9px 26px;
+    }
+
+        .leaderboard table tr:first-child {
+            border-top: var(--clr-primary-600) solid 3.5px;
+        }
+
+        .leaderboard table tr:last-child {
+            border-bottom: var(--clr-primary-600) solid 3.5px;
+        }
+
+    .leaderboard table td {
+        min-width: 40px;
+    }
+
+.leaderboard .place {
+    font-weight: bold;
+    color: var(--clr-primary-600);
+    font-size: 20pt;
+}
+
+.leaderboard .name {
+    font-weight: bold;
+}
+
+.leaderboard .wins, .leaderboard .losses {
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+   

@@ -46,7 +46,7 @@
 
     <div class="leadertable">
         <table>
-            @for(var i = 3; i < leaderBoardEntries?.Length; i++)
+            @for (var i = 3; i < 10; i++) @*je to top 10 hracu, kdyz tak tam predtim bylo tohle leaderBoardEntries?.Length*@
             {
                 var iCopy = i;
                 var entry = leaderBoardEntries[iCopy];
@@ -58,4 +58,5 @@
             }
         </table>
     </div>
+    <a href="/leaderboard" class="blue-link">Kompletní leaderboard</a>
 </div>
