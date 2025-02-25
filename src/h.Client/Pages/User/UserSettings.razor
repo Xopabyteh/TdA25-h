@@ -9,7 +9,12 @@
 
 <h2>Nastavení účtu</h2>
 
-<EditForm Model="Model" class="settings" OnValidSubmit="HandleSubmit">
+<EditForm Model="Model" class="settings" OnValidSubmit="HandleSubmit"
+          style="display: flex;
+    flex-direction: column;
+    margin: 1em;
+    gap: 1.5em;
+    width: 20em;"> @*ano ty styles by meli bejt ve stylesheetu, ale tam proste nefungujou ani kdyz je to ::deep*@
     <FluentValidationValidator />
     <ValidationSummary />
 

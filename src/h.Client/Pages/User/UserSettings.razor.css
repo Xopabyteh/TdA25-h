@@ -2,7 +2,7 @@ h3 {
     color: var(--clr-primary-600);
 }
 
-.settings {
+::deep .settings {
     display: flex;
     flex-direction: column;
     margin: 1em;
