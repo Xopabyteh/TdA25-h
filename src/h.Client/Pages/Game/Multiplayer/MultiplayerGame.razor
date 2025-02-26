@@ -8,8 +8,11 @@
 
 <PageTitle>Ranked hra</PageTitle>
 
-<NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="HandleOnBeforeInternalNavigation" />
-@*TODO: leave button and binding w BE*@
+@* Try prevent navigation until game hasn't ended *@
+<NavigationLock
+    ConfirmExternalNavigation="!isGameEnded"
+    OnBeforeInternalNavigation="HandleOnBeforeInternalNavigation" />
+
 @if(isGameStarted)
 {
     <div class="center">
@@ -68,7 +71,7 @@
                         <img src="@ResourceHelper.GetSymbolSrc(playerOnTurn.Symbol)" alt="@playerOnTurn.Symbol.ToString()">
                     </div>
                 </div>
-                <button class="secondary-button">Vzdát se</button>
+                <button @onclick="HandleSurrender" class="secondary-button">Vzdát se</button>
                 <p>Vzdaní se negativně ovlivní tvé ELO</p>
             </div>
         </div>
@@ -122,7 +125,7 @@
                         <a class="back-to-list secondary-button" href="@PageRoutes.HomeIndex">Odejít</a>
                     </div>
                     <div class="col-2">
-                        <button disabled="@requestedRevange" @onclick="HandleRequestRevange" class="primary-button">
+                        <button disabled="@(requestedRevange || !gameEndedDetails!.Value.IsRevangePossible)" @onclick="HandleRequestRevange" class="primary-button">
                             @if (otherPlayerRequestedRevange)
                             {
                                 <text>Přijmout odvetu</text>

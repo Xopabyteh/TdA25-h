@@ -27,6 +27,7 @@ public static class PageRoutes
     {
         public const string MultiplayerGame = "/multiplayer-game";
         public const string MatchmakingQueue = "/multiplayer-game/queue";
+        //public static string MatchmakingQueueWithQuery(bool noAutoJoin) => $"/multiplayer-game/queue?noAutoJoin={noAutoJoin}";
         
         public const string FriendMatchChooseType = "/multiplayer-game/friend-query";
         public const string FriendJoinCode = "/multiplayer-game/friend-invite";

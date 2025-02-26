@@ -4,6 +4,7 @@ using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Pipelines;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
 
@@ -42,16 +43,45 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         await base.OnConnectedAsync();
     }
 
-    public override Task OnDisconnectedAsync(Exception? exception)
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
         // Remove from mapping
-        if(Context.User is {Identity: { IsAuthenticated: true } })
+        if(Context.User is not {Identity: { IsAuthenticated: true } })
         {
-            var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
-            _userIdMappingService.Remove(identity);
+            await base.OnDisconnectedAsync(exception);
+            return;
         }
 
-        return base.OnDisconnectedAsync(exception);
+        var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
+        _userIdMappingService.Remove(identity);
+        
+        // If player was part of a game, remove him and consider the other one as winner
+        var gameOfUser = _gameSessionService.GetGameByPlayer(identity);
+        if(gameOfUser is not null)
+        {
+            await HandlePlayerDisconnectMidGame(gameOfUser, identity);
+        }
+
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    private async Task HandlePlayerDisconnectMidGame(MultiplayerGameSession game, MultiplayerGameUserIdentity disconnectedPlayer)
+    {
+        var otherPlayer = game.Players.Single(p => p != disconnectedPlayer);
+        var otherPlayerConnId = _userIdMappingService.GetConnectionId(otherPlayer)
+            ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(otherPlayer);
+        
+        // End the game with results
+        _gameSessionService.EndGameEarly(game.Id, otherPlayer);
+
+        var endResult = _gameSessionService.GetEndResult(game.Id)
+            ?? throw new NullReferenceException("End result is null after ending the game early");
+
+        await HandleGameEndedAsync(game, endResult, isRevangePossible: false);
+
+        // Kill session (it wont be possible to revange anymore)
+        _gameSessionService.KillSession(game.Id);
     }
 
     public async Task ConfirmLoaded(Guid gameId)
@@ -165,23 +195,33 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             if(endResult is null)
                 throw new NullReferenceException("No next player on turn but end results are null"); // Should never happen
 
-            var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
+           await HandleGameEndedAsync(game, endResult, isRevangePossible: true);
+        }
+    }
 
-            // Notify players about the game over
-            foreach(var player in game.Players)
-            {
-                var connId = _userIdMappingService.GetConnectionId(player)
-                    ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(player);
+    private async Task HandleGameEndedAsync(
+        MultiplayerGameSession game,
+        MultiplayerGameSessionEndResult endResult,
+        bool isRevangePossible)
+    {
+        var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
 
-                await Clients.Client(connId)
-                    .GameEnded(new(
-                        endResult.IsDraw,
-                        MapToDto(endResult.WinnerId),
-                        updateResult.DidUpdateElo,
-                        updateResult.OldElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
-                        updateResult.NewElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default
-                    ));
-            }
+        // Notify players about the game over
+        foreach(var player in game.Players)
+        {
+            var connId = _userIdMappingService.GetConnectionId(player);
+            if(connId is null)
+                continue;
+
+            await Clients.Client(connId)
+                .GameEnded(new(
+                    endResult.IsDraw,
+                    MapToDto(endResult.WinnerId),
+                    updateResult.DidUpdateElo,
+                    updateResult.OldElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
+                    updateResult.NewElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
+                    isRevangePossible
+                ));
         }
     }
 
@@ -225,7 +265,33 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             .NewRevangeGameSessionCreated(newGame.Id);
     }
 
-    // Todo: leave game
+    public async Task Surrender(Guid gameId)
+    {
+        if (Context.User is not { Identity: { IsAuthenticated: true } })
+        {   
+            Context.Abort();
+            return;
+        }
+
+        var identity = MultiplayerGameUserIdentity.FromNETIdentity(Context.User);
+        var game = _gameSessionService.GetGame(gameId);
+        if (game is null)
+            throw new NullReferenceException("Game not found when surrendering"); // Should never happen
+
+        var connectionIds = game.Players
+            .Select(userId => _userIdMappingService.GetConnectionId(userId)
+                ?? throw IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity>.UserNotPresentException(identity))
+            .ToArray();
+
+        // End the game with results
+        var otherPlayer = game.Players.Single(p => p != identity);
+        _gameSessionService.EndGameEarly(gameId, otherPlayer);
+
+        var endResult = _gameSessionService.GetEndResult(gameId)
+            ?? throw new NullReferenceException("End result is null after ending the game early");
+
+        await HandleGameEndedAsync(game, endResult, isRevangePossible: true);
+    }
 
     // Helper methods
     private MultiplayerGameUserIdentityDTO MapToDto(MultiplayerGameUserIdentity identity)

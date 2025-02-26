@@ -221,8 +221,20 @@ public partial class MultiplayerGame : IAsyncDisposable
                 period: TimeSpan.FromMilliseconds(ClockUpdateIntervalMs)
             );
 
+    private async Task HandleSurrender()
+    {
+        if(hubConnection is null)
+            return;
+
+        // Todo: warning or smth?
+        await hubConnection!.InvokeAsync("Surrender", gameDetails.GameId);
+    }
+
     private async Task HandleOnBeforeInternalNavigation(LocationChangingContext context)
     {
+        if(isGameEnded)
+            return; // Don't block nav after game ended
+
         var isConfirmed = await _js.InvokeAsync<bool>(
             "confirm", 
             "Opravdu chcete odejít?");
@@ -232,7 +244,6 @@ public partial class MultiplayerGame : IAsyncDisposable
             context.PreventNavigation();
         }
     }
-
     public async ValueTask DisposeAsync()
     {
         if(clockTimer is not null)

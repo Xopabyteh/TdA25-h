@@ -56,4 +56,19 @@ public interface IMultiplayerGameSessionService
     public MultiplayerGameSession? GetGame(Guid byGameId);
 
     public int GetActiveGamesCount();
+
+    public MultiplayerGameSession? GetGameByPlayer(MultiplayerGameUserIdentity palyer);
+    /// <summary>
+    /// Don't forget to kill a session after it's done.
+    /// It is essentially a dispose.
+    /// This is performed on all games in a background task.
+    /// (If you kill a session, a revange match will not be possible anymore)
+    /// </summary>
+    public void KillSession(Guid gameId);
+
+    /// <summary>
+    /// Ends the game early. Does not kill it.
+    /// </summary>
+    /// <param name="winner">When null, game is a draw</param>
+    public void EndGameEarly(Guid gameId, MultiplayerGameUserIdentity? winner);
 }

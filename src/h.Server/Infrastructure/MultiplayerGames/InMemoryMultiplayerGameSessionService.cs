@@ -10,7 +10,18 @@ namespace h.Server.Infrastructure.MultiplayerGames;
 
 public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionService
 {
+    /// <summary>
+    /// Key: Game id,
+    /// Value: game
+    /// </summary>
     private readonly ConcurrentDictionary<Guid, MultiplayerGameSession> _gameSessions
+        = new(concurrencyLevel: -1, capacity: 30);
+
+    /// <summary>
+    /// Key: Identity session id,
+    /// Value: game
+    /// </summary>
+    private readonly ConcurrentDictionary<Guid, MultiplayerGameSession> _playersToGameMapping
         = new(concurrencyLevel: -1, capacity: 30);
 
     private readonly TimeProvider _timeProvider;
@@ -64,7 +75,11 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         );
 
         _gameSessions[gameId] = gameSession;
-        
+        foreach (var player in players)
+        {
+            _playersToGameMapping[player.SessionId] = gameSession;
+        }
+
         return gameSession;
     }
 
@@ -195,12 +210,49 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         );
 
         _gameSessions[gameId] = gameSession;
-        
+        foreach (var player in players)
+        {
+            _playersToGameMapping[player.SessionId] = gameSession;
+        }
+
         return gameSession;
     }
+    public void KillSession(Guid gameId)
+    {
+        var exists = _gameSessions.TryGetValue(gameId, out var gameSession);
+        if (!exists)
+            return;
 
+        foreach (var player in gameSession!.Players)
+        {
+            _playersToGameMapping.TryRemove(player.SessionId, out _);
+        }
+
+        _gameSessions.TryRemove(gameId, out _);
+    }
     public int GetActiveGamesCount()
     {
         return _gameSessions.Count;
+    }
+
+    public MultiplayerGameSession? GetGameByPlayer(MultiplayerGameUserIdentity palyer)
+    {
+        var exists = _playersToGameMapping.TryGetValue(palyer.SessionId, out var gameSession);
+        
+        return exists
+            ? gameSession
+            : null;
+    }
+
+    public void EndGameEarly(Guid gameId, MultiplayerGameUserIdentity? winner)
+    {
+        var exists = _gameSessions.TryGetValue(gameId, out var gameSession);
+        if (!exists)
+            throw new SharedErrors.MultiplayerGames.GameNotFoundException();
+
+        gameSession!.EndGame(new(
+            false,
+            winner
+        )); 
     }
 }

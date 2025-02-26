@@ -11,5 +11,6 @@ public readonly record struct MultiplayerGameEndedResponse(
     MultiplayerGameUserIdentityDTO? WinnerId,
     bool DidEloChange,
     int OldElo,
-    int NewElo
+    int NewElo,
+    bool IsRevangePossible
 );
