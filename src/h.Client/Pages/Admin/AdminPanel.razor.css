@@ -59,6 +59,16 @@
     display: none; /*mel by to jinak byt inline-block*/
 }
 
+.line {
+    background: var(--clr-gray-500);
+    height: 1px;
+    width: 100%;
+}
+
+.ban button {
+    box-sizing: content-box;
+}
+
 @media only screen and (max-width: 600px) {
     .admin-search {
         align-items: inherit;
