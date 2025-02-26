@@ -37,7 +37,8 @@ public static class GetUserById
             user.Elo.Rating,
             user.WinAmount,
             user.DrawAmount,
-            user.LossAmount
+            user.LossAmount,
+            user.BannedFromRankedMatchmakingAt
         );
 
         return Results.Ok(response);

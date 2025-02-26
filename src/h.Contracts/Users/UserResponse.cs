@@ -16,5 +16,6 @@ public readonly record struct UserResponse(
     int Elo,
     int Wins,
     int Draws,
-    int Losses
+    int Losses,
+    DateTime? BannedFromRankedMatchmakingAt
 );

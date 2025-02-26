@@ -42,7 +42,8 @@ public static class GetCurrentUserInfo
             user.Elo.Rating,
             user.WinAmount,
             user.DrawAmount,
-            user.LossAmount
+            user.LossAmount,
+            user.BannedFromRankedMatchmakingAt
         );
 
         return Results.Ok(response);

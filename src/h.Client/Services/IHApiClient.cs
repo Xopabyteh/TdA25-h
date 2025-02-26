@@ -29,6 +29,11 @@ public interface IHApiClient : IWasmOnly
     // User
     [Put("/api/v1/users/self")]
     Task<IApiResponse> UpdateUserSelf([Body] UpdateUserSelfRequest request);
+    [Put("/api/v1/users/admin-update/{id}")]
+    Task<IApiResponse<UserResponse>> AdminUpdateUser(Guid id, [Body] AdminUpdateUserRequest request);
+
+    [Get("/api/v1/users/find")]
+    Task<ApiResponse<UserResponse>> FindUser([Query] string query);
 
     // Invitation
     [Post("/api/v1/invitation/create")]

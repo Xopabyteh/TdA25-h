@@ -81,7 +81,8 @@ public static class RegisterUser
                     user.Elo.Rating,
                     user.WinAmount,
                     user.DrawAmount,
-                    user.LossAmount
+                    user.LossAmount,
+                    user.BannedFromRankedMatchmakingAt
                 )
             )
         );

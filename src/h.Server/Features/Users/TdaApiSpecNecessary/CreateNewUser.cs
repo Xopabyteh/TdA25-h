@@ -58,7 +58,8 @@ public static class CreateNewUser
                 user.Elo.Rating,
                 user.WinAmount,
                 user.DrawAmount,
-                user.LossAmount
+                user.LossAmount,
+                user.BannedFromRankedMatchmakingAt
             )
         );
     }

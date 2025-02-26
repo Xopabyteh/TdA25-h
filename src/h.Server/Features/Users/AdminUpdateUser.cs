@@ -7,15 +7,16 @@ using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace h.Server.Features.Users.TdaApiSpecNecessary;
+namespace h.Server.Features.Users;
 
-public static class UpdateUser
+public static class AdminUpdateUser
 {
     public class Endpoint : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/api/v1/users/{id}", Handle);
+            app.MapPut("/api/v1/users/admin-update/{id}", Handle)
+                .RequireAuthorization(nameof(AppPolicies.IsAdmin));
         }
     }
 
@@ -24,7 +25,7 @@ public static class UpdateUser
         [FromServices] PasswordHashService passwordHashService,
         [FromServices] UserService userService,
         [FromRoute] Guid id,
-        UpdateUserRequest request,
+        [FromBody] AdminUpdateUserRequest request,
         CancellationToken cancellationToken)
     {
         var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Uuid == id, cancellationToken);
@@ -49,6 +50,9 @@ public static class UpdateUser
 
         user.Username = request.Username;
         user.Email = request.Email;
+        user.WinAmount = request.WinAmount;
+        user.DrawAmount = request.DrawAmount;
+        user.LossAmount = request.LossAmount;
         user.Elo = new()
         {
             Rating = request.Elo
@@ -66,7 +70,8 @@ public static class UpdateUser
             user.Elo.Rating,
             user.WinAmount,
             user.DrawAmount,
-            user.LossAmount
+            user.LossAmount,
+            user.BannedFromRankedMatchmakingAt  
         );
 
         return Results.Ok(response);

@@ -1,3 +1,4 @@
+@using h.Contracts.Users
 @attribute [Route(PageRoutes.Admin.AdminPanel)]
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @rendermode InteractiveWebAssembly
@@ -6,33 +7,94 @@
 
 <h2>Admin panel</h2>
 
-<div class="admin-search">
-    <input type="text" class="text-input" placeholder="Nickname / Email / UUID">
-    <button class="primary-button">Zobrazit uživatele</button>
-</div>
+<form class="admin-search" @onsubmit="FindUser">
+    <input @bind="query" type="text" class="text-input" placeholder="Nickname / Email / UUID">
+    <button type="submit" class="primary-button">Zobrazit uživatele</button>
+</form>
 
 @*popup*@
 <p class="admin-error">Tento uživatel neexistuje / Tento uživatel je admin / Nic</p>
-
-<div class="admin-options-group">
-    <p><b>vaclav.brdek</b><button class="edit-button"></button></p>
-    <p>vaclav.brdek@mensagymnazium.cz<button class="edit-button"></button></p>
-</div>
-
-<div class="admin-flex-element admin-options-group">
-    <div>
-        <p><b>Heslo</b></p>
-        <p>*****<button class="edit-button"></button></p>
+@* 
+@if(_user is not null) {
+    <div class="admin-options-group">
+        <p><b>@_user.Value.Username</b><button class="edit-button"></button></p>
+        <p>@_user.Value.Email<button class="edit-button"></button></p>
     </div>
-    <div>
-        <p><b>ELO</b></p>
-        <p>9<button class="edit-button"></button></p>
+
+    <div class="admin-flex-element admin-options-group">
+        <div>
+            <p><b>Heslo</b></p>
+            <p>*****<button class="edit-button"></button></p>
+        </div>
+        <div>
+            <p><b>ELO</b></p>
+            <p>9<button class="edit-button"></button></p>
+        </div>
     </div>
-</div>
 
-<div class="admin-options-group">
-    <p><b>Počet vyhraných her</b></p>
-    <p>65465415<button class="edit-button"></button></p>
-</div>
+    <div class="admin-options-group">
+        <p><b>Počet vyhraných her</b></p>
+        <p>65465415<button class="edit-button"></button></p>
+    </div>
 
-<button class="danger-button admin-options-group">Zabanovat uživatele</button>
+    @if(_user.Value.BannedFromRankedMatchmakingAt is null) {
+        <button class="danger-button admin-options-group">Zabanovat uživatele</button>
+    } else {
+        <button class="danger-button admin-options-group">Odbanovat uživatele</button>
+    }
+}
+
+ *@
+
+@if(_user is not null) {
+    <EditForm Model="Model" class="settings" OnValidSubmit="HandleUpdate"
+              style="display: flex;
+    flex-direction: column;
+    margin: 1em;
+    gap: 1.5em;
+    width: 20em;">
+        <FluentValidationValidator />
+        <ValidationSummary />
+
+        <div class="nickname">
+            <h3>Nickname</h3>
+            <input @bind="Model.Username" type="text" class="text-input nick" name="nick"/>
+        </div>
+        <div class="email">
+            <h3>Email</h3>
+            <input @bind="Model.Email" type="email" class="text-input" name="mail"/>
+        </div>
+        <div>
+            <h3>Elo</h3>
+            <input @bind="Model.Rating" type="number" class="text-input"/>
+        </div>
+        <div>
+            <h3>Počet výher</h3>
+            <input @bind="Model.WinAmount" type="number" class="text-input" />
+        </div>
+        <div>
+            <h3>Počet proher</h3>
+            <input @bind="Model.LossAmount" type="number" class="text-input"/>
+        </div>
+        <div>
+            <h3>Počet remíz</h3>
+            <input @bind="Model.DrawAmount" type="number" class="text-input"/>
+        </div>
+
+        <div class="pwd">
+            <h3>Heslo</h3>
+            @if (isChangingPassword)
+            {
+                <input @bind="Model.Password" type="password" class="text-input mail" name="password">
+            }
+            else
+            {
+                <button @onclick="() => isChangingPassword = true" class="secondary-button">Změnit heslo</button>
+            }
+        </div>
+        <div class="line"></div>
+        <div class="save">
+            <button type="submit" class="primary-button">Uložit nastavení</button>
+        </div>
+    </EditForm>
+}

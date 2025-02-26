@@ -30,7 +30,8 @@ public static class GetAllUsers
                 u.Elo.Rating,
                 u.WinAmount,
                 u.DrawAmount,
-                u.LossAmount
+                u.LossAmount,
+                u.BannedFromRankedMatchmakingAt
             ))
             .ToListAsync(cancellationToken);
         return Results.Ok(users);

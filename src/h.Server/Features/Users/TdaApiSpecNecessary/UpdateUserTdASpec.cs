@@ -9,28 +9,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Features.Users.TdaApiSpecNecessary;
 
-public static class UpdateUserSelf
+public static class AdminUpdateUser
 {
     public class Endpoint : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/api/v1/users/self", Handle)
-                .RequireAuthorization();
+            app.MapPut("/api/v1/users/{id}", Handle);
         }
     }
 
     public static async Task<IResult> Handle(
-        [FromBody] UpdateUserSelfRequest request,
         [FromServices] AppDbContext db,
         [FromServices] PasswordHashService passwordHashService,
         [FromServices] UserService userService,
-        HttpContext context,
+        [FromRoute] Guid id,
+        UpdateUserRequestTdASpec request,
         CancellationToken cancellationToken)
     {
-        var currentUserId = context.User.GetUserId();
-
-        var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Uuid == currentUserId, cancellationToken);
+        var user = await db.UsersDbSet.FirstOrDefaultAsync(u => u.Uuid == id, cancellationToken);
         if (user is null)
             return ErrorResults.NotFound([SharedErrors.User.UserNotFound()]);
 
@@ -52,6 +49,10 @@ public static class UpdateUserSelf
 
         user.Username = request.Username;
         user.Email = request.Email;
+        user.Elo = new()
+        {
+            Rating = request.Elo
+        };
 
         db.Update(user);    
         await db.SaveChangesAsync(cancellationToken);
@@ -66,7 +67,7 @@ public static class UpdateUserSelf
             user.WinAmount,
             user.DrawAmount,
             user.LossAmount,
-            user.BannedFromRankedMatchmakingAt
+            user.BannedFromRankedMatchmakingAt  
         );
 
         return Results.Ok(response);
