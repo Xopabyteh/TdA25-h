@@ -1,0 +1,70 @@
+﻿@attribute [Route(PageRoutes.User.GameArchive)]
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Hra 123456</PageTitle>
+
+<div class="center">
+    <h1>Archiv her</h1>
+    <div class="sheet">
+        <div class="gamedata-row">
+            <h1 class="blue">Hra 69</h1>
+            <p>ze dne 6. 1. 2025</p>
+            <div class="gamedata-vs">
+                <div class="player">
+                    <img src="/IMG/X/X_cervene.svg" alt="">
+                    <p>evzen.rozinka</p>
+                </div>
+                <p class="vs">vs</p>
+                <div class="player">
+                    <img src="/IMG/O/O_modre.svg" alt="">
+                    <p>vaclav.brdek</p>
+                </div>
+            </div>
+        </div>
+        <a href="/user/game-history/" class="backbutton blue" style="margin-bottom: 30px; display: block">Zpět do historie</a>
+        <div class="split-sides">
+            <div class="side">
+                <h2 class="blue">Poslední stav</h2>
+                <div class="mid-game">
+                    @for (int y = 0; y < 15; y++)
+                    {
+                        <div class="mid-row">
+                            @for (int x = 0; x < 15; x++)
+                            {
+                                int id1D = y * 15 + x;
+                                var xCopy = x;
+                                var yCopy = y;
+
+                                string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
+
+                                <div class="cell empty"
+                                     style="width: 20px; background-color: @background; height: inherit"
+                                     data-x="@xCopy"
+                                     data-y="@yCopy">
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="side gameresult">
+                <div class="times">
+                    <div class="player">
+                        <p>Zbývající čas</p>
+                        <img src="/IMG/X/X_cervene.svg" alt="">
+                    </div>
+                    <h2 class="blue">00:00</h2>
+                    <div class="player" style="margin-top: 40px">
+                        <p>Zbývající čas</p>
+                        <img src="/IMG/O/O_modre.svg" alt="">
+                    </div>
+                    <h2 class="blue">00:00</h2>
+                </div>
+                <div class="winner sheet">
+                    <p>Výherce</p>
+                    <img src="/IMG/X/X_cervene.svg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
