@@ -8,7 +8,8 @@
 }
 
 .text-input {
-    min-width: 230px;
+    min-width: 15rem;
+    box-sizing: content-box;
 }
 
 .register-btn {
