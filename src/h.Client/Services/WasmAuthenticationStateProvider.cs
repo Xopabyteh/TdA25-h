@@ -22,16 +22,24 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
     /// <returns></returns>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        if(shouldReloadAuthState || currentClaimsPrincipal is not {Identity: {IsAuthenticated: true } }) {
+        var didAuthChange = false;
+
+        if (shouldReloadAuthState || currentClaimsPrincipal is not {Identity: {IsAuthenticated: true } }) {
             // Try get current user from http request 
             var claimDTOs = await _api.GetCurrentUserClaims();
             if (claimDTOs is {Length: > 0})
             {
                 var claims = claimDTOs.Select(c => new Claim(c.Type, c.Value)).ToArray();
                 currentClaimsPrincipal = NewCookiePrincipalFromClaims(claims);
+                didAuthChange = true;
             }
 
             shouldReloadAuthState = false;
+        }
+
+        if(didAuthChange)
+        {
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
         return new AuthenticationState(currentClaimsPrincipal);
@@ -49,11 +57,15 @@ public class WasmAuthenticationStateProvider : AuthenticationStateProvider
     public void MarkUserAsAuthenticated(Claim[] claims)
     {
         currentClaimsPrincipal = NewCookiePrincipalFromClaims(claims);
+
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     public void MarkShouldReloadAuthState()
     {
         shouldReloadAuthState = true;
+
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     private static ClaimsPrincipal NewCookiePrincipalFromClaims(Claim[] claims)

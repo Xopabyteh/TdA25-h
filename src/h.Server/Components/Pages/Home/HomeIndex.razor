@@ -1,5 +1,5 @@
 ﻿@attribute [Route(PageRoutes.HomeIndex)]
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 
 <PageTitle>Vítejte ve Think different Academy</PageTitle>
 
@@ -13,8 +13,8 @@
         <div class="info-button">
             <NavLink href="/multiplayer-game/queue" class="primary-button">Připoj se do online hry</NavLink>
             <div class="text-field">
-                <p><b>X</b> hráčů online</p>
-                <p><b>Y</b> probíhajících her</p>
+                <p><b>@playersOnline</b> hráčů online</p>
+                <p><b>@gamesInProgress</b> probíhajících her</p>
             </div>
         </div>
         <p>nebo se připoj ke kamarádovi</p>
@@ -74,7 +74,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private int? roomInviteCode;
-}

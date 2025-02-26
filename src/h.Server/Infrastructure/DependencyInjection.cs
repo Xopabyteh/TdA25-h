@@ -22,6 +22,7 @@ using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using h.Contracts;
 using h.Client.Pages;
+using h.Server.Infrastructure.Leaderboard;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -172,6 +173,9 @@ public static class DependencyInjection
 
         // Audit log
         builder.Services.AddScoped<AuditLogService>();
+
+        // Leaderboard
+        builder.Services.AddScoped<LeaderboardService>();   
 
         return builder;
     }

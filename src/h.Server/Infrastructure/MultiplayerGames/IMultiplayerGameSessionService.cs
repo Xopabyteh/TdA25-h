@@ -54,4 +54,6 @@ public interface IMultiplayerGameSessionService
     public MultiplayerGameSessionEndResult? GetEndResult(Guid gameId);
 
     public MultiplayerGameSession? GetGame(Guid byGameId);
+
+    public int GetActiveGamesCount();
 }

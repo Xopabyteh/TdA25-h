@@ -198,4 +198,9 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         
         return gameSession;
     }
+
+    public int GetActiveGamesCount()
+    {
+        return _gameSessions.Count;
+    }
 }

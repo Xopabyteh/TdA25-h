@@ -1,4 +1,4 @@
-﻿@rendermode InteractiveWebAssembly
+﻿@rendermode InteractiveServer
 
 <div class="leaderboard-container">
     <h1 class="blue">Leaderboard</h1>
@@ -7,7 +7,7 @@
             @if (topNLeaderboardEntries?.Length > 1)
             {
                 <p class="name">@topNLeaderboardEntries[1].Username</p>
-                <p class="elo">ELO: @topNLeaderboardEntries[1].EloRating</p>
+                <p class="elo">ELO: @topNLeaderboardEntries[1].Rating</p>
             }
             else
             {
@@ -20,7 +20,7 @@
             @if (topNLeaderboardEntries?.Length > 0)
             {
                 <p class="name">@topNLeaderboardEntries[0].Username</p>
-                <p class="elo">ELO: @topNLeaderboardEntries[0].EloRating</p>
+                <p class="elo">ELO: @topNLeaderboardEntries[0].Rating</p>
             }
             else
             {
@@ -33,7 +33,7 @@
             @if (topNLeaderboardEntries?.Length > 2)
             {
                 <p class="name">@topNLeaderboardEntries[2].Username</p>
-                <p class="elo">ELO: @topNLeaderboardEntries[2].EloRating</p>
+                <p class="elo">ELO: @topNLeaderboardEntries[2].Rating</p>
             }
             else
             {
@@ -53,7 +53,7 @@
                 <tr>
                     <td class="place">@iCopy</td>
                     <td class="name">@entry.Username</td>
-                    <td class="elo">ELO: @entry.EloRating</td>
+                    <td class="elo">ELO: @entry.Rating</td>
                 </tr>
             }
         </table>
