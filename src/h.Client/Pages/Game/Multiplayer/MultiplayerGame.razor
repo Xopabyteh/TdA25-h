@@ -1,3 +1,4 @@
+
 @using System.Data.SqlTypes
 @using h.Client.Services
 
@@ -7,6 +8,7 @@
 
 <PageTitle>Ranked hra</PageTitle>
 
+<NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="HandleOnBeforeInternalNavigation" />
 @*TODO: leave button and binding w BE*@
 @if(isGameStarted)
 {

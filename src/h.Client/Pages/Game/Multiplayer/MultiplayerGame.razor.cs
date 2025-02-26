@@ -4,12 +4,16 @@ using h.Contracts.MultiplayerGames;
 using h.Primitives;
 using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
 using System.Runtime.InteropServices;
 
 namespace h.Client.Pages.Game.Multiplayer;
 
 // Todo: client prediction and server reconciliation? (for smoother experience)
+// Todo: rejoin ability
+// Todo: alert on leave
 public partial class MultiplayerGame : IAsyncDisposable
 {
     public const string GameIdSessionStorageKey = "h.multiplayerSession.gameId";
@@ -18,6 +22,7 @@ public partial class MultiplayerGame : IAsyncDisposable
     private readonly ISessionStorageService _sessionStorageService;
     private readonly NavigationManager _navigationManager;
     private readonly IWasmCurrentUserStateService _userStateService;
+    private readonly IJSRuntime _js;
 
     private Guid gameId;
     private HubConnection? hubConnection;
@@ -63,11 +68,12 @@ public partial class MultiplayerGame : IAsyncDisposable
     private string GetClockCss(Guid sessionid)
         => sessionid == playerOnTurn.Identity.SessionId ? "turn" : "";
 
-    public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager, IWasmCurrentUserStateService userStateService)
+    public MultiplayerGame(ISessionStorageService sessionStorageService, NavigationManager navigationManager, IWasmCurrentUserStateService userStateService, IJSRuntime js)
     {
         _sessionStorageService = sessionStorageService;
         _navigationManager = navigationManager;
         _userStateService = userStateService;
+        _js = js;
     }
 
     protected override async Task OnInitializedAsync()
@@ -214,6 +220,18 @@ public partial class MultiplayerGame : IAsyncDisposable
                 dueTime: TimeSpan.FromSeconds(0),
                 period: TimeSpan.FromMilliseconds(ClockUpdateIntervalMs)
             );
+
+    private async Task HandleOnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var isConfirmed = await _js.InvokeAsync<bool>(
+            "confirm", 
+            "Opravdu chcete odejít?");
+
+        if (!isConfirmed)
+        {
+            context.PreventNavigation();
+        }
+    }
 
     public async ValueTask DisposeAsync()
     {
