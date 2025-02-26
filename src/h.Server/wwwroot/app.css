@@ -332,6 +332,20 @@ a.disabled {
     }
 
 
+@media only screen and (max-width: 600px) {
+    .userbox {
+        margin-left: calc((100% - 460px) / 2 + 140px); /*more magic numbers*/
+    }
+
+    .userbox img {
+        width: 50px;
+    }
+
+    .userbox p {
+        font-size: 23px;
+    }
+}
+
 .blue {
     color: var(--clr-primary-600);
 }

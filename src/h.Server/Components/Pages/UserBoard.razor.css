@@ -139,3 +139,15 @@ button:hover {
     font-weight: bold;
     text-decoration: underline;
 }
+
+@media only screen and (max-width: 600px) {
+    .userfields {
+        flex-direction: column;
+    }
+
+    .userfield {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+}
