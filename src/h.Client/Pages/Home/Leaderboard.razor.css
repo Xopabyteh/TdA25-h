@@ -39,7 +39,9 @@
         }
 
     .leaderboard table td {
-        min-width: 40px;
+        min-width: 20px;
+        display: flex;
+        justify-content: center;
     }
 
 .leaderboard .place {
@@ -52,11 +54,15 @@
     font-weight: bold;
 }
 
-.leaderboard .wins, .leaderboard .losses {
+.leaderboard .wins, .leaderboard .losses, .leaderboard .draws {
     font-weight: bold;
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
     align-items: center;
+}
+
+td img {
+    width: 25px;
 }
    
