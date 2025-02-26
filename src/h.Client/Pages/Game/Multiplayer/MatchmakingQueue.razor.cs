@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
@@ -39,6 +41,9 @@ public partial class MatchmakingQueue : IAsyncDisposable
     private Timer? refreshQueueStatisticsTimer;
 
     private bool isLeavePopupVisible = false;
+    private bool isCountingDown = false;
+
+    private int Progress = 100;
 
     public MatchmakingQueue(
         IHApiClient api,
@@ -130,6 +135,21 @@ public partial class MatchmakingQueue : IAsyncDisposable
             isJoinedQueue = false;
 
             // Todo: start countdown for automatic cancellation
+            isCountingDown = true;
+            Progress = 100;
+
+            int totalTime = 30000; // 30 seconds in milliseconds
+            int steps = 100;        // Decrease in 100 steps (1% at a time)
+            int delay = totalTime / steps; // Delay to make it exactly 30s
+
+            for (int i = 100; i >= 0; i--)
+            {
+                Progress = i;
+                await Task.Delay(delay); // Adjusts to match 30 seconds
+                StateHasChanged(); // Update UI
+            }
+
+            isCountingDown = false;
 
             await InvokeAsync(StateHasChanged);
         });

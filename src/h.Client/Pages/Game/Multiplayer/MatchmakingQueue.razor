@@ -46,13 +46,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="divider"></div>
-                        <div class="accept-loader"></div> @*TODO: loader*@
-                        <p>Čas na přijetí hry končí v @currentMatching?.ExpiresAt.LocalDateTime</p>
-                        <div class="queue-btn-row">
-                            <button class="primary-button" @onclick="HandleAcceptMatching">Přijmout</button>
-                            <button class="secondary-button" @onclick="HandleDeclineMatching">Odmítnout</button>
-                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="accept-loader">
+                        <div class="load-status" style="width: @Progress%"></div>
+                    </div> @*TODO: loader*@
+                    <p>Čas na přijetí hry končí v @currentMatching?.ExpiresAt.LocalDateTime</p>
+                    <div class="queue-btn-row">
+                        <button class="primary-button" @onclick="HandleAcceptMatching">Přijmout</button>
+                        <button class="secondary-button" @onclick="HandleDeclineMatching">Odmítnout</button>
                     </div>
                 </div>
             } else {
