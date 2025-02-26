@@ -7,10 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Serialization;
 
 namespace h.Client.Pages.Game.Multiplayer;
 
@@ -34,16 +31,20 @@ public partial class MatchmakingQueue : IAsyncDisposable
         : currentMatching!.Value.Player1;
 
     private bool isJoinedQueue;
+
+    // Queue statistics - how many players are in queue and position in queue
     private int? positionInQueue;
     private int? totalPlayersInQueue;
-
     private const int QueueRefreshIntervalMS = 5000;
     private Timer? refreshQueueStatisticsTimer;
 
     private bool isLeavePopupVisible = false;
-    private bool isCountingDown = false;
 
-    private int Progress = 100;
+    private Timer? acceptCountdownTimer;
+    private bool isCountingDown = false;
+    private double acceptProgress = 100;
+    
+    private bool isPageFirstLoaded;
 
     public MatchmakingQueue(
         IHApiClient api,
@@ -90,6 +91,41 @@ public partial class MatchmakingQueue : IAsyncDisposable
 
         // Join queue on load
         await HandleJoinQueue();
+
+        isPageFirstLoaded = true;
+    }
+
+    /// <summary>
+    /// Sets progress bar percentage, shown in UI.
+    /// Also, after countdown ends tries to cancel match.
+    /// </summary>
+    /// <param name="endTime"></param>
+    private void StartAcceptMatchProgressBarCountdown(DateTimeOffset endTime)
+    {
+        var startTime = DateTime.UtcNow;
+        var totalDurationMs = (endTime - startTime).TotalMilliseconds;
+
+        isCountingDown = true;
+        acceptCountdownTimer = new Timer(
+            async _ =>
+            {
+                var elapsedMs = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                acceptProgress = Math.Max(100 - (elapsedMs / totalDurationMs * 100), 0);
+
+                if (acceptProgress <= 0)
+                {
+                    acceptCountdownTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                    isCountingDown = false;
+                }
+
+                await InvokeAsync(StateHasChanged); // Update UI without blocking
+            }, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(100));
+    }
+
+    private void StopProgressBarCountdown()
+    {
+        acceptCountdownTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        isCountingDown = false;
     }
 
     private async Task RefreshQueueStatistics()
@@ -134,22 +170,8 @@ public partial class MatchmakingQueue : IAsyncDisposable
             // We are no longer in queue
             isJoinedQueue = false;
 
-            // Todo: start countdown for automatic cancellation
-            isCountingDown = true;
-            Progress = 100;
-
-            int totalTime = 30000; // 30 seconds in milliseconds
-            int steps = 100;        // Decrease in 100 steps (1% at a time)
-            int delay = totalTime / steps; // Delay to make it exactly 30s
-
-            for (int i = 100; i >= 0; i--)
-            {
-                Progress = i;
-                await Task.Delay(delay); // Adjusts to match 30 seconds
-                StateHasChanged(); // Update UI
-            }
-
-            isCountingDown = false;
+            // Start countdown
+            StartAcceptMatchProgressBarCountdown(response.ExpiresAt);
 
             await InvokeAsync(StateHasChanged);
         });
@@ -162,6 +184,7 @@ public partial class MatchmakingQueue : IAsyncDisposable
             if (response.MatchId != currentMatching!.Value.MatchId)
                 throw new Exception("Match cancelled does not match current match");
 
+            StopProgressBarCountdown();
             CancelMatching(response.NewPositionInQueue);
 
             await InvokeAsync(StateHasChanged);
@@ -209,7 +232,7 @@ public partial class MatchmakingQueue : IAsyncDisposable
         if (currentMatching is null)
             return;
 
-        await _api.DeclineMatch(currentMatching!.Value.MatchId);    
+        await _api.DeclineMatch(currentMatching!.Value.MatchId); 
     }
 
     public async Task HandleJoinQueue()
@@ -225,6 +248,9 @@ public partial class MatchmakingQueue : IAsyncDisposable
 
     public async Task HandleLeaveQueue()
     {
+        isLeavePopupVisible = false; // Incase it was open
+        positionInQueue = null;
+
         await _api.LeaveMatchmaking();
         
         isJoinedQueue = false;
@@ -234,7 +260,10 @@ public partial class MatchmakingQueue : IAsyncDisposable
     {
         locationChangedEventDisposable?.Dispose();
 
-        if(refreshQueueStatisticsTimer is not null)
+        if (acceptCountdownTimer is not null)
+            await acceptCountdownTimer.DisposeAsync();
+
+        if (refreshQueueStatisticsTimer is not null)
             await refreshQueueStatisticsTimer.DisposeAsync();
 
         if (hubConnection is not null)

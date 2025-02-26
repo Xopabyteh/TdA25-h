@@ -18,7 +18,7 @@
     gap: 15px;
 }
 
-.user-cont-game .pfp {
+.pfp {
     width: 50px;
     height: 50px;
     background-image: url("/IMG/pfps/pfp-blue.svg");
@@ -26,7 +26,7 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
-.user-cont-game .pfp.loader {
+.pfp.loader {
     background-image: url("/IMG/loader.gif");
     filter: saturate(0%) opacity(40%);
 }
@@ -107,14 +107,16 @@
     background-color: var(--clr-gray-500);
     border-radius: 3px;
     height: 30px;
-    width: 400px;
-    width: 100%;
 }
 
 .load-status {
     background-color: #0070BB;
     height: 100%;
     border-radius: 3px;
+
+    transition: max-width linear 200ms;
+    max-width: 100%;
+    width: auto;
 }
 
 /*Leave queue popup*/
