@@ -18,6 +18,11 @@
     justify-content: center;
 }
 
+.warning {
+    color: var(--clr-red);
+    font-weight: bold;
+}
+
 @media only screen and (max-width: 600px) {
     .showcase {
         flex-direction: column;
