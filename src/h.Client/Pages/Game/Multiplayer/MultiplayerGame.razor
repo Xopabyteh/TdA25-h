@@ -14,8 +14,8 @@
         <h1>Hodnocená hra</h1>
         <div class="game-window">
             <div class="game-field"
-                data-cell-hover-symbol="@(ourPlayer.Symbol.ToString())"
-                 data-hover-disabled="@(ourPlayer.Identity.SessionId != playerOnTurn.Identity.SessionId)">
+            data-cell-hover-symbol="@(ourPlayer.Symbol.ToString())"
+            data-hover-disabled="@(ourPlayer.Identity.SessionId != playerOnTurn.Identity.SessionId)">
                 @for (int y = 0; y < 15; y++)
                 {
                     <div class="game-field-row">
@@ -29,14 +29,14 @@
                             var symbol = gameField[y,x];
 
                             <div class="cell @(symbol == Primitives.Games.GameSymbol.None ? "empty" : "")"
-                                 style="width: 40px; background-color: @background;"
-                                 data-x="@xCopy"
-                                 data-y="@yCopy"
-                                 @onclick="async () => await HandlePlaceSymbol(xCopy, yCopy)">
-                                 @if(symbol != Primitives.Games.GameSymbol.None)
-                                 {
-                                     <img src="@ResourceHelper.GetSymbolSrc(symbol)"/>
-                                 }
+                            style="width: 40px; background-color: @background;"
+                            data-x="@xCopy"
+                            data-y="@yCopy"
+                            @onclick="async () => await HandlePlaceSymbol(xCopy, yCopy)">
+                                @if(symbol != Primitives.Games.GameSymbol.None)
+                                {
+                                    <img src="@ResourceHelper.GetSymbolSrc(symbol)"/>
+                                }
                             </div>
                         }
                     </div>
@@ -95,37 +95,50 @@
                             // Winner
                             @* <span>@sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Name</span> *@
                             var winnerSymbol = ResourceHelper.GetSymbolSrc(sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Symbol);
-                            <img src="@winnerSymbol" alt="@sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Symbol.ToString()">
+                            <img src="@winnerSymbol" alt="@sessionIdToPlayer[gameEndedDetails!.Value.WinnerId!.Value.SessionId].Symbol.ToString()" style="height: 15px; width: 15px">
                             @* <img src="/IMG/X/X_cervene.svg" alt="X" style="height: 15px; width: 15px"> *@
-                             @* <img src="/IMG/O/O_modre.svg" alt="O" style="height: 15px; width: 15px"> *@
+                            @* <img src="/IMG/O/O_modre.svg" alt="O" style="height: 15px; width: 15px"> *@
                         }
                     </div>
                 </div>
                 @if(gameEndedDetails!.Value.DidEloChange) {
                     <div class="elo-diff">
                         <div>
-                            Old elo:
-                            <span>@gameEndedDetails!.Value.OldElo</span>
+                            <p>@gameEndedDetails!.Value.OldElo</p>
+                            <span>ELO před hrou</span>
                         </div>
+                        <img src="/IMG/icons/arrow.svg" class="arrow" />
                         <div>
-                            New elo:
-                            <span>@gameEndedDetails!.Value.NewElo</span>
+                            <p>@gameEndedDetails!.Value.NewElo</p>
+                            <span>ELO po hře</span>
                         </div>
                     </div>
                 }
                 <div class="win-r3">
-                    <a class="back-to-list secondary-button" href="@PageRoutes.Multiplayer.MatchmakingQueue">Zpět do fronty</a>
-                    <a class="back-to-list secondary-button" href="@PageRoutes.HomeIndex">Odejít</a>
-                </div>
-                <div class="revange">
-                    <button disabled="@requestedRevange" @onclick="HandleRequestRevange">
+                    <div class="col-1">
+                        <a class="back-to-list primary-button" href="@PageRoutes.Multiplayer.MatchmakingQueue">Zpět do fronty</a>
+                        <a class="back-to-list secondary-button" href="@PageRoutes.HomeIndex">Odejít</a>
+                    </div>
+                    <div class="col-2">
+                        <button disabled="@requestedRevange" @onclick="HandleRequestRevange" class="primary-button">
+                            @if (otherPlayerRequestedRevange)
+                            {
+                                <text>Přijmout odvetu</text>
+                            }
+                            else
+                            {
+                                <text>Nabídnout odvetu</text>
+                            }
+                        </button>
                         @if (otherPlayerRequestedRevange)
                         {
-                            <text>Přijmout odvetu</text>
-                        } else {
-                            <text>Nabídnout odvetu</text>
+                            <span style="color: var(--clr-primary-600)">@gameDetails.Players[1].Name nabídl(a) odvetu</span>
                         }
-                    </button>
+                        else
+                        {
+                            <span style="color: var(--clr-gray-600)">Oba hráči musí souhlasit</span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
