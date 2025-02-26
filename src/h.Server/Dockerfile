@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 
 WORKDIR /src
-COPY ["Directory.Build.props", "."]
+COPY ["Directory.Build.props", "src/"]
 RUN ls -la /src  # List contents of /src to verify Directory.Build.props is copied
 
 COPY ["src/h.Server/h.Server.csproj", "src/h.Server/"]
