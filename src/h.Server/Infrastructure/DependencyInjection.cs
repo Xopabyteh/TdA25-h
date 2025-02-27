@@ -135,6 +135,9 @@ public static class DependencyInjection
                 options.Cookie.Name = "h.Auth";
                 options.LoginPath = PageRoutes.Auth.LoginIndex;
                 options.LogoutPath = PageRoutes.Auth.Logout;
+
+                options.AccessDeniedPath = PageRoutes.HomeIndex; // Redirect to home if access denied
+                
                 options.ReturnUrlParameter = "r";
             })
              .AddPolicyScheme("HybridAuth", JwtBearerDefaults.AuthenticationScheme, options =>
