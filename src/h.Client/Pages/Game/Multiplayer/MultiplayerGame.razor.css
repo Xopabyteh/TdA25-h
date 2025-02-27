@@ -152,6 +152,10 @@
     width: 30px;
 }
 
+.cell {
+    width: 40px;
+}
+
 .col-1 {
     border-right: 1px var(--clr-gray-500) solid;
     display: flex;
@@ -167,3 +171,41 @@
     align-items: center;
     padding: 10px;
 }
+
+@media only screen and (max-width: 600px) {
+    .game-window {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .game-info {
+        width: 100%;
+        align-items: center;
+    }
+
+    .cell {
+        width: 25px;
+        > img {
+                width: 15px;
+                height: 15px;
+            }
+    }
+
+    .game-field-row {
+        height: 25px;
+    }
+
+    .win-r3 {
+        flex-direction: column;
+
+        .col-1 {
+                   border-right: none;
+                   border-bottom: 1px var(--clr-gray-500) solid;
+               }
+        
+        .col-2 {
+            border-left: none;
+            border-top: 1px var(--clr-gray-500) solid;
+        }
+    }
+} 
