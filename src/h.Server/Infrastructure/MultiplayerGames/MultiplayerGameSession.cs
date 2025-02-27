@@ -69,8 +69,8 @@ public class MultiplayerGameSession : IDisposable
         ClockCheckerTimer = new Timer(
             callback: _ => CheckClock(),
             state: null,
-            dueTime: TimeSpan.FromSeconds(16),
-            period: TimeSpan.FromSeconds(1));
+            dueTime: TimeSpan.FromSeconds(16), // Heuristic, guessing that a game will last > 16 seconds
+            period: TimeSpan.FromSeconds(1)); // Check every second
     }
 
     private void CheckClock()

@@ -40,7 +40,7 @@ public partial class LoginIndex
             {
                 _wasmAuth.MarkShouldReloadAuthState();
             }
-            _navigation.NavigateTo(ReturnUrl ?? PageRoutes.HomeIndex);
+            _navigation.NavigateTo(ReturnUrl ?? PageRoutes.HomeIndex, forceLoad: true);
             return;
         }
         
