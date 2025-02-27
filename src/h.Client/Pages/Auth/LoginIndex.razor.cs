@@ -1,4 +1,4 @@
-using h.Contracts.Users;
+ï»¿using h.Contracts.Users;
 using Microsoft.AspNetCore.Components;
 using h.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -46,7 +46,7 @@ public partial class LoginIndex
         
         if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            await _toast.ErrorAsync("Špatné údaje");
+            await _toast.ErrorAsync("Å patnÃ© Ãºdaje");
             return;
         }
     }
