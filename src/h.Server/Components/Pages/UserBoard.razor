@@ -37,7 +37,7 @@
         <div class="userfield sheet">
             <h1>Historie her</h1>
             <div class="gamehistory">
-                @foreach (var gameRecord in currentUser!.UserToFinishedRankedGames.Take(4)) 
+                @foreach (var gameRecord in currentUser!.UserToFinishedRankedGames.Reverse().Take(4)) 
                 {
                     var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
                     var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
