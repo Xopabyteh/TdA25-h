@@ -38,6 +38,8 @@ public interface IHApiClient : IWasmOnly
 
     [Get("/api/v1/users/find")]
     Task<ApiResponse<UserResponse>> FindUser([Query] string query);
+    [Delete("/api/v1/users/{id}")]
+    Task<IApiResponse> DeleteUser(Guid id);
 
     // Invitation
     [Post("/api/v1/invitation/create")]

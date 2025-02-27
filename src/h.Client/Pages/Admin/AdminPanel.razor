@@ -92,6 +92,7 @@
                 <button @onclick="() => isChangingPassword = true" class="secondary-button">Změnit heslo</button>
             }
         </div>
+        <h3>Online hry</h3>
         <div class="ban">
             @if(_user.Value.BannedFromRankedMatchmakingAt is null) {
                 <button class="danger-button" type="button" @onclick="HandleBanUser">Zabanovat uživatele</button>
@@ -99,6 +100,10 @@
                 <button class="danger-button" type="button" @onclick="HandleUnbanUser">Odbanovat uživatele</button>
             }
         </div>
+
+        <h3>Smazat</h3>
+        <button class="danger-button-outline" type="button" @onclick="HandleDelete">Smazat uživatele</button>
+
         <div class="line"></div>
         <div class="save">
             <button type="submit" class="primary-button">Uložit nastavení</button>
