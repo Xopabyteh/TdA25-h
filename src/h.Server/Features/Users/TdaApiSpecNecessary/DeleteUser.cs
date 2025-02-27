@@ -14,7 +14,7 @@ public static class DeleteUser
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapDelete("/api/v1/users/{id}", Handle);
+            app.MapDelete("/api/v1/users/{id:guid}", Handle);
         }
     }
 

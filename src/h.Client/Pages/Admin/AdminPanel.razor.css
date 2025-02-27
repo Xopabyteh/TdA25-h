@@ -51,6 +51,19 @@
     font-weight: bold;
 }
 
+.danger-button-outline {
+    border: var(--clr-red) solid 2px;
+    background-color:  transparent;
+    border-radius: 4px;
+    align-content: center;
+    padding: 0.3em 3.5em;
+    margin: 2px 0;
+    cursor: pointer;
+    min-width: 205px;
+    text-align: center;
+    font-weight: bold;
+}
+
 .admin-error {
     padding: 13px 25px;
     background-color: #f25f5f;

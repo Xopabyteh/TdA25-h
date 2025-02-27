@@ -126,6 +126,24 @@ public partial class AdminPanel
         }
     }
 
+    private async Task HandleDelete()
+    {
+        if (_user is null)
+            return;
+
+        var response = await _api.DeleteUser(_user.Value.Uuid);
+        if (response.IsSuccessStatusCode)
+        {
+            _user = null;
+            Model = new ();
+            await _toast.SuccessAsync("Uživatel byl smazán");
+            return;
+        }
+
+        // -> Error
+        await _toast.ErrorAsync("Nepodařilo se smazat uživatele");
+    }
+
     public class RequestModel
     {
         public string Username { get; set; } = string.Empty;
