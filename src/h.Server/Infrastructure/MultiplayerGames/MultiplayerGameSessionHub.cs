@@ -57,7 +57,9 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         
         // If player was part of a game, remove him and consider the other one as winner
         var gameOfUser = _gameSessionService.GetGameByPlayer(identity);
-        if(gameOfUser is not null)
+        if(gameOfUser is not null
+            && !gameOfUser.GameEnded
+            && gameOfUser.GameStarted)
         {
             await HandlePlayerDisconnectMidGame(gameOfUser, identity);
         }

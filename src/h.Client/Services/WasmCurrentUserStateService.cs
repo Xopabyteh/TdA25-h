@@ -54,9 +54,12 @@ public class WasmCurrentUserStateService : IWasmCurrentUserStateService, IDispos
         }
 
         // -> User
-        var userDetails = await _api.GetCurrentUser();
-        UserDetails = userDetails;
-        Name = userDetails.Username;
+        var userDetailsResponse = await _api.GetCurrentUser();
+        if(userDetailsResponse.IsSuccessStatusCode)
+        {
+            UserDetails = userDetailsResponse.Content;
+            Name = userDetailsResponse.Content.Username;
+        }
     }
 
     public void MarkShouldRefresh()
