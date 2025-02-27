@@ -21,14 +21,16 @@ public class LeaderboardService
                     sql: """
                          WITH RankedUsers AS (
                              SELECT 
-                                 Username, 
+                                 Username,
+                                 Uuid,
                                  Elo_Rating AS Rating, 
                                  WinAmount, 
-                                 LossAmount, 
+                                 LossAmount,
+                                 DrawAmount,
                                  ROW_NUMBER() OVER (ORDER BY Elo_Rating DESC) AS Rank
                              FROM UsersDbSet
                          )
-                         SELECT Username, Rating, WinAmount, LossAmount, Rank 
+                         SELECT Username, Uuid, Rating, WinAmount, LossAmount, DrawAmount, Rank 
                          FROM RankedUsers
                          WHERE Rank > @skip AND Rank <= @count
                          """,

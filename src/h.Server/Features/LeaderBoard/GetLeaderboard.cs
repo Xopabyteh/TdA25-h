@@ -26,9 +26,11 @@ public static class GetLeaderboard
             var responseEntries = entries!
                 .Select(entry => new LeaderBoardEntryResponse(
                 entry.Username,
+                entry.Uuid,
                 entry.Rating,
                 entry.WinAmount,
                 entry.LossAmount,
+                entry.DrawAmount,
                 entry.Rank
             )).ToArray();
 

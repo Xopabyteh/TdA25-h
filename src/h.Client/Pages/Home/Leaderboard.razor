@@ -12,7 +12,7 @@
                     <tr>
                         <td class="place">@(context.Rank)</td>
                         <td class="name">
-                            @* <a href="@PageRoutes.User.UserBoardWithParam(context.Id)"> *@ @context.Username @* </a> *@ @*TODO: get userid*@
+                            <a href="@PageRoutes.User.UserBoardWithParam(context.Uuid)"> @context.Username</a> @*TODO: get userid*@
                         </td>
                         <td class="elo">ELO: <b>@context.EloRating</b></td>
                         <td class="wins">
@@ -25,7 +25,7 @@
                         </td>
                         <td class="draws">
                             <img src="/IMG/icons/draw.svg" />
-                            69
+                            @context.DrawAmount
                         </td>
                     </tr>
                 </ItemContent>
