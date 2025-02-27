@@ -32,8 +32,7 @@
                 <span>Hraj s kamarádem</span>
             </NavLink>
             <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
-                <NavLink href="@(PageRoutes.User.UserBoard)" class="link x">
-                    @*tady by to melo odkazovat na konkretni userid ale idk jak na to*@
+                <NavLink href="@(PageRoutes.User.UserBoardWithParam(context.User!.GetUserId()!.Value))" class="link x">
                     <div class="nav-icon"></div>
                     <span>Nástěnka uživatele</span>
                 </NavLink>
