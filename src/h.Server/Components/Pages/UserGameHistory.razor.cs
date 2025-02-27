@@ -1,4 +1,4 @@
-using h.Server.Entities.MultiplayerGames;
+﻿using h.Server.Entities.MultiplayerGames;
 using h.Server.Entities.Users;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Components;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace h.Server.Components.Pages;
 
-public partial class UserBoard
+public partial class UserGameHistory
 {
     [Parameter] [FromRoute(Name = "userId")] public Guid? UserId { get; set; }
 
@@ -17,9 +17,9 @@ public partial class UserBoard
     private int placeInLeaderboard;
 
     private Dictionary<Guid, string>? opponentsInGames = new();
-    private UserToFinishedRankedGame[]? top4Games;
+    private UserToFinishedRankedGame[] allGames;
 
-    public UserBoard(IDbContextFactory<AppDbContext> dbContextFactory)
+    public UserGameHistory(IDbContextFactory<AppDbContext> dbContextFactory)
     {
         _dbContextFactory = dbContextFactory;
     }
@@ -46,12 +46,11 @@ public partial class UserBoard
             .CountAsync() + 1;
 
         // Load opponent details
-        top4Games= currentUser.UserToFinishedRankedGames
+        allGames = currentUser.UserToFinishedRankedGames
             .OrderByDescending(m => m.FinishedRankedGame!.PlayedAt)
-            .Take(4)
             .ToArray();
 
-        var opponentIdsInGames = top4Games
+        var opponentIdsInGames = allGames
             .Select(m => m.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid))
             .Distinct()
             .ToArray();
