@@ -66,6 +66,12 @@ p {
     align-items: center;
 }
 
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 @media only screen and (max-width: 600px) {
     .gamedata-row {
         flex-wrap: wrap;

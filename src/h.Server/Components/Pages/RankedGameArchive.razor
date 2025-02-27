@@ -28,11 +28,11 @@
                     </div>
                 </div>
             </div>
-            <a href="/user/game-history/" class="backbutton blue" style="margin-bottom: 30px; display: block">Zpět do historie</a>
+            <a href="@(PageRoutes.User.UserGameHistoryWithParam(game.Player1Id))" class="backbutton blue" style="margin-bottom: 30px; display: block">Zpět do historie</a>
             <div class="split-sides">
                 <div class="side">
                     <h2 class="blue">Poslední stav</h2>
-                    <div class="mid-game">
+                    <div class="mid-game sheet">
                         @for (int y = 0; y < 15; y++)
                         {
                             <div class="mid-row">
@@ -51,7 +51,7 @@
                                     data-y="@yCopy">
                                         @if (symbol != Primitives.Games.GameSymbol.None)
                                         {
-                                            <img src="@ResourceHelper.GetSymbolSrc(symbol)" />
+                                            <img src="@ResourceHelper.GetSymbolSrc(symbol)" style="width: 15px; height: 15px"/>
                                         }
                                     </div>
                                 }
