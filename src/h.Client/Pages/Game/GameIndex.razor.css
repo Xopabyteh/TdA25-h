@@ -105,6 +105,10 @@
     cursor: pointer;
     min-height: 50px;
     gap: 5px;
+
+    img {
+            height: 15px
+        }
 }
 
 /*win popup*/
@@ -211,3 +215,77 @@
 .save-game-btn {
     box-sizing: border-box;
 }
+
+
+.cell {
+    width: 40px;
+}
+
+@media only screen and (max-width: 600px) {
+    .save-card {
+        flex-direction: column;
+    }
+
+    ::deep .difficulty-selector {
+        grid-template-columns: 4fr 1fr 2rem;
+    }
+
+    .card {
+        flex-direction: column;
+        gap: 10px;
+
+        .secondary-column {
+            gap: 5px;
+
+            h3 {
+                   font-size: 16px;
+               }
+
+            span {
+                font-size: 14px;
+            }
+        }
+    }
+
+    .cell {
+        width: 25px;
+        > img {
+                width: 15px;
+                height: 15px;
+            }
+    }
+
+    .game-field-row {
+        height: 25px;
+    }
+
+    .info-row {
+        .to-games {
+            padding: 0 30px;
+            img {
+                height: 10px;
+            }
+
+            h3 {
+                font-size: 16px;
+            }
+        }
+
+        .game-name {
+            padding: 0 30px;
+        }
+
+        .game-name h2 {
+            font-size: 20px;
+        }
+
+        .turn {
+            width: 40px;
+
+            img {
+                height: 20px;
+                width: 20px;
+            }
+        }
+    }
+} 
