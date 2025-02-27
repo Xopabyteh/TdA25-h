@@ -1,7 +1,8 @@
 ﻿@attribute [Route(PageRoutes.User.UserGameHistory)]
 @rendermode InteractiveWebAssembly
+@using h.Client.Services
 
-<PageTitle>Hry hráče evzen.rozinka</PageTitle>
+<PageTitle>Hry hráče @currentUser?.Username</PageTitle>
 
 <div class="userbanner">
     <div class="userbox sheet">
@@ -24,55 +25,35 @@
             </tr>
         </thead>
         <tbody>
-            <Virtualize Items="@items" Context="item">
+            @foreach (var gameRecord in currentUser!.UserToFinishedRankedGames.Reverse())
+            {
+                var gameId = gameRecord.FinishedRankedGameId!;
+                var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
+                var playerSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser.Uuid));
+                bool didWin = gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid);
+
                 <tr>
-                    <td>@item.GID</td>
-                    <td>@item.GameDate</td>
-                    <td>@item.Enemy</td>
-                    @if (item.IsX)
-                    {
-                        <td>
-                            <img src="/IMG/X/X_cervene.svg" class="player-icon" />
-                        </td>
-                    }
-                    else
-                    {
-                        <td><img src="/IMG/O/O_modre.svg" class="player-icon" /></td>
-                    }
-                    @if (item.Winner)
+                    <td>@gameId</td>
+                    <td>@(gameRecord.FinishedRankedGame!.PlayedAt.ToShortDateString())</td>
+                    <td>@opponentName</td>
+                    <td>
+                        <img src="@playerSymbolIcon" class="player-icon" />
+                    </td>
+                    @if (didWin)
                     {
                         <td>Tento hráč</td>
-                    } else
+                    }
+                    else
                     {
                         <td>Protivník</td>
                     }
                     <td>
-                        <button class="view">
+                        <button class="view" @onclick="HandleOpenGameArchive">
                             <img src="/IMG/icons/view.svg" alt="">
                         </button>
                     </td>
                 </tr>
-            </Virtualize>
+            }        
         </tbody>
     </table>
 </div>
-
-@code {
-    private List<Game> items = Enumerable.Range(1, 100).Select(i => new Game
-    {
-        GID = i,
-        GameDate = new DateOnly(2001, 09, 11),
-        Enemy = "vaclav.brdek",
-        IsX = (i % 2 == 0),
-        Winner = (i % 3 == 0)
-    }).ToList();
-
-    public class Game
-    {
-        public int GID { get; set; }
-        public DateOnly GameDate { get; set; }
-        public string Enemy { get; set; }
-        public bool IsX { get; set; }
-        public bool Winner { get; set; }
-    }
-}
