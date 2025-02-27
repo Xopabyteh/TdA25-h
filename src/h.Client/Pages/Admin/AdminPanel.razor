@@ -93,7 +93,11 @@
             }
         </div>
         <div class="ban">
-            <button class="danger-button">Zabanovat uživatele</button>
+            @if(_user.Value.BannedFromRankedMatchmakingAt is null) {
+                <button class="danger-button" type="button" @onclick="HandleBanUser">Zabanovat uživatele</button>
+            } else {
+                <button class="danger-button" type="button" @onclick="HandleUnbanUser">Odbanovat uživatele</button>
+            }
         </div>
         <div class="line"></div>
         <div class="save">

@@ -31,6 +31,10 @@ public interface IHApiClient : IWasmOnly
     Task<IApiResponse> UpdateUserSelf([Body] UpdateUserSelfRequest request);
     [Put("/api/v1/users/admin-update/{id}")]
     Task<IApiResponse<UserResponse>> AdminUpdateUser(Guid id, [Body] AdminUpdateUserRequest request);
+    [Put("/api/v1/users/{uuid}/ban")]
+    Task<IApiResponse> BanUserFromRankedMatchmaking(Guid uuid);
+    [Put("/api/v1/users/{uuid}/unban")]
+    Task<IApiResponse> UnbanUserFromRankedMatchmaking(Guid uuid);
 
     [Get("/api/v1/users/find")]
     Task<ApiResponse<UserResponse>> FindUser([Query] string query);

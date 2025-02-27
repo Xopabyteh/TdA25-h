@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using h.Client.Services;
 using h.Contracts;
 using h.Contracts.Users;
@@ -33,7 +33,7 @@ public partial class AdminPanel
             return;
         }
 
-        await _toast.ErrorAsync("U�ivatel nenalezen");
+        await _toast.ErrorAsync("Uživatel nenalezen");
     }
 
     private async Task HandleUpdate()
@@ -51,7 +51,7 @@ public partial class AdminPanel
         var response = await _api.AdminUpdateUser(_user!.Value.Uuid, request);
         if (response.IsSuccessStatusCode)
         {
-            await _toast.SuccessAsync("Ulo�eno");
+            await _toast.SuccessAsync("Uloženo");
             _user = response.Content;
             UpdateModelFromUser();
             return;
@@ -61,11 +61,11 @@ public partial class AdminPanel
         var error = response.Error.ToErrorResponse();
         if (error.TryFindError(nameof(SharedErrors.User.UsernameAlreadyTaken), out _))
         {
-            await _toast.ErrorAsync("U�ivatelsk� jm�no je ji� zabran�");
+            await _toast.ErrorAsync("Uživatelské jméno je již zabrané");
         }
         else if (error.TryFindError(nameof(SharedErrors.User.EmailAlreadyTaken), out _))
         {
-            await _toast.ErrorAsync("Email je ji� zabran�");
+            await _toast.ErrorAsync("Email je již zabraný");
         }
         else
         {
@@ -87,6 +87,43 @@ public partial class AdminPanel
             DrawAmount = _user.Value.Draws,
             LossAmount = _user.Value.Losses
         };
+    }
+
+    private async Task HandleBanUser()
+    {
+        if(_user is null)
+            return;
+
+        var response = await _api.BanUserFromRankedMatchmaking(_user.Value.Uuid);
+        if (response.IsSuccessStatusCode)
+        {
+            // Reload user
+            _user = (await _api.FindUser(query)).Content;
+            await _toast.SuccessAsync("Uživatel byl zabanován");
+            return;
+        } else
+        {
+            await _toast.ErrorAsync("Nepodařilo se zabanovat uživatele");
+        }
+    }
+
+    private async Task HandleUnbanUser()
+    {
+        if (_user is null) 
+            return;
+
+        var response = await _api.UnbanUserFromRankedMatchmaking(_user.Value.Uuid);
+        if (response.IsSuccessStatusCode)
+        {
+            // Reload user
+            _user = (await _api.FindUser(query)).Content;
+            await _toast.SuccessAsync("Uživatel byl odbanován");
+            return;
+        }
+        else
+        {
+            await _toast.ErrorAsync("Nepodařilo se odbanovat uživatele");
+        }
     }
 
     public class RequestModel
