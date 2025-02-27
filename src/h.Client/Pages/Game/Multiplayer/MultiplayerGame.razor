@@ -130,6 +130,10 @@
                             {
                                 <text>Přijmout odvetu</text>
                             }
+                            else @if (requestedRevange)
+                            {
+                                <text>Odveta nabídnuta</text>
+                            }
                             else
                             {
                                 <text>Nabídnout odvetu</text>
@@ -138,6 +142,10 @@
                         @if (otherPlayerRequestedRevange)
                         {
                             <span style="color: var(--clr-primary-600)">@gameDetails.Players[1].Name nabídl(a) odvetu</span>
+                        }
+                        else @if (requestedRevange)
+                        {
+                           <span style="color: var(--clr-primary-600)">Nabídl(a) jsi odvetu</span>
                         }
                         else
                         {
