@@ -1,4 +1,4 @@
-using h.Client.Services;
+Ôªøusing h.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using System.Runtime.InteropServices;
@@ -51,11 +51,11 @@ public partial class RegisterIndex
         var error = response.Error.ToErrorResponse();
         if (error.TryFindError(nameof(SharedErrors.User.UsernameAlreadyTaken), out _))
         {
-            await _toast.ErrorAsync("UûivatelskÈ jmÈno je jiû zabranÈ");
+            await _toast.ErrorAsync("U≈æivatelsk√© jm√©no je ji≈æ zabran√©");
         }
         else if (error.TryFindError(nameof(SharedErrors.User.EmailAlreadyTaken), out _))
         {
-            await _toast.ErrorAsync("Email je jiû zabran˝");
+            await _toast.ErrorAsync("Email je ji≈æ zabran√Ω");
         }
         else
         {
@@ -78,7 +78,7 @@ public partial class RegisterIndex
             RuleFor(x => x.Username).SetValidator(new SharedUsernameValidator());
             RuleFor(x => x.Email).NotNull();
             RuleFor(x => x.Password).SetValidator(new SharedPasswordValidator());
-            RuleFor(x => x.PasswordMatch).Equal(x => x.Password).WithMessage("Hesla se neshodujÌ");
+            RuleFor(x => x.PasswordMatch).Equal(x => x.Password).WithMessage("Hesla se neshoduj√≠");
         }
     }
 }

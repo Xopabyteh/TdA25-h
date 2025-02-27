@@ -6,6 +6,7 @@ using h.Primitives.Games;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.JSInterop;
 using System.Runtime.InteropServices;
 
@@ -62,6 +63,9 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     private bool requestedRevange;
     private bool otherPlayerRequestedRevange;
+
+    private IDisposable? navEventDisposable;
+    
     private string GetRemainingClockTimeFormatted(Guid sessionid)
         => playerClockRemainingTimes[sessionid].ToString(@"mm\:ss");
 
@@ -80,6 +84,8 @@ public partial class MultiplayerGame : IAsyncDisposable
     {
         if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return;
+        
+        navEventDisposable = _navigationManager.RegisterLocationChangingHandler(OnBeforeNav);
 
         gameId = await _sessionStorageService.GetItemAsync<Guid>(GameIdSessionStorageKey);
 
@@ -97,6 +103,14 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         // Ping we are ready
         await hubConnection.SendAsync("ConfirmLoaded", gameId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
+            return;
+
+        //await _js.InvokeVoidAsync("window.SetLeaveConfirmation");
     }
 
     private Task ResetForNewGameAsync(Guid gameId)
@@ -268,26 +282,35 @@ public partial class MultiplayerGame : IAsyncDisposable
         if(hubConnection is null)
             return;
 
+        var confirm = await _js.InvokeAsync<bool>("confirm", "Opravdu se chceš vzdát?");
+        if (!confirm)
+            return;
+
         // Todo: warning or smth?
         await hubConnection!.InvokeAsync("Surrender", gameDetails.GameId);
     }
 
-    private async Task HandleOnBeforeInternalNavigation(LocationChangingContext context)
+    private async ValueTask OnBeforeNav(LocationChangingContext context)
     {
         if(isGameEnded)
             return; // Don't block nav after game ended
+        
+        context.PreventNavigation();
 
         var isConfirmed = await _js.InvokeAsync<bool>(
             "confirm", 
             "Opravdu chcete odejít?");
 
-        if (!isConfirmed)
+        if (isConfirmed)    
         {
-            context.PreventNavigation();
+            navEventDisposable?.Dispose();
+            _navigationManager.NavigateTo(context.TargetLocation);
         }
     }
     public async ValueTask DisposeAsync()
     {
+        navEventDisposable?.Dispose();
+
         if(clockTimer is not null)
             await clockTimer.DisposeAsync();
 

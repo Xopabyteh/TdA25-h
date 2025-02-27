@@ -1,5 +1,5 @@
-
 @using System.Data.SqlTypes
+@using System.Runtime.InteropServices
 @using h.Client.Services
 
 @attribute [Route(PageRoutes.Multiplayer.MultiplayerGame)]
@@ -7,11 +7,9 @@
 @layout GameLayout
 
 <PageTitle>Ranked hra</PageTitle>
-
-@* Try prevent navigation until game hasn't ended *@
 <NavigationLock
     ConfirmExternalNavigation="!isGameEnded"
-    OnBeforeInternalNavigation="HandleOnBeforeInternalNavigation" />
+    OnBeforeInternalNavigation="async ctx => await OnBeforeNav(ctx)" />
 
 @if(isGameStarted)
 {
@@ -157,3 +155,4 @@
         </div>
     }
 }
+
