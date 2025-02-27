@@ -78,7 +78,7 @@
     <div class="primary-column">
         <div class="info-row">
             <a href="/game/list" class="to-games">
-                <img src="/IMG/icons/end-game-arrow.svg" alt="back" style="height: 15px">
+                <img src="/IMG/icons/end-game-arrow.svg" alt="back">
                 <h3>Ukončit hru</h3>
             </a>
             <div class="game-name">
@@ -111,7 +111,7 @@
                         string background = (id1D % 2 == 0) ? "#f9f9f9" : "white";
 
                         <div class="cell empty"
-                             style="width: 40px; background-color: @background;"
+                             style="background-color: @background;"
                              data-x="@xCopy"
                              data-y="@yCopy">
 
@@ -149,9 +149,7 @@
         }
         else // LoadedGame is null
         {
-            <div class="save-game">
-                <button @onclick="HandleOpenSaveDialog" class="save-game-btn primary-button">Uložit hru</button>
-            </div>
+            <button @onclick="HandleOpenSaveDialog" class="save-game-btn primary-button">Uložit hru</button>
         }
     </div>
 </div>

@@ -11,7 +11,9 @@
                 <ItemContent>
                     <tr>
                         <td class="place">@(context.Rank)</td>
-                        <td class="name">@context.Username</td>
+                        <td class="name">
+                            @* <a href="@PageRoutes.User.UserBoardWithParam(context.Id)"> *@ @context.Username @* </a> *@ @*TODO: get userid*@
+                        </td>
                         <td class="elo">ELO: <b>@context.EloRating</b></td>
                         <td class="wins">
                             <img src="/IMG/icons/win.svg" />

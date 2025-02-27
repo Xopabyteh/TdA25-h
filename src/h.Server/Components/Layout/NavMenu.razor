@@ -21,22 +21,27 @@
                 <div class="nav-icon"></div>
                 <span>Vytvořit novou úlohu</span>
             </NavLink>
-            <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
-                <NavLink href="/user/settings" class="link x">
-                    <div class="nav-icon"></div>
-                    <span>Nastavení účtu</span>
-                </NavLink>
-            </AuthorizeView>
             <AuthorizeView>
-                <NavLink href="/multiplayer-game/queue" class="link o">
+                <NavLink href="/multiplayer-game/queue" class="link x">
                     <div class="nav-icon"></div>
                     <span>Hodnocená hra</span>
                 </NavLink>
             </AuthorizeView>
-            <NavLink href="/multiplayer-game/friend-query" class="link x">
+            <NavLink href="/multiplayer-game/friend-query" class="link o">
                 <div class="nav-icon"></div>
                 <span>Hraj s kamarádem</span>
             </NavLink>
+            <AuthorizeView Policy="@nameof(AppPolicies.IsUser)">
+                <NavLink href="@(PageRoutes.User.UserBoard)" class="link x">
+                    @*tady by to melo odkazovat na konkretni userid ale idk jak na to*@
+                    <div class="nav-icon"></div>
+                    <span>Nástěnka uživatele</span>
+                </NavLink>
+                <NavLink href="/user/settings" class="link o">
+                    <div class="nav-icon"></div>
+                    <span>Nastavení účtu</span>
+                </NavLink>
+            </AuthorizeView>
         </AuthorizeView>
         <AuthorizeView Policy="@nameof(AppPolicies.IsAdmin)">
             <NavLink href="/admin/panel" class="link x">
