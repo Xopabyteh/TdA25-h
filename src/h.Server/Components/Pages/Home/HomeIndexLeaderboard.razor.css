@@ -71,6 +71,10 @@
     font-weight: bold;
 }
 
+.name:hover {
+    text-decoration: underline;
+}
+
 .blue-link {
     text-decoration: underline;
     color: var(--clr-primary-600);

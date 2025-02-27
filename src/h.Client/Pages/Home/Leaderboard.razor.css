@@ -65,4 +65,7 @@
 td img {
     width: 25px;
 }
-   
+
+.name :hover {
+    text-decoration: underline;
+}

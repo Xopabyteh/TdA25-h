@@ -91,7 +91,7 @@
 
 
 .col-dark {
-    background: var(--clr-gray-400);
+    background: var(--clr-gray-450);
     width: 15px;
     display: flex;
     align-items: center;
@@ -99,7 +99,7 @@
 }
 
 .col-light {
-    background: none;
+    background: var(--clr-white);
     width: 15px;
     display: flex;
     align-items: center;
