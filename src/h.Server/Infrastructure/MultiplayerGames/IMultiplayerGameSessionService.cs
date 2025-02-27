@@ -26,8 +26,14 @@ public interface IMultiplayerGameSessionService
     /// Create a game session with the given players.
     /// They are all registered users with their given userIDs.
     /// </summary>
-    public MultiplayerGameSession CreateGameSession(IReadOnlyCollection<User> players, Guid? forcedStartingPlayerId = null);
+    public MultiplayerGameSession CreateGameSession(
+        IReadOnlyCollection<User> players,
+        Guid? forcedStartingPlayerId = null);
 
+    /// <summary>
+    /// Used to create a revange session.
+    /// Uses same callback as the previous game.
+    /// </summary>
     public MultiplayerGameSession CreateRevangeSession(MultiplayerGameSession previousGame);
 
     /// <summary>

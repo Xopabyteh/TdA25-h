@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using h.Contracts;
 using h.Client.Pages;
 using h.Server.Infrastructure.Leaderboard;
+using System.Threading.Channels;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection

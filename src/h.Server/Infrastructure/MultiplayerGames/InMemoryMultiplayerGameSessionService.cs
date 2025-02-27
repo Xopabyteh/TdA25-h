@@ -25,10 +25,14 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         = new(concurrencyLevel: -1, capacity: 30);
 
     private readonly TimeProvider _timeProvider;
+    private readonly ILogger<InMemoryMultiplayerGameSessionService> _logger;
 
-    public InMemoryMultiplayerGameSessionService(TimeProvider timeProvider)
+    public InMemoryMultiplayerGameSessionService(
+        TimeProvider timeProvider,
+        ILogger<InMemoryMultiplayerGameSessionService> logger)
     {
         _timeProvider = timeProvider;
+        _logger = logger;
     }
 
     public MultiplayerGameSession CreateGameSession(
@@ -64,23 +68,13 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
             playerOnTurnIndex = new Random().Next(0, players.Count);
         }
 
-        var gameSession = new MultiplayerGameSession(
+        return HandleCreateNewSessionCore(
             gameId,
             players,
             board,
             playerSymbols,
-            playerOnTurnIndex,
-            _timeProvider.GetUtcNow(),
-            TimeSpan.FromSeconds(IMultiplayerGameSessionService.STARTING_SECONDS_ON_CLOCK) // Todo: moved to shared config
+            playerOnTurnIndex
         );
-
-        _gameSessions[gameId] = gameSession;
-        foreach (var player in players)
-        {
-            _playersToGameMapping[player.SessionId] = gameSession;
-        }
-
-        return gameSession;
     }
 
     public ErrorOr<bool> ConfirmPlayerLoaded(Guid gameId, MultiplayerGameUserIdentity playerId)
@@ -199,6 +193,22 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
         // Who starts? -> the other player than before
         int startingPlayerIndex = (players.IndexOf(previousGame.StartingPlayer) + 1) % players.Count;
 
+        return HandleCreateNewSessionCore(
+            gameId,
+            players,
+            board,
+            playerSymbols,
+            startingPlayerIndex
+        );
+    }
+
+    private MultiplayerGameSession HandleCreateNewSessionCore(
+        Guid gameId,
+        IReadOnlyCollection<MultiplayerGameUserIdentity> players,
+        GameBoard board,
+        Dictionary<MultiplayerGameUserIdentity, GameSymbol> playerSymbols,
+        int startingPlayerIndex)
+    {
         var gameSession = new MultiplayerGameSession(
             gameId,
             players,
@@ -217,6 +227,7 @@ public class InMemoryMultiplayerGameSessionService : IMultiplayerGameSessionServ
 
         return gameSession;
     }
+
     public void KillSession(Guid gameId)
     {
         var exists = _gameSessions.TryGetValue(gameId, out var gameSession);
