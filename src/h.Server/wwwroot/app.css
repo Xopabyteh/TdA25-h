@@ -323,6 +323,10 @@ a.disabled {
     margin-left: calc((100% - 270px) / 2 + 145px); /*haha magic numbers (works, no idea why)*/
 }
 
+    a {
+        cursor: pointer;
+    }
+
     .userbox p {
         font-weight: bold;
         font-size: 26px;

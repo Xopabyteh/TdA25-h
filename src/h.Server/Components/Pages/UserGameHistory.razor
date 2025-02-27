@@ -12,48 +12,55 @@
     </div>
 </div>
 
-<div class="sheet game-history">
-    <h2 class="blue">Historie her</h2>
-    <table class="game-history-list">
-        <thead class="game-history-head">
-            <tr>
-                <th>ID hry</th>
-                <th>Datum</th>
-                <th>Protivník</th>
-                <th>Symbol</th>
-                <th>Vyhrál</th>
-                <th>Zobrazit hru</th>
-            </tr>
-        </thead>
-        <tbody>
-            @* <Virtualize Items="@allGames" Context="gameRecord"> *@
-            @foreach (var gameRecord in allGames) {
-                var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
-                var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
-                var playeSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser!.Uuid));
-                
+<div class="game-history-cont">
+    <a href="@(PageRoutes.User.UserBoardWithParam(currentUser!.Uuid))" class="blue">
+        Zpět na nástěnku uživatele
+    </a>
+    <div class="sheet game-history">
+        <h2 class="blue">Historie her</h2>
+        <table class="game-history-list">
+            <thead class="game-history-head">
                 <tr>
-                    <td>@gameRecord.FinishedRankedGameId</td>
-                    <td>@gameRecord.FinishedRankedGame!.PlayedAt</td>
-                    <td>@(opponentName)</td>
-                    <td>
-                        <img src="@playeSymbolIcon" class="player-icon" />
-                    </td>
-                    @if (gameRecord.FinishedRankedGame.WinnerId == UserId)
-                    {
-                        <td>Tento hráč</td>
-                    } else
-                    {
-                        <td>Protivník</td>
-                    }
-                    <td>
-                        <a href="@PageRoutes.User.RankedGameArchiveWithParam(gameRecord.FinishedRankedGameId)" class="view">
-                            <img src="/IMG/icons/view.svg" alt="">
-                        </a>
-                    </td>
+                    <th>ID hry</th>
+                    <th>Datum</th>
+                    <th>Protivník</th>
+                    <th>Symbol</th>
+                    <th>Vyhrál</th>
+                    <th>Zobrazit hru</th>
                 </tr>
-            }
-            @* </Virtualize> *@
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @* <Virtualize Items="@allGames" Context="gameRecord"> *@
+                @foreach (var gameRecord in allGames)
+                {
+                    var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
+                    var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
+                    var playeSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser!.Uuid));
+
+                    <tr>
+                        <td>@gameRecord.FinishedRankedGameId</td>
+                        <td>@gameRecord.FinishedRankedGame!.PlayedAt</td>
+                        <td>@(opponentName)</td>
+                        <td>
+                            <img src="@playeSymbolIcon" class="player-icon" />
+                        </td>
+                        @if (gameRecord.FinishedRankedGame.WinnerId == UserId)
+                        {
+                            <td>Tento hráč</td>
+                        }
+                        else
+                        {
+                            <td>Protivník</td>
+                        }
+                        <td>
+                            <a href="@PageRoutes.User.RankedGameArchiveWithParam(gameRecord.FinishedRankedGameId)" class="view">
+                                <img src="/IMG/icons/view.svg" alt="">
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @* </Virtualize> *@
+            </tbody>
+        </table>
+    </div>
 </div>
