@@ -1,10 +1,9 @@
 ﻿using h.Contracts.MultiplayerGames;
 using h.Primitives;
-using h.Primitives.Games;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.IO.Pipelines;
+using static h.Server.Infrastructure.MultiplayerGames.MultiplayerGameStatisticsService;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
 
@@ -14,17 +13,23 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
     private readonly IMultiplayerGameSessionService _gameSessionService;
     private readonly MultiplayerGameStatisticsService _multiplayerGameStatisticsService;
     private readonly AppDbContext _db;
+    private readonly ILogger<MultiplayerGameSessionHub> _logger;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public MultiplayerGameSessionHub(
         IMultiplayerGameSessionService gameSessionService,
         IHubUserIdMappingService<MultiplayerGameSessionHub, MultiplayerGameUserIdentity> userIdMappingService,
         MultiplayerGameStatisticsService multiplayerGameStatisticsService,
-        AppDbContext db)
+        AppDbContext db,
+        ILogger<MultiplayerGameSessionHub> logger,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _gameSessionService = gameSessionService;
         _userIdMappingService = userIdMappingService;
         _multiplayerGameStatisticsService = multiplayerGameStatisticsService;
         _db = db;
+        _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public override async Task OnConnectedAsync()
@@ -80,7 +85,8 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         var endResult = _gameSessionService.GetEndResult(game.Id)
             ?? throw new NullReferenceException("End result is null after ending the game early");
 
-        await HandleGameEndedAsync(game, endResult, isRevangePossible: false);
+        var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
+        await HandleGameEndedAsync(game, endResult, isRevangePossible: false, updateResult);
 
         // Kill session (it wont be possible to revange anymore)
         _gameSessionService.KillSession(game.Id);
@@ -110,8 +116,34 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         if(game is null)
             throw new NullReferenceException("Game not found after all players confirmed"); // Should never happen
 
+        game.OnClockRanOutAndGameEnded += async args =>
+        {
+            // Try catch because of async void
+            try
+            {
+                var endResult = _gameSessionService.GetEndResult(args.Game.Id);
+                if (endResult is null)
+                    throw new NullReferenceException("End result is null after clock ran out");
+
+                // Notify players about the game over
+                await using var scope = _serviceScopeFactory.CreateAsyncScope();
+                var multiplayerGameStatisticsService = scope.ServiceProvider.GetRequiredService<MultiplayerGameStatisticsService>();
+                var updateResult = await multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
+                
+                var losingPlayer = args.Player;
+
+                await HandleGameEndedAsync(args.Game, endResult, isRevangePossible: true, updateResult);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e, "Error while handling clock ran out event");
+            }
+        };
+
+        // Start game
         var gameStartResult = _gameSessionService.StartGame(gameId);
 
+        // Notify about game details
         var identitiesAndConnections = game.Players.Select(identity => 
             (
                 identity,
@@ -196,17 +228,19 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
             var endResult = _gameSessionService.GetEndResult(gameId);
             if(endResult is null)
                 throw new NullReferenceException("No next player on turn but end results are null"); // Should never happen
+            
+            var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
 
-           await HandleGameEndedAsync(game, endResult, isRevangePossible: true);
+            await HandleGameEndedAsync(game, endResult, isRevangePossible: true, updateResult);
         }
     }
 
     private async Task HandleGameEndedAsync(
         MultiplayerGameSession game,
         MultiplayerGameSessionEndResult endResult,
-        bool isRevangePossible)
+        bool isRevangePossible,
+        StatisticsUpdateResult statsUpdateResult)
     {
-        var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
 
         // Notify players about the game over
         foreach(var player in game.Players)
@@ -219,9 +253,9 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
                 .GameEnded(new(
                     endResult.IsDraw,
                     MapToDto(endResult.WinnerId),
-                    updateResult.DidUpdateElo,
-                    updateResult.OldElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
-                    updateResult.NewElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
+                    statsUpdateResult.DidUpdateElo,
+                    statsUpdateResult.OldElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
+                    statsUpdateResult.NewElos?.Single(kvp => kvp.Key == player.UserId!.Value).Value.Rating ?? default,
                     isRevangePossible
                 ));
         }
@@ -292,7 +326,8 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
         var endResult = _gameSessionService.GetEndResult(gameId)
             ?? throw new NullReferenceException("End result is null after ending the game early");
 
-        await HandleGameEndedAsync(game, endResult, isRevangePossible: true);
+        var updateResult = await _multiplayerGameStatisticsService.UpdateAndSavePlayerStatisticsAsync(game);
+        await HandleGameEndedAsync(game, endResult, isRevangePossible: true, updateResult);
     }
 
     // Helper methods

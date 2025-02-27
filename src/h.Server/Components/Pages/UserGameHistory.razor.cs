@@ -1,4 +1,5 @@
-﻿using h.Server.Entities.Users;
+﻿using h.Server.Entities.MultiplayerGames;
+using h.Server.Entities.Users;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,10 @@ public partial class UserGameHistory
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
     private User? currentUser;
+    private int placeInLeaderboard;
 
     private Dictionary<Guid, string>? opponentsInGames = new();
+    private UserToFinishedRankedGame[] allGames;
 
     public UserGameHistory(IDbContextFactory<AppDbContext> dbContextFactory)
     {
@@ -23,8 +26,8 @@ public partial class UserGameHistory
 
     protected override async Task OnInitializedAsync()
     {
-        if (UserId is null)
-            return;
+        if(UserId is null)
+            return; 
 
         await using var db = await _dbContextFactory.CreateDbContextAsync();
 
@@ -34,12 +37,18 @@ public partial class UserGameHistory
             .ThenInclude(m => m.FinishedRankedGame)
             .FirstOrDefaultAsync(u => u.Uuid == UserId.Value);
 
-        if (currentUser is null)
+        if(currentUser is null)
             return;
 
-        // Load oponent details
-        var allGames = currentUser.UserToFinishedRankedGames
-            .OrderByDescending(m => m.FinishedRankedGame!.PlayedAt);
+        // Load leaderboard
+        placeInLeaderboard = await db.UsersDbSet
+            .Where(u => u.Elo.Rating > currentUser!.Elo.Rating)
+            .CountAsync() + 1;
+
+        // Load opponent details
+        allGames = currentUser.UserToFinishedRankedGames
+            .OrderByDescending(m => m.FinishedRankedGame!.PlayedAt)
+            .ToArray();
 
         var opponentIdsInGames = allGames
             .Select(m => m.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid))
@@ -51,10 +60,5 @@ public partial class UserGameHistory
             .ToDictionaryAsync(
                 keySelector: u => u.Uuid,
                 elementSelector: u => u.Username);
-    }
-
-    private void HandleOpenGameArchive()
-    {
-        Console.WriteLine("ure gay");
     }
 }

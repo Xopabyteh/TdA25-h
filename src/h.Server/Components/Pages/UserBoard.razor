@@ -1,6 +1,7 @@
 ﻿@using h.Client.Services
 @attribute [Route(PageRoutes.User.UserBoard)]
-@rendermode InteractiveServer
+@* No interactivity needed *@
+@* @rendermode InteractiveServer *@
 
 <PageTitle>Profil hráče @currentUser?.Username</PageTitle>
 
@@ -37,7 +38,7 @@
         <div class="userfield sheet">
             <h1>Historie her</h1>
             <div class="gamehistory">
-                @foreach (var gameRecord in currentUser!.UserToFinishedRankedGames.Reverse().Take(4)) 
+                @foreach (var gameRecord in top4Games ?? []) 
                 {
                     var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
                     var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
@@ -55,14 +56,14 @@
                         <div class="icons">
                             <img src="@playeSymbolIcon" alt="">
                             <img src="@winIcon" alt="">
-                            <button class="view">
+                            <a href="@PageRoutes.User.RankedGameArchiveWithParam(gameRecord.FinishedRankedGameId)" class="view">
                                 <img src="/IMG/icons/view.svg" alt="">
-                            </button>
+                            </a>
                         </div>
                     </div>
                 }
             </div>
-            <a href="@(PageRoutes.User.UserGameHistroryWithParam(currentUser.Uuid))" class="show-history">Kompletní historie</a>
+            <a href="@PageRoutes.User.UserGameHistoryWithParam(UserId!.Value)" class="show-history">Kompletní historie</a>
         </div>
     </div>
 </div>

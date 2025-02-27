@@ -1,8 +1,9 @@
-﻿@attribute [Route(PageRoutes.User.UserGameHistory)]
-@rendermode InteractiveWebAssembly
-@using h.Client.Services
+﻿@using h.Client.Services
 
-<PageTitle>Hry hráče @currentUser?.Username</PageTitle>
+@attribute [Route(PageRoutes.User.UserGameHistory)]
+@* @rendermode InteractiveWebAssembly *@
+
+<PageTitle>Hry hráče evzen.rozinka</PageTitle>
 
 <div class="userbanner">
     <div class="userbox sheet">
@@ -25,35 +26,34 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var gameRecord in currentUser!.UserToFinishedRankedGames.Reverse())
-            {
-                var gameId = gameRecord.FinishedRankedGameId!;
+            @* <Virtualize Items="@allGames" Context="gameRecord"> *@
+            @foreach (var gameRecord in allGames) {
                 var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
-                var playerSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser.Uuid));
-                bool didWin = gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid);
-
+                var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
+                var playeSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser!.Uuid));
+                
                 <tr>
-                    <td>@gameId</td>
-                    <td>@(gameRecord.FinishedRankedGame!.PlayedAt.ToShortDateString())</td>
-                    <td>@opponentName</td>
+                    <td>@gameRecord.FinishedRankedGameId</td>
+                    <td>@gameRecord.FinishedRankedGame!.PlayedAt</td>
+                    <td>@(opponentName)</td>
                     <td>
-                        <img src="@playerSymbolIcon" class="player-icon" />
+                        <img src="@playeSymbolIcon" class="player-icon" />
                     </td>
-                    @if (didWin)
+                    @if (gameRecord.FinishedRankedGame.WinnerId == UserId)
                     {
                         <td>Tento hráč</td>
-                    }
-                    else
+                    } else
                     {
                         <td>Protivník</td>
                     }
                     <td>
-                        <button class="view" @onclick="HandleOpenGameArchive">
+                        <button class="view">
                             <img src="/IMG/icons/view.svg" alt="">
                         </button>
                     </td>
                 </tr>
-            }        
+            }
+            @* </Virtualize> *@
         </tbody>
     </table>
 </div>

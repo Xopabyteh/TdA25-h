@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace h.Server.Infrastructure.MultiplayerGames;
 
-public class MultiplayerGameSession
+public class MultiplayerGameSession : IDisposable
 {
     public Guid Id { get; init; }
     public IReadOnlyCollection<MultiplayerGameUserIdentity> Players { get; init; }
@@ -39,6 +39,9 @@ public class MultiplayerGameSession
     /// "Šachové hodiny"
     /// </summary>
     public TimeSpan TimerLength { get; init;}
+    
+    private readonly Timer? ClockCheckerTimer;
+    public event Action<ClockRanOutAndGameoverEventArgs>? OnClockRanOutAndGameEnded;
 
     public MultiplayerGameSession(
         Guid id,
@@ -62,7 +65,36 @@ public class MultiplayerGameSession
         
         _playerOnTurnIndex = playerOnTurnIndex;
         StartingPlayer = PlayerOnTurn;
+
+        ClockCheckerTimer = new Timer(
+            callback: _ => CheckClock(),
+            state: null,
+            dueTime: TimeSpan.FromSeconds(16), // Heuristic, guessing that a game will last > 16 seconds
+            period: TimeSpan.FromSeconds(1)); // Check every second
     }
+
+    private void CheckClock()
+    {
+        if (GameEnded)
+            return;
+
+        var remainingTime = GetRemainingTime(PlayerOnTurn);
+        if (remainingTime > TimeSpan.Zero)
+            return;
+
+        // Update timer
+        ClockCheckerTimer!.Change(Timeout.Infinite, Timeout.Infinite);
+
+        // End game (other player as winner)
+        EndGame(new MultiplayerGameSessionEndResult(
+            IsDraw: false,
+            WinnerId: Players.First(p => p != PlayerOnTurn)
+        ));
+
+        // Notify
+        OnClockRanOutAndGameEnded?.Invoke(new(PlayerOnTurn, this));
+    }
+
 
     /// <summary>
     /// Moves the turn to the next player.
@@ -121,10 +153,18 @@ public class MultiplayerGameSession
 
         return PlayersRequestingRevange.Count == Players.Count;
     }
+
+    public void Dispose()
+    {
+        ClockCheckerTimer?.Dispose();
+    }
+
     public class GameNotEndedYetException : Exception
     {
         public GameNotEndedYetException() : base("Game has not ended yet.")
         {
         }
     }
+
+    public readonly record struct ClockRanOutAndGameoverEventArgs(MultiplayerGameUserIdentity Player, MultiplayerGameSession Game);
 }

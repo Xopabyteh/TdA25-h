@@ -1,3 +1,4 @@
+using h.Server.Entities.MultiplayerGames;
 using h.Server.Entities.Users;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Components;
@@ -16,6 +17,7 @@ public partial class UserBoard
     private int placeInLeaderboard;
 
     private Dictionary<Guid, string>? opponentsInGames = new();
+    private UserToFinishedRankedGame[]? top4Games;
 
     public UserBoard(IDbContextFactory<AppDbContext> dbContextFactory)
     {
@@ -25,7 +27,7 @@ public partial class UserBoard
     protected override async Task OnInitializedAsync()
     {
         if(UserId is null)
-            return;
+            return; 
 
         await using var db = await _dbContextFactory.CreateDbContextAsync();
 
@@ -44,9 +46,10 @@ public partial class UserBoard
             .CountAsync() + 1;
 
         // Load opponent details
-        var top4Games = currentUser.UserToFinishedRankedGames
+        top4Games= currentUser.UserToFinishedRankedGames
             .OrderByDescending(m => m.FinishedRankedGame!.PlayedAt)
-            .Take(4);
+            .Take(4)
+            .ToArray();
 
         var opponentIdsInGames = top4Games
             .Select(m => m.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid))
@@ -59,6 +62,4 @@ public partial class UserBoard
                 keySelector: u => u.Uuid,
                 elementSelector: u => u.Username);
     }
-
-
 }

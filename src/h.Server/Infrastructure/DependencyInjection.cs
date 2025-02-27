@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using h.Contracts;
 using h.Client.Pages;
 using h.Server.Infrastructure.Leaderboard;
+using System.Threading.Channels;
 
 namespace h.Server.Infrastructure;
 public static class DependencyInjection
@@ -134,6 +135,9 @@ public static class DependencyInjection
                 options.Cookie.Name = "h.Auth";
                 options.LoginPath = PageRoutes.Auth.LoginIndex;
                 options.LogoutPath = PageRoutes.Auth.Logout;
+
+                options.AccessDeniedPath = PageRoutes.HomeIndex; // Redirect to home if access denied
+                
                 options.ReturnUrlParameter = "r";
             })
              .AddPolicyScheme("HybridAuth", JwtBearerDefaults.AuthenticationScheme, options =>

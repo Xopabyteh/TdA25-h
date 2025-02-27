@@ -246,10 +246,16 @@ public partial class MultiplayerGame : IAsyncDisposable
                     var prevSeconds = playerClockRemainingTimes[playerOnTurn.Identity.SessionId].Seconds;
                     var newTime = playerClockRemainingTimes[playerOnTurn.Identity.SessionId] - TimeSpan.FromMilliseconds(ClockUpdateIntervalMs);
                     playerClockRemainingTimes[playerOnTurn.Identity.SessionId] = newTime;
-
+                    
                     if (newTime.Seconds != prevSeconds)
                     {
                         await InvokeAsync(StateHasChanged);
+                    }
+
+                    if(newTime.TotalMilliseconds <= 0)
+                    {
+                        // Stop timer
+                        await clockTimer!.DisposeAsync();
                     }
                 },
                 null,

@@ -43,7 +43,7 @@ public partial class RegisterIndex
             {
                 _wasmAuth.MarkShouldReloadAuthState();
             }
-            _navigation.NavigateTo(ReturnUrl ?? "/");
+            _navigation.NavigateTo(ReturnUrl ?? "/", forceLoad: true);
             return;
         }
 
