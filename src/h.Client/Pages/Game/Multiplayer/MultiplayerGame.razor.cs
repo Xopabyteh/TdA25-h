@@ -78,8 +78,9 @@ public partial class MultiplayerGame : IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        if(RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
+        if (RuntimeInformation.ProcessArchitecture != Architecture.Wasm)
             return;
+
         gameId = await _sessionStorageService.GetItemAsync<Guid>(GameIdSessionStorageKey);
 
         // 1. Ensure game hub connection
@@ -88,9 +89,42 @@ public partial class MultiplayerGame : IAsyncDisposable
         // 4. Play game
 
         // Hub connection
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl($"{_navigationManager.BaseUri}{IMultiplayerGameSessionHubClient.Route}")
-            .Build();
+        hubConnection = CreateHubWithCallbacks();
+        await hubConnection.StartAsync();
+
+        // Reset
+        await ResetForNewGameAsync(gameId);;
+
+        // Ping we are ready
+        await hubConnection.SendAsync("ConfirmLoaded", gameId);
+    }
+
+    private Task ResetForNewGameAsync(Guid gameId)
+    {
+        // Reset all fields
+        this.gameId = gameId;
+        isGameStarted = false;
+        isGameEnded = false;
+        gameDetails = default;
+        gameEndedDetails = default;
+        moveI = 1;
+        ourPlayer = default;
+        otherPlayer = default;
+        gameField = new GameSymbol[15, 15];
+        //sessionIdToPlayer = null;
+        //playerClockRemainingTimes = default;
+        playerOnTurn = default;
+        requestedRevange = false;
+        otherPlayerRequestedRevange = false;
+
+        return Task.CompletedTask;
+    }
+
+    private HubConnection CreateHubWithCallbacks()
+    {
+        var hubConnection = new HubConnectionBuilder()
+                    .WithUrl($"{_navigationManager.BaseUri}{IMultiplayerGameSessionHubClient.Route}")
+                    .Build();
 
         hubConnection.On<MultiplayerGameStartedResponse>(nameof(IMultiplayerGameSessionHubClient.GameStarted), async response =>
         {
@@ -137,7 +171,7 @@ public partial class MultiplayerGame : IAsyncDisposable
             gameField[response.Position.Y, response.Position.X] = response.Symbol;
 
             // If no more players on turn, game ended, wait for game ended invokation
-            if(response.NextPlayerOnTurn is null)
+            if (response.NextPlayerOnTurn is null)
                 return;
 
             // Update turn
@@ -156,7 +190,7 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         hubConnection.On<MultiplayerGameUserIdentityDTO>(nameof(IMultiplayerGameSessionHubClient.PlayerRequestedRevange), async player =>
         {
-            if(player.SessionId == ourPlayer.Identity.SessionId)
+            if (player.SessionId == ourPlayer.Identity.SessionId)
                 return;
 
             otherPlayerRequestedRevange = true;
@@ -166,15 +200,17 @@ public partial class MultiplayerGame : IAsyncDisposable
 
         hubConnection.On<Guid>(nameof(IMultiplayerGameSessionHubClient.NewRevangeGameSessionCreated), async newGameId =>
         {
-            await _sessionStorageService.SetItemAsync(GameIdSessionStorageKey, newGameId);
-            //_navigationManager.NavigateTo(PageRoutes.Multiplayer.MultiplayerGame, forceLoad: true);
-            _navigationManager.Refresh(forceReload: true);
+            await InvokeAsync(async () =>
+            {
+                // New revange game started, reset and confirm loaded.
+                await _sessionStorageService.SetItemAsync(GameIdSessionStorageKey, newGameId);
+            
+                await ResetForNewGameAsync(newGameId);
+                await hubConnection!.SendAsync("ConfirmLoaded", newGameId);
+            });
         });
 
-        await hubConnection.StartAsync();
-
-        // Ping we are ready
-        await hubConnection.SendAsync("ConfirmLoaded", gameId);
+        return hubConnection;
     }
 
     private async Task HandlePlaceSymbol(int x, int y)

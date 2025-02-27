@@ -22,7 +22,7 @@ public interface IHApiClient : IWasmOnly
     Task LogoutUser();
 
     [Get("/api/v1/users/current")]
-    Task<UserResponse> GetCurrentUser();
+    Task<ApiResponse<UserResponse>> GetCurrentUser();
     [Get("/api/v1/users/current/claims")]
     Task<ClaimResponse[]> GetCurrentUserClaims();
 
