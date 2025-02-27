@@ -162,7 +162,7 @@ public class MultiplayerGameSessionHub : Hub<IMultiplayerGameSessionHubClient>
                 MapToDto(u),
                 game.PlayerSymbols[u],
                 u.Name,
-                nonGuestUsersInGame.FirstOrDefault(user => user.Uuid == u.UserId!.Value)?.Elo.Rating,
+                nonGuestUsersInGame.FirstOrDefault(user => user.Uuid == u.UserId)?.Elo.Rating ?? null,
                 game.TimerLength
             ))
             .ToList()

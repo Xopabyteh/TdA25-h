@@ -270,7 +270,7 @@ public partial class MatchmakingQueue : IAsyncDisposable
             await hubConnection.DisposeAsync();
     }
 
-    public async Task HandleLoginRedirect() => _navigationManager.NavigateTo(PageRoutes.Auth.LoginIndex);
+    public async Task HandleLoginRedirect() => _navigationManager.NavigateTo(PageRoutes.Auth.LoginIndexWithQuery(_navigationManager.Uri));
 
     public void HandleCloseLeavePopup()
     {
