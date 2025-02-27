@@ -6,7 +6,9 @@
         <div class="pedestal silver">
             @if (topNLeaderboardEntries?.Length > 1)
             {
-                <p class="name">@topNLeaderboardEntries[1].Username</p>
+                <p class="name">
+                    <a href="@(PageRoutes.User.UserBoardWithParam(topNLeaderboardEntries[1].Uuid))">@topNLeaderboardEntries[1].Username</a>
+                </p>
                 <p class="elo">ELO: @topNLeaderboardEntries[1].Rating</p>
             }
             else
@@ -19,7 +21,9 @@
         <div class="pedestal gold">
             @if (topNLeaderboardEntries?.Length > 0)
             {
-                <p class="name">@topNLeaderboardEntries[0].Username</p>
+                <p class="name">
+                    <a href="@(PageRoutes.User.UserBoardWithParam(topNLeaderboardEntries[0].Uuid))">@topNLeaderboardEntries[0].Username</a>
+                </p>
                 <p class="elo">ELO: @topNLeaderboardEntries[0].Rating</p>
             }
             else
@@ -32,7 +36,9 @@
         <div class="pedestal bronze">
             @if (topNLeaderboardEntries?.Length > 2)
             {
-                <p class="name">@topNLeaderboardEntries[2].Username</p>
+                <p class="name">
+                    <a href="@(PageRoutes.User.UserBoardWithParam(topNLeaderboardEntries[2].Uuid))">@topNLeaderboardEntries[2].Username</a>
+                </p>
                 <p class="elo">ELO: @topNLeaderboardEntries[2].Rating</p>
             }
             else
@@ -52,7 +58,7 @@
                 var entry = topNLeaderboardEntries[iCopy];
                 <tr>
                     <td class="place">@iCopy</td>
-                    <td class="name">@entry.Username</td>
+                    <td class="name"><a href="@(PageRoutes.User.UserBoardWithParam(topNLeaderboardEntries[iCopy].Uuid))">@entry.Username</a></td>
                     <td class="elo">ELO: @entry.Rating</td>
                 </tr>
             }
