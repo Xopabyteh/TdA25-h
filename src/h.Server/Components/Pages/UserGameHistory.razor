@@ -3,12 +3,12 @@
 @attribute [Route(PageRoutes.User.UserGameHistory)]
 @* @rendermode InteractiveWebAssembly *@
 
-<PageTitle>Hry hráče evzen.rozinka</PageTitle>
+<PageTitle>Hry hráče @currentUser?.Username</PageTitle>
 
 <div class="userbanner">
     <div class="userbox sheet">
         <img src="/IMG/pfps/pfp-blue.svg" alt="">
-        <p>evzen.rozinka</p>
+        <p>@currentUser?.Username</p>
     </div>
 </div>
 

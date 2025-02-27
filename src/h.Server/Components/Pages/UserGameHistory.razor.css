@@ -57,4 +57,12 @@ td, th {
         margin-top: 5rem;
         width: 100%;
     }
+
+    thead tr th {
+        font-size: 14px;
+    }
+
+    tbody tr td {
+        font-size: 14px;
+    }
 }
