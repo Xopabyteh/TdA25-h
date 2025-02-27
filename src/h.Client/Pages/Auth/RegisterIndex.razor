@@ -12,7 +12,7 @@
 } else {
     <EditForm Model="Model" class="login-form" OnValidSubmit="HandleRegister">
         <FluentValidationValidator/>
-        <ValidationSummary/>
+        <ValidationSummary style="font-size: 14pt; color: var(--clr-red)"/>
         
         <h2>Vytvořit nový účet</h2>
         <input autocomplete="username" @bind="Model.Username" type="text" placeholder="Jméno" class="text-input" name="nick" maxlength="16">
