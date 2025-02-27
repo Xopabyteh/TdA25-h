@@ -268,6 +268,10 @@ public partial class MultiplayerGame : IAsyncDisposable
         if(hubConnection is null)
             return;
 
+        var confirm = await _js.InvokeAsync<bool>("confirm", "Opravdu se chceš vzdát?");
+        if (!confirm)
+            return;
+
         // Todo: warning or smth?
         await hubConnection!.InvokeAsync("Surrender", gameDetails.GameId);
     }

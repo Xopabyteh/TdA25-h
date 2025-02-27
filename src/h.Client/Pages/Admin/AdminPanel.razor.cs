@@ -2,6 +2,7 @@
 using h.Client.Services;
 using h.Contracts;
 using h.Contracts.Users;
+using Microsoft.JSInterop;
 
 namespace h.Client.Pages.Admin;
 
@@ -9,11 +10,13 @@ public partial class AdminPanel
 {
     private readonly IHApiClient _api;
     private readonly ToastService _toast;
+    private readonly IJSRuntime _js;
 
-    public AdminPanel(IHApiClient api, ToastService toast)
+    public AdminPanel(IHApiClient api, ToastService toast, IJSRuntime js)
     {
         _api = api;
         _toast = toast;
+        _js = js;
     }
 
     private string query = string.Empty;
@@ -129,6 +132,10 @@ public partial class AdminPanel
     private async Task HandleDelete()
     {
         if (_user is null)
+            return;
+
+        var confirm = await _js.InvokeAsync<bool>("confirm", "Opravdu chcete smazat uživatele?");
+        if (!confirm)
             return;
 
         var response = await _api.DeleteUser(_user.Value.Uuid);

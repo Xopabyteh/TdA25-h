@@ -9,7 +9,8 @@
 <PageTitle>Ranked hra</PageTitle>
 
 @* Try prevent navigation until game hasn't ended *@
-<NavigationLock
+<NavigationLock 
+    @rendermode="InteractiveAuto"
     ConfirmExternalNavigation="!isGameEnded"
     OnBeforeInternalNavigation="HandleOnBeforeInternalNavigation" />
 
