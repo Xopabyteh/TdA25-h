@@ -52,6 +52,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GuestLoginEnsureMiddleware>();
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions()
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
