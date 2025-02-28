@@ -2,8 +2,4 @@
 	<ItemGroup>
 		<PackageReference Include="Ardalis.SmartEnum" />
 	</ItemGroup>
-
-	<PropertyGroup>
-		<PublishTrimmed>false</PublishTrimmed>
-	</PropertyGroup>
 </Project>

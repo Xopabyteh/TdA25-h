@@ -1,5 +1,6 @@
 ﻿using h.Primitives;
 using h.Primitives.Games;
+using System.Diagnostics.CodeAnalysis;
 
 namespace h.Contracts.MultiplayerGames;
 
@@ -12,15 +13,16 @@ namespace h.Contracts.MultiplayerGames;
 /// Used for syncing player timers on client, after a player makes a move
 /// </param>
 // Exclude from linking (trimming)
-[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class PlayerMadeAMoveResponse
 {
     public MultiplayerGameUserIdentityDTO PlayerId { get; init; }
     public Int2 Position { get; init; }
     public GameSymbol Symbol { get; init; }
     public MultiplayerGameUserIdentityDTO? NextPlayerOnTurn { get; init; }
-    public KeyValuePair<Guid, TimeSpan>[] PlayerRemainingClockTimes { get; init; }
 
+    public KeyValuePair<Guid, TimeSpan>[] PlayerRemainingClockTimes { get; init; }
+    
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(KeyValuePair<Guid, TimeSpan>))]
     public PlayerMadeAMoveResponse(
         MultiplayerGameUserIdentityDTO playerId,
         Int2 position,
