@@ -56,6 +56,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions()
 {
     ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
 });
+app.UseStatusCodePagesWithRedirects("/StatusCode/{0}");
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
