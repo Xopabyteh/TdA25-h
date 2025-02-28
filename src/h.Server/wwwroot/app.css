@@ -52,7 +52,9 @@ body {
 
 
 header {   /*nemazat*/
-    background-color: #F9F9F9;
+    /*background-color: #F9F9F9;*/
+    background-color: var(--clr-white);
+    border-bottom: 2px solid var(--clr-gray-450);
     display: flex;
     justify-content: space-between;
     height: 60px;
