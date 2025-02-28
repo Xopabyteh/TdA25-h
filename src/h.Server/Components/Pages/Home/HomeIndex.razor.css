@@ -79,3 +79,27 @@ h1.blue {
     border-radius: 200px;
     margin-bottom: 30px;
 }
+
+footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: solid 1px var(--clr-gray-450);
+    padding: 20px;
+    background: var(--clr-gray-400);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .links
+
+{
+    display: flex;
+    flex-direction: column;
+    a: hover
+
+{
+    text-decoration: underline;
+}
+
+}
+}
