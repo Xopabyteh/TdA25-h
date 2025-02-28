@@ -57,7 +57,7 @@
                 var iCopy = i;
                 var entry = topNLeaderboardEntries[iCopy];
                 <tr>
-                    <td class="place">@iCopy</td>
+                    <td class="place">@(iCopy + 1)</td>
                     <td class="name"><a href="@(PageRoutes.User.UserBoardWithParam(topNLeaderboardEntries[iCopy].Uuid))">@entry.Username</a></td>
                     <td class="elo">ELO: @entry.Rating</td>
                 </tr>

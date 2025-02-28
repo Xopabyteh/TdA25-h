@@ -2,6 +2,7 @@
 using h.Contracts;
 using h.Primitives.Users;
 using h.Server.Infrastructure;
+using h.Server.Infrastructure.AuditLog;
 using h.Server.Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,8 @@ public static class DeleteUser
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapDelete("/api/v1/users/{id:guid}", Handle);
+            app.MapDelete("/api/v1/users/{id:guid}", Handle)
+                .AuditMethod(ctx => $"Deleted user {ctx.HttpContext.GetRouteValue("id")}");
         }
     }
 
