@@ -209,6 +209,12 @@ input[type="range"] {
     box-sizing: content-box;
 }
 
+button[disabled] {
+    background: var(--clr-gray-600);
+    border-color: var(--clr-gray-600);
+    cursor: initial;
+}
+
 .text-input {
     padding: 10px;
     border-radius: 0;
