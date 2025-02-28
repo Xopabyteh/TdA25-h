@@ -216,7 +216,12 @@ public partial class MatchmakingQueue : IAsyncDisposable
             // No longer in queue
             isJoinedQueue = false;
         }
-        positionInQueue = newPositionInQueue;
+        else
+        {
+            // Still in queue
+            isJoinedQueue = true;
+            positionInQueue = newPositionInQueue;
+        }
     }
 
     public async Task HandleAcceptMatching()

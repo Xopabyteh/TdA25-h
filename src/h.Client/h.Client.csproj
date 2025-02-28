@@ -25,4 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\h.Contracts\h.Contracts.csproj" />
   </ItemGroup>
-</Project>
+	</Project>

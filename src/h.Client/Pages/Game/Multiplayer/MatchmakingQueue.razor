@@ -48,7 +48,7 @@
                         </div>
                         @* <p>Čas na přijetí hry končí v @currentMatching?.ExpiresAt.LocalDateTime</p> *@
                         <div class="queue-btn-row">
-                            <button class="primary-button" @onclick="HandleAcceptMatching">Přijmout</button>
+                            <button disabled="@(currentMatchingAcceptees.Contains(_currentUserStateService.UserDetails.Value.Uuid))" class="primary-button" @onclick="HandleAcceptMatching">Přijmout</button>
                             <button class="secondary-button" @onclick="HandleDeclineMatching">Odmítnout</button>
                         </div>
                     </div>
