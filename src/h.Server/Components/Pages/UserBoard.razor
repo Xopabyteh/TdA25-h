@@ -40,10 +40,11 @@
             <div class="gamehistory">
                 @foreach (var gameRecord in top4Games ?? []) 
                 {
-                    var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)];
+                    @* var opponentName = opponentsInGames?[gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid)]; *@
+                    opponentsInGames!.TryGetValue(gameRecord.FinishedRankedGame!.GetOpponentUserId(currentUser!.Uuid), out var opponentName);
+                    opponentName ??= "Neznámý hráč";
                     var winIcon = ResourceHelper.GetTrophyIcon(gameRecord.FinishedRankedGame!.DidWin(currentUser!.Uuid));
                     var playeSymbolIcon = ResourceHelper.GetSymbolSrc(gameRecord.FinishedRankedGame!.GetPlayerSymbol(currentUser!.Uuid));
-                    
 
                     <div class="gamerecord">
                         <div class="data">

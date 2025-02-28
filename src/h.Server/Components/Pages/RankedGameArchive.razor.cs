@@ -37,7 +37,10 @@ public partial class RankedGameArchive
         if (game is null)
             return;
 
-        player1Name = game.UserToFinishedRankedGames.First(u => u.UserId == game.Player1Id)!.User!.Username;
-        player2Name = game.UserToFinishedRankedGames.First(u => u.UserId == game.Player2Id)!.User!.Username;
+        //player1Name = game.UserToFinishedRankedGames.First(u => u.UserId == game.Player1Id)!.User!.Username;
+        player1Name = game.UserToFinishedRankedGames.FirstOrDefault(u => u.UserId == game.Player1Id)?.User?.Username
+            ?? "Neznámý uživatel";
+        player2Name = game.UserToFinishedRankedGames.FirstOrDefault(u => u.UserId == game.Player2Id)?.User?.Username
+            ?? "Neznámý uživatel";
     }
 }
