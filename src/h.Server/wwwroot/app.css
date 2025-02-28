@@ -212,7 +212,7 @@ input[type="range"] {
 button[disabled] {
     background: var(--clr-gray-600);
     border-color: var(--clr-gray-600);
-    cursor: not-allowed;
+    cursor: initial;
 }
 
 .text-input {
