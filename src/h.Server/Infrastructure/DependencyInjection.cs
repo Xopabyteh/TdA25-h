@@ -138,7 +138,7 @@ public static class DependencyInjection
 
                 options.AccessDeniedPath = PageRoutes.HomeIndex; // Redirect to home if access denied
                 
-                options.ReturnUrlParameter = "r";
+                options.ReturnUrlParameter = "return";
             })
              .AddPolicyScheme("HybridAuth", JwtBearerDefaults.AuthenticationScheme, options =>
             {
