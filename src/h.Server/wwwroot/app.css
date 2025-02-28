@@ -90,11 +90,13 @@ aside { /*new layout css, do not delete!!!*/
     gap: 1rem;
     position: sticky;
     top: 20px;
+    min-width: 236px;
 }
 
 @media only screen and (max-width: 600px) {
     aside {
         flex-direction: row;
+        min-height: 251px;
     }
 
     .display {
