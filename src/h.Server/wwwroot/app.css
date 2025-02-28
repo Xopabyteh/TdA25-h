@@ -92,6 +92,7 @@ aside { /*new layout css, do not delete!!!*/
     position: sticky;
     top: 20px;
     min-width: 236px;
+    z-index: 100;
 }
 
 @media only screen and (max-width: 600px) {

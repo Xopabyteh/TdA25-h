@@ -183,12 +183,18 @@
         align-items: center;
     }
 
+
     .cell {
         width: 25px;
         > img {
                 width: 15px;
                 height: 15px;
             }
+
+        &::after {
+            width: 15px !important;
+            height: 15px !important;
+        }
     }
 
     .game-field-row {
@@ -208,4 +214,4 @@
             border-top: 1px var(--clr-gray-500) solid;
         }
     }
-} 
+}

@@ -27,12 +27,13 @@ public class LeaderboardService
                                  WinAmount, 
                                  LossAmount,
                                  DrawAmount,
-                                 ROW_NUMBER() OVER (ORDER BY Elo_Rating DESC) AS Rank
+                                 ROW_NUMBER() OVER (ORDER BY Elo_Rating DESC) AS Rank,
+                                 (BannedFromRankedMatchmakingAt IS NOT NULL) AS IsBanned 
                              FROM UsersDbSet
                          )
                          SELECT Username, Uuid, Rating, WinAmount, LossAmount, DrawAmount, Rank 
                          FROM RankedUsers
-                         WHERE Rank > @skip AND Rank <= @count
+                         WHERE (NOT IsBanned) AND (Rank > @skip AND Rank <= @count)
                          """,
                  new SqliteParameter("@skip", skip),
                  new SqliteParameter("@count", count))
